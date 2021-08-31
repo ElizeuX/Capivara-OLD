@@ -149,7 +149,7 @@ class Treeview():
         for path in pathlist :
             tree_iter = model.get_iter(path)
             value = model.get_value(tree_iter,1)
-        print(value)
+            print(value)
 
 
 class JsonTools():

@@ -9,8 +9,8 @@ import json
 import os
 from datetime import datetime
 
-engine = create_engine('sqlite:///capivara.db', echo=False)
-#engine = create_engine('sqlite://', echo=False)
+#engine = create_engine('sqlite:///capivara.db', echo=False)
+engine = create_engine('sqlite://', echo=False)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 connection = engine.connect()
@@ -141,8 +141,9 @@ class SmartGroup(Base):
         retorno = []
         for smartGroup in smartGroups:
             smartGroupStr = JsonTools.putMap('"id"', str(smartGroup.id)) + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description  + '"') + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule  + '"')
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
+            #smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description  + '"') + ','
+            #smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule  + '"')
             retorno.append(JsonTools.putObject(smartGroupStr))
 
         return JsonTools.putArray(', '.join(retorno))
@@ -247,77 +248,79 @@ class Character(Base):
         retorno = []
         for character in characters:
             characterStr = JsonTools.putMap('"id"', str(character.id)) + ','
-            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"height"', '"' + str(character.height) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"weight"', '"' + str(character.weight) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"standing features"', '"' + str(character.standing_features) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
+            #characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"')
+            # characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"height"', '"' + str(character.height) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"weight"', '"' + str(character.weight) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"standing features"', '"' + str(character.standing_features) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
+            # # characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"')
 
-            i = character.id
-            strBiografia = ""
-            result = s.query(Biography).filter(Biography.id_character == i)
-
-            if result.count() > 0:
-                for row in result:
-                    strBio = ""
-                    strBio = strBio + JsonTools.putMap('"year"', str(row.year)) + ','
-                    strBio = strBio + JsonTools.putMap('"description"', '"' + str(row.description) + '"')
-                    strBio = JsonTools.putObject(strBio) + ','
-                    strBiografia = strBiografia + strBio
-                strBiografia = JsonTools.putMap('"biography"', JsonTools.putArray(strBiografia[:-1]))
-            else:
-                strBiografia = JsonTools.putMap('"biography"', "[]")
-
-            characterStr = characterStr + strBiografia
-
-            # OBTER OS RELACIONAMENTOS COM O CORE
-            result = s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == i)
-            strIdCore = []
-            if result.count() > 0:
-                for row in result:
-                    strIdCore.append(str(row.core_id))
-                strIdCore = ",".join(strIdCore)
-                strIdCore = JsonTools.putArray(strIdCore.replace("'", ""))
-            else:
-                strIdCore = JsonTools.putMap("[]")
-
-            strDestinationCore = JsonTools.putMap('"destination"', '"core"')  + ", "
-            strDestinationCore = strDestinationCore + JsonTools.putMap('"idrefs"', strIdCore)
-            strDestinationCore = JsonTools.putObject(strDestinationCore)
-
-            # OBTER OS RELACIONAMENTOS COM O TAG
-            result = s.query(TagCharacterLink).filter(TagCharacterLink.character_id == i)
-            strIdTag = []
-            if result.count() > 0:
-                for row in result:
-                    strIdTag.append(str(row.tag_id))
-                strIdTag = ",".join(strIdTag)
-                strIdTag = JsonTools.putArray(strIdTag.replace("'", ""))
-            else:
-                strIdTag  = JsonTools.putMap("[]")
-
-            strDestinationTag = JsonTools.putMap('"destination"', '"tag"') + ", "
-            strDestinationTag = strDestinationTag + JsonTools.putMap('"idrefs"', strIdTag)
-            strDestinationTag = JsonTools.putObject(strDestinationTag)
-
-            strRelationship = strDestinationCore + ", " + strDestinationTag
-            strRelationship = JsonTools.putMap('"relationship"', JsonTools.putArray(strRelationship))
-
-            characterStr = characterStr + ", " + strRelationship
-
+            # i = character.id
+            # strBiografia = ""
+            # result = s.query(Biography).filter(Biography.id_character == i)
+            #
+            # if result.count() > 0:
+            #     for row in result:
+            #         strBio = ""
+            #         strBio = strBio + JsonTools.putMap('"year"', str(row.year)) + ','
+            #         strBio = strBio + JsonTools.putMap('"description"', '"' + str(row.description) + '"')
+            #         strBio = JsonTools.putObject(strBio) + ','
+            #         strBiografia = strBiografia + strBio
+            #     strBiografia = JsonTools.putMap('"biography"', JsonTools.putArray(strBiografia[:-1]))
+            # else:
+            #     strBiografia = JsonTools.putMap('"biography"', "[]")
+            #
+            # characterStr = characterStr + strBiografia
+            #
+            # # OBTER OS RELACIONAMENTOS COM O CORE
+            # result = s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == i)
+            # strIdCore = []
+            # if result.count() > 0:
+            #     for row in result:
+            #         strIdCore.append(str(row.core_id))
+            #     strIdCore = ",".join(strIdCore)
+            #     strIdCore = JsonTools.putArray(strIdCore.replace("'", ""))
+            # else:
+            #     strIdCore = JsonTools.putMap("[]")
+            #
+            # strDestinationCore = JsonTools.putMap('"destination"', '"core"')  + ", "
+            # strDestinationCore = strDestinationCore + JsonTools.putMap('"idrefs"', strIdCore)
+            # strDestinationCore = JsonTools.putObject(strDestinationCore)
+            #
+            # # OBTER OS RELACIONAMENTOS COM O TAG
+            # result = s.query(TagCharacterLink).filter(TagCharacterLink.character_id == i)
+            # strIdTag = []
+            # if result.count() > 0:
+            #     for row in result:
+            #         strIdTag.append(str(row.tag_id))
+            #     strIdTag = ",".join(strIdTag)
+            #     strIdTag = JsonTools.putArray(strIdTag.replace("'", ""))
+            # else:
+            #     strIdTag  = JsonTools.putMap("[]")
+            #
+            # strDestinationTag = JsonTools.putMap('"destination"', '"tag"') + ", "
+            # strDestinationTag = strDestinationTag + JsonTools.putMap('"idrefs"', strIdTag)
+            # strDestinationTag = JsonTools.putObject(strDestinationTag)
+            #
+            # strRelationship = strDestinationCore + ", " + strDestinationTag
+            # strRelationship = JsonTools.putMap('"relationship"', JsonTools.putArray(strRelationship))
+            #
+            # characterStr = characterStr + ", " + strRelationship
+            #
 
             retorno.append(JsonTools.putObject(characterStr))
 
@@ -406,6 +409,23 @@ class DataUtils():
         s.add(c)
         s.commit()
 
+        # Retornar o dict com os dados carregados no banco de dados
+        c = SmartGroup()
+        __smartgroups__ = '"smart group":' + c.dictBuffer()
+        dictReturn = __smartgroups__ + ','
+        c = Core()
+        __cores__ = '"core" :' + c.dictBuffer()
+        dictReturn = dictReturn + __cores__ + ','
+
+        c = Character()
+        __charaters__ = '"character":' + c.dictBuffer()
+        dictReturn = '{' + dictReturn + __charaters__ + '}'
+
+        json_acceptable_string = dictReturn.replace("'", "\"")
+        dict_object = json.loads(json_acceptable_string)
+
+        return dict_object
+
     def loadCapivaraFile(self, fileOpen):
         capivara = JsonTools.loadFile(fileOpen)
         logging.info("Gravando objetos na base de dados.")
@@ -413,7 +433,6 @@ class DataUtils():
         Base.metadata.create_all()
 
         self.truncate_db()
-
 
         s = Session()
         # Incluir dados do arquivo
@@ -487,7 +506,22 @@ class DataUtils():
                         s.add(c)
                         s.commit()
 
-        return capivara
+        # Retornar o dict com os dados carregados no banco de dados
+        c = SmartGroup()
+        __smartgroups__ =  '"smart group":' + c.dictBuffer()
+        dictReturn = __smartgroups__ + ','
+        c = Core()
+        __cores__ = '"core" :' +c.dictBuffer()
+        dictReturn = dictReturn + __cores__ + ','
+
+        c = Character()
+        __charaters__ = '"character":' + c.dictBuffer()
+        dictReturn = '{' + dictReturn + __charaters__ +'}'
+
+        json_acceptable_string = dictReturn.replace("'", "\"")
+        dict_object = json.loads(json_acceptable_string)
+
+        return dict_object
 
     def saveCapivaraFile(self, capivaraFile):
 

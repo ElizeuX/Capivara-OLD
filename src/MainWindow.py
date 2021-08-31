@@ -65,8 +65,22 @@ class MainWindow(Gtk.ApplicationWindow):
         # NOVA VERSÃO
         # TODO: Verificar se existe nova versão e apresentar no Info
         #if not self.info_bar.get_revealed():
-        self.info_bar.set_revealed(revealed=True)
-        GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
+        # self.info_bar.set_revealed(revealed=True)
+        # GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
+
+        # # Verifica se existe nova versão disponível
+        # if self.appConfig.getUpdateAutomatically() == "yes":
+        #     # TODO: Criar função para verificar se existe nova versão disponível
+        #     newVersion = True
+        #     if newVersion:
+        #         dialog = DialogUpdateAutomatically(self)
+        #         response = dialog.run()
+        #         if response == Gtk.ResponseType.OK:
+        #             print("The OK button was clicked")
+        #         elif response == Gtk.ResponseType.CANCEL:
+        #             print("The Cancel button was clicked")
+        #
+        #         dialog.destroy()
 
         # CONSTRUINDO O MENU POPOVER DINAMICAMENTE
         popover = Gtk.Template.Child(name='menu-popover')
@@ -84,77 +98,12 @@ class MainWindow(Gtk.ApplicationWindow):
         propertiesProject['pseudonym'] = ""
 
         dataUtils = DataUtils()
-        dataUtils.LoadCapivaraFileEmpty(propertiesProject)
+        capivara = dataUtils.LoadCapivaraFileEmpty(propertiesProject)
 
         Biografia_Character = [
             (1965, 'Nascimento'), (1974, 'Evento 1'), (1976, 'Evento 2'), (1979, 'Evento 3'),
             (1980, 'Evento 4'), (1985, 'Evento 5'), (1987, 'Evento 6'),
         ]
-
-        capivara = {
-            "character": [
-                {
-                    "id": 1,
-                    "name": "Frodo Baggins 2"
-                },
-                {
-                    "id": 2,
-                    "name": "Aragorn (Strider) 2"
-                },
-                {
-                    "id": 3,
-                    "name": "Meriadoc (Merry) Brandybuck 2"
-                },
-                {
-                    "id": 4,
-                    "name": "Boromir 2"
-                }
-            ],
-            "core": [
-                {
-                    "id": 1,
-                    "description": "The Fellowship of the Ring"
-                },
-                {
-                    "id": 2,
-                    "description": "Allies of the Fellowship"
-                },
-                {
-                    "id": 3,
-                    "description": "Opponents of the fellowship"
-                },
-                {
-                    "id": 4,
-                    "description": "Fellowship"
-                },
-                {
-                    "id": 5,
-                    "description": "Ring"
-                },
-                {
-                    "id": 6,
-                    "description": "Allies"
-                }
-            ],
-            "smart group": [
-                {
-                    "id": 1,
-                    "description": "Elves"
-                },
-                {
-                    "id": 2,
-                    "description": "Hobbits"
-                },
-                {
-                    "id": 3,
-                    "description": "Humans"
-                },
-                {
-                    "id": 4,
-                    "description": "Female character"
-                }
-            ]
-        }
 
         for state in Biografia_Character:
             self.list_store.append(row=state)
@@ -509,31 +458,16 @@ class Application(Gtk.Application):
         Gtk.Application.do_startup(self)
 
     def do_activate(self):
+        appConfig = AppConfig()
 
         win = self.props.active_window
         if not win:
             win = MainWindow(application=self)
 
-        appConfig = AppConfig()
-
         win.set_title("Untitled")
         win.set_default_size(width=appConfig.getDefaultWidth(), height=appConfig.getDefaultHeight())
         win.set_position(position=Gtk.WindowPosition.CENTER)
         win.present()
-
-        # Verifica se existe nova versão disponível
-        if appConfig.getUpdateAutomatically() == "yes":
-            # TODO: Criar função para verificar se existe nova versão disponível
-            newVersion = True
-            if newVersion:
-                dialog = DialogUpdateAutomatically(win)
-                response = dialog.run()
-                if response == Gtk.ResponseType.OK:
-                    print("The OK button was clicked")
-                elif response == Gtk.ResponseType.CANCEL:
-                    print("The Cancel button was clicked")
-
-                dialog.destroy()
 
     def do_command_line(self, command_line):
         options = command_line.get_options_dict()
