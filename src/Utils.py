@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
-
 import gi
+import base64
+
 
 gi.require_version(namespace='Gtk', version='3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
@@ -372,6 +373,66 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         # print(f'URI até o arquivo: {self.get_uri()}')
         return self.get_filename()
 
+class DialogSelectImage(Gtk.FileChooserDialog):
+    # Definindo o diretório padrão.
+    home = Path.home()
+
+    def __init__(self, select_multiple):
+        super().__init__()
+        self.select_multiple = select_multiple
+
+        self.set_title(title='Abrir')
+        self.set_modal(modal=True)
+
+        #
+        # Tipo de ação que o dialogo irá executar.
+        self.set_action(action=Gtk.FileChooserAction.OPEN)
+
+        # Defininido se a seleção será multipla ou não
+        self.set_select_multiple(select_multiple=self.select_multiple)
+        # Pasta onde o diálogo será aberto.
+        self.set_current_folder(filename=str(self.home))
+
+        # Botões que serão exibidos.
+        self.add_buttons(
+            '_Cancelar', Gtk.ResponseType.CANCEL,
+            '_OK', Gtk.ResponseType.OK
+        )
+
+        # Adicionando class action nos botões.
+        btn_cancel = self.get_widget_for_response(
+            response_id=Gtk.ResponseType.CANCEL,
+        )
+        btn_cancel.get_style_context().add_class(class_name='destructive-action')
+
+        btn_save = self.get_widget_for_response(
+            response_id=Gtk.ResponseType.OK,
+        )
+        btn_save.get_style_context().add_class(class_name='suggested-action')
+
+        # Criando e adicionando filtros.
+        img_filter = Gtk.FileFilter()
+        img_filter.set_name("Image files")
+        img_filter.add_pattern("*.jpg")
+        img_filter.add_pattern("*.jpeg")
+        img_filter.add_pattern("*.png")
+        img_filter.add_pattern("*.tif")
+        img_filter.add_pattern("*.bmp")
+        img_filter.add_pattern("*.gif")
+        img_filter.add_pattern("*.tiff")
+        self.add_filter(filter=img_filter)
+
+        all_filter = Gtk.FileFilter()
+        all_filter.set_name(name='todos')
+        all_filter.add_pattern(pattern='*')
+        self.add_filter(filter=all_filter)
+
+        # É obrigatório utilizar ``show_all()``.
+        self.show_all()
+
+    def show_file_info(self):
+        return self.get_filename()
+
 class DialogSelectFile(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
     appConfig = AppConfig()
@@ -430,20 +491,6 @@ class DialogSelectFile(Gtk.FileChooserDialog):
     def show_file_info(self):
         return self.get_filename()
 
-def getPlugins():
-    plugins = []
-    possibleplugins = os.listdir(PluginFolder)
-    for i in possibleplugins:
-        location = os.path.join(PluginFolder, i)
-        if not os.path.isdir(location) or not MainModule + ".py" in os.listdir(location):
-            continue
-        info = importlib.find_module(MainModule, [location])
-        plugins.append({"name": i, "info": info})
-    return plugins
-
-def loadPlugin(plugin):
-    return importlib.import_module(plugin, PluginFolder )
-
 class DialogUpdateAutomatically(Gtk.Dialog):
     def __init__(self, parent):
         super().__init__(title="Capivara update", transient_for=parent, flags=0)
@@ -462,4 +509,71 @@ class DialogUpdateAutomatically(Gtk.Dialog):
         box.add(label3)
         self.show_all()
 
+def getPlugins():
+    plugins = []
+    possibleplugins = os.listdir(PluginFolder)
+    for i in possibleplugins:
+        location = os.path.join(PluginFolder, i)
+        if not os.path.isdir(location) or not MainModule + ".py" in os.listdir(location):
+            continue
+        info = importlib.find_module(MainModule, [location])
+        plugins.append({"name": i, "info": info})
+    return plugins
 
+def loadPlugin(plugin):
+    return importlib.import_module(plugin, PluginFolder )
+
+def alert(widget, message):
+    dialog = Gtk.MessageDialog(widget, 0, Gtk.MessageType.ERROR,
+                               Gtk.ButtonsType.CANCEL, "Error")
+    dialog.format_secondary_text(message)
+    dialog.run()
+    print("INFO dialog closed")
+
+    dialog.destroy()
+
+
+def imageToBase64(widget, imageFile):
+    base64_string = ""
+    try:
+        with open(imageFile, "rb") as img_file:
+            base64_string = base64.b64encode(img_file.read())
+    except IOError:
+        alert(widget, "Erro ao tentar abrir o arquivo de imagem")
+
+    finally:
+        img_file.close()
+
+    return base64_string
+
+def base64ToImage(widget, base64_string):
+    try:
+        imgdata = base64.b64decode(base64_string)
+    except:
+        alert(widget, "Erro ao abrir a imagem")
+    finally:
+        imgdata = ""
+
+    return imgdata
+
+def get_pixbuf_from_base64string(base64string):
+    if base64string is None:
+        return 'NOIMAGE'
+    raw_data = base64.b64decode(base64string)
+    try:
+        pixbuf_loader = GdkPixbuf.PixbufLoader.new_with_mime_type("image/jpeg")
+        pixbuf_loader.write(raw_data)
+        pixbuf_loader.close()
+        pixbuf = pixbuf_loader.get_pixbuf()
+        return pixbuf
+    except Exception as e:
+        pass
+    try:
+        pixbuf_loader = GdkPixbuf.PixbufLoader.new_with_mime_type("image/png")
+        pixbuf_loader.write(raw_data)
+        pixbuf_loader.close()
+        pixbuf = pixbuf_loader.get_pixbuf()
+        return pixbuf
+    except Exception as e:
+        pass
+    return ""

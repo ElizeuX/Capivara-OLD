@@ -17,7 +17,7 @@ splash = Splash()
 splash.start()
 
 # CONFIGURANDO O APLICATIVO
-logging.info("configuranando plugins")
+logging.info("configurando plugins")
 plugin = Utils.loadPlugin("__init__")
 plugin.run()
 

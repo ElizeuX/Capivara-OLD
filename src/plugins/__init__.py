@@ -1,2 +1,2 @@
 def run():
-    print("Hello from a plugin dir!")
+    print("Hello from a plugin!")

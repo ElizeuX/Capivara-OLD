@@ -205,7 +205,7 @@ class Character(Base):
     standing_features = Column(Unicode(100))
     background = Column(Unicode(1000))
     hobbies = Column(Unicode())
-    picture = Column(Unicode(100))
+    picture = Column(Unicode(200000))
     notes = Column(Unicode(1000))
     tag = Column(Unicode(50))
     biography = relationship("Biography")
