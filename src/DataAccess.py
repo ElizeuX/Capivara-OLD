@@ -428,6 +428,9 @@ class DataUtils():
 
     def loadCapivaraFile(self, fileOpen):
         capivara = JsonTools.loadFile(fileOpen)
+        if not capivara:
+            return ""
+
         logging.info("Gravando objetos na base de dados.")
 
         Base.metadata.create_all()

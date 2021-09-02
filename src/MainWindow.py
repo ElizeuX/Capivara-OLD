@@ -10,18 +10,13 @@ from gi.repository import Gio, Gtk, GdkPixbuf, GLib
 
 import Global
 from Global import Global
-from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, JsonTools, Treeview
+from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, Treeview
 import PluginsManager
 import webbrowser
 from CapivaraSmartGroup import CapivaraSmartGroup
-from DataAccess import DataUtils, FileInformation, ProjectProperties, Character, Core, SmartGroup
+from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup
 import Utils
-
-from time import sleep
-
-import logging
-
-logging.basicConfig(level=logging.INFO)
+from src.logger import Logs
 
 # importar Telas
 from Preferences import Preferences
@@ -29,10 +24,13 @@ from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
 
+logs = Logs(filename="capivara.log")
+
 
 @Gtk.Template(filename='MainWindow.ui')
 class MainWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'MainWindow'
+
     settings = Gtk.Settings.get_default()
 
     btn_search = Gtk.Template.Child(name='btn_search')
@@ -132,7 +130,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Verificando a resposta recebida.
         if response == Gtk.ResponseType.OK:
-            logging.info("Abrindo arquivo de imagem : " + dialog.show_file_info())
+            logs.record("Abrindo arquivo de imagem : " + dialog.show_file_info(), type="info", colorize=True)
             fileOpen = dialog.show_file_info()
             stringBase64 = Utils.imageToBase64(self, fileOpen)
             strTeste64 = '''/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB
@@ -2041,25 +2039,38 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
 
         # Verificando a resposta recebida.
         if response == Gtk.ResponseType.OK:
-            logging.info("Abrindo arquivo : " + dialog.show_file_info())
+            logs.record("Abrindo arquivo : " + dialog.show_file_info(), type="info", colorize=True)
 
             # Carregar Capivara salva
             fileOpen = dialog.show_file_info()
             dataUtils = DataUtils()
             capivara = dataUtils.loadCapivaraFile(fileOpen)
 
-            Treeview(self.treeView, capivara)
+            if not capivara:
+                dialog.destroy()
+                dlgMessage = Gtk.MessageDialog(
+                    transient_for=self,
+                    flags=0,
+                    message_type=Gtk.MessageType.ERROR,
+                    buttons=Gtk.ButtonsType.OK,
+                    text="ERROR",
+                )
+                dlgMessage.format_secondary_text("Não foi possível carregar o arquivo.")
+                dlgMessage.run()
 
-            projectProperties = ProjectProperties.get()
-            self.header_bar.set_title(projectProperties.title)
-            self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+                dlgMessage.destroy()
+            else:
+                Treeview(self.treeView, capivara)
+
+                projectProperties = ProjectProperties.get()
+                self.header_bar.set_title(projectProperties.title)
+                self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+
+                # Destruindo a janela de dialogo.
+                dialog.destroy()
 
         elif response == Gtk.ResponseType.NO:
             pass
-
-        # Destruindo a janela de dialogo.
-        dialog.destroy()
-
 
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):

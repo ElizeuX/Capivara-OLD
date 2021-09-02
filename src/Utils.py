@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
 import gi
 import base64
-
+from logger import Logs
 
 gi.require_version(namespace='Gtk', version='3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf
@@ -168,15 +167,21 @@ class JsonTools():
         else:
             return lista
 
-    def loadFile(file_name):
-        logging.info("Carregando o arquivos json")
+    def loadFile( file_name):
+        logs = Logs(filename="capivara.log")
+
+        logs.record("Carregando o arquivos json", type="info", colorize=True)
 
         # ler arquivo capivara
         try:
             with open(file_name, "r") as jsonFileLeitura:
                 jsonFile = json.load(jsonFileLeitura)
         except:
-            print("An exception occurred")
+            logs.record("Arquivo : " + file_name + "corrompido.")
+            jsonFile = ""
+
+        finally:
+            jsonFileLeitura.close()
 
         return jsonFile
 

@@ -4,23 +4,22 @@ import sys
 from MainWindow import Application
 from SplashScreen import Splash
 import Utils
-import logging
+from src.logger import Logs
 
 from time import sleep
 
-logging.basicConfig(level=logging.INFO)
+logs = Logs(filename="capivara.log")
 
 # Initiate and show the splash screen
-logging.info("Starting splash")
+logs.record("Starting splash", type="info", colorize=True)
 
 splash = Splash()
 splash.start()
 
 # CONFIGURANDO O APLICATIVO
-logging.info("configurando plugins")
+logs.record("configurando plugins", type="info", colorize=True)
 plugin = Utils.loadPlugin("__init__")
 plugin.run()
-
 
 sleep(1)
 
