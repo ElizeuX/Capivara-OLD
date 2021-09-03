@@ -164,7 +164,7 @@
                 <property name="margin-bottom">5</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScrolledWindow">
+                  <object class="GtkScrolledWindow" id="scrollView">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="shadow-type">in</property>
@@ -174,8 +174,11 @@
                         <property name="can-focus">True</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
+                        <signal name="cursor-changed" handler="on" swapped="no"/>
                         <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                          <object class="GtkTreeSelection" id="GtkTreeview">
+                            <signal name="changed" handler="on_GtkTreeview_changed" swapped="no"/>
+                          </object>
                         </child>
                       </object>
                     </child>
@@ -704,6 +707,7 @@
                                             <property name="can-focus">True</property>
                                             <property name="margin-start">5</property>
                                             <property name="margin-top">5</property>
+                                            <property name="margin-bottom">10</property>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
@@ -912,6 +916,7 @@
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
+                                            <property name="margin-end">5</property>
                                             <property name="label" translatable="yes">Ano :</property>
                                           </object>
                                           <packing>
@@ -935,6 +940,8 @@
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
+                                            <property name="margin-start">5</property>
+                                            <property name="margin-end">5</property>
                                             <property name="label" translatable="yes">Evento :</property>
                                           </object>
                                           <packing>
@@ -960,6 +967,7 @@
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
+                                            <property name="margin-start">10</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -973,6 +981,8 @@
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
+                                            <property name="margin-start">5</property>
+                                            <property name="margin-end">5</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -992,6 +1002,7 @@
                                         <property name="height-request">200</property>
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
+                                        <property name="margin-top">10</property>
                                         <property name="shadow-type">in</property>
                                         <child>
                                           <object class="GtkTreeView" id="treeviewBiography">

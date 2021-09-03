@@ -38,10 +38,12 @@ class MainWindow(Gtk.ApplicationWindow):
     statusbar = Gtk.Template.Child(name='statusbar')
     header_bar = Gtk.Template.Child(name='header_bar')
     treeView = Gtk.Template.Child(name='treeview')
+    scrollView = Gtk.Template.Child(name='scrollView')
     # spinner = Gtk.Template.Child(name='spinner')
     info_bar = Gtk.Template.Child(name='info_bar')
     list_store = Gtk.Template.Child(name='list_store')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
+
 
 
     # Obtendo as configurações

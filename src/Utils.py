@@ -4,7 +4,8 @@ import base64
 from logger import Logs
 
 gi.require_version(namespace='Gtk', version='3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf
+from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
+from gi.repository.GdkPixbuf import Pixbuf
 
 import configparser
 import os
@@ -24,9 +25,12 @@ class Treeview():
     selected = 'workspace'
 
     def __init__(self, treeview, data):
+
+        for column in treeview.get_columns():
+            treeview.remove_column(column)
+
         self.treeview = treeview
         self.data = data
-
 
         DRAG_ACTION = Gdk.DragAction.COPY
 
@@ -34,33 +38,61 @@ class Treeview():
         self.treeview.connect('button_press_event', self.mouse_click)
 
         # create a storage model in this case a treemodel
-        self.treemodel = Gtk.TreeStore(str, str)
+        self.treemodel = Gtk.TreeStore(str, Pixbuf, str)
         self.treeview.set_model(self.treemodel)
         self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, [], DRAG_ACTION)
-        #self.drop_area = DropArea()
+        # self.drop_area = DropArea()
 
         # add columns usually only one in case of the treeview
-        for column in treeview.get_columns():
-            treeview.remove_column(column)
-
-
         column = Gtk.TreeViewColumn("Projeto")
-        self.treeview.append_column(column)
 
         # add in a text renderer so we can see the items we add
-        cell = Gtk.CellRendererText()
-        column.pack_start(cell, False)
-        column.add_attribute(cell, "text", 0)
-        column.add_attribute(cell, "text", 1)
 
-        #Quando um item é selecionado
+        # Create a column cell to display text
+        cell = Gtk.CellRendererText()
+
+        # Create a column cell to display an image
+        colCellImg = Gtk.CellRendererPixbuf()
+
+        # Add the cells to the column
+        column.pack_start(colCellImg, False)
+        column.pack_start(cell, True)
+
+        # Bind the text cell to column 0 of the tree's model
+        column.add_attribute(cell, "text", 0)
+
+        # Bind the image cell to column 1 of the tree's model
+        column.add_attribute(colCellImg, "pixbuf", 1)
+
+        self.treeview.append_column(column)
+
+        # Quando um item é selecionado
         tree_selection = treeview.get_selection()
-        tree_selection.connect("changed", self.onSelectionChanged)
+
+        # verifico se o handler já está conectado
+        handler_id = self.get_handler_id(tree_selection, "changed")
+
+        if handler_id == 0:
+            tree_selection.connect("changed", self.onSelectionChanged)
+
 
         self.populate()
         treeview.expand_all()
+        # selecionar primeiro personagem
+        # last = self.treemodel.iter_n_children()
+        # last = last - 1  # iter_n_children starts at 1 ; set_cursor starts at 0
+        # c = self.treeview.get_column(0)
+        # self.treeview.set_cursor(last, c, True)  # set the cursor to the last appended item
+        # self.treeview.row_activated(Gtk.TreePath(row), Gtk.TreeViewColumn(None))
+        # self.treeview.set_cursor(Gtk.TreePath(row))
+        #
+        c = self.treeview.get_column(0)
+        self.treeview.set_cursor(Gtk.TreePath.new_from_string("0:0"), c, True)  # set the cursor to the last appended item
 
-        #self.menu()
+        # self.menu()
+    def get_handler_id(self, obj, signal_name):
+        signal_id, detail = GObject.signal_parse_name(signal_name, obj, True)
+        return GObject.signal_handler_find(obj, GObject.SignalMatchType.ID, signal_id, detail, None, None, None)
 
     def populate(self):
         self.treemodel.clear()
@@ -76,39 +108,18 @@ class Treeview():
                     dictlist.append(temp)
                 iter_level_2 = self.append_tree(dictlist[1], dictlist[0], iter_level_1)
 
-        # populate the treeview with a largish tree
-        # personagens = JsonTools.listSection(self.data, 'character', 'name', True)
-        # grupos = JsonTools.listSection(self.data, 'core', 'description', False)
-        # smartGrupos = JsonTools.listSection(self.data, 'smart group', 'description', False)
-        # id = 1
-        # iter_level_1 = self.append_tree('Smart Group')
-        # for dados in smartGrupos:
-        #     id = 1
-        #     iter_level_2 = self.append_tree(dados, id, iter_level_1)
-        #
-        # iter_level_1 = self.append_tree('Core')
-        # for dados in grupos:
-        #     id = 1
-        #     iter_level_2 = self.append_tree(dados, id, iter_level_1)
-        #
-        # iter_level_1 = self.append_tree('Character')
-        # for dados in personagens:
-        #     id = 1
-        #     iter_level_2 = self.append_tree(dados, id, iter_level_1)
-
     def append_tree(self, name=None, id=None, parent=None):
         """
             append to the treeview if parent is null append to root level.
             if parent is a valid iter (possibly returned from previous append) then append under the parent
         """
-        if id == None:
-            id = 1
-        filepb = GdkPixbuf.Pixbuf.new_from_file(filename='assets/icons/icon.png')
+        itemIsHeader = parent == None
+        itemIcon = Gtk.IconTheme.get_default().load_icon("document-open-symbolic" if itemIsHeader else "user-info-symbolic", 22, 0)
         myiter = self.treemodel.insert_after(parent, None)
-        self.treemodel.set_value(myiter, 1, str(id))
         self.treemodel.set_value(myiter, 0, name)
+        self.treemodel.set_value(myiter, 1, itemIcon)
+        self.treemodel.set_value(myiter, 2, str(id))
         self.order = Gtk.SortType.ASCENDING
-        # self.treemodel.set_sort_column_id(0, self.order)
 
         return myiter
 
@@ -119,9 +130,8 @@ class Treeview():
         self.treeview_menu = Gtk.Menu()
         menu_item = Gtk.MenuItem("Excluir Capivara")
         self.treeview_menu.append(menu_item)
-        menu_item = Gtk.MenuItem("Imprimir Capivara" )
+        menu_item = Gtk.MenuItem("Imprimir Capivara")
         self.treeview_menu.append(menu_item)
-
 
         # for item in range(0, 5):
         #     menu_item = Gtk.MenuItem("Menu " + str(item))
@@ -140,16 +150,17 @@ class Treeview():
         model = tv.get_model()
         treeiter = model.get_iter(treepath)
         self.selected = model.get_value(treeiter, 1)
-        #self.entry.set_text(self.selected)
+        # self.entry.set_text(self.selected)
         print(self.selected)
 
-
-    def onSelectionChanged(self, tree_selection) :
+    def onSelectionChanged(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
-        for path in pathlist :
+        value = ""
+        for path in pathlist:
             tree_iter = model.get_iter(path)
-            value = model.get_value(tree_iter,1)
-            print(value)
+            value = model.get_value(tree_iter, 2)
+
+        print(str(value))
 
 
 class JsonTools():
@@ -167,7 +178,7 @@ class JsonTools():
         else:
             return lista
 
-    def loadFile( file_name):
+    def loadFile(file_name):
         logs = Logs(filename="capivara.log")
 
         logs.record("Carregando o arquivos json", type="info", colorize=True)
@@ -192,7 +203,7 @@ class JsonTools():
         return '[' + dataJson + ']'
 
     def putMap(strKey, strValue):
-            return strKey + ' : ' +  strValue
+        return strKey + ' : ' + strValue
 
     def dict_from_str(dict_str):
         while True:
@@ -203,6 +214,7 @@ class JsonTools():
                 dict_str = dict_str.replace(key, "'{}'".format(key))
             else:
                 return dict_
+
 
 class AppConfig:
     home = Path.home()
@@ -307,10 +319,11 @@ class AppConfig:
             value = str(value)
         self.config.set(section, key, value)
 
+
 class DialogSaveFile(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
-    #home = Path.home()
-    #home = Config.get_ini_value("DIRECTORY", "mycapivaras")
+    # home = Path.home()
+    # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
     home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
 
     def __init__(self):
@@ -328,7 +341,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         # Tipo de ação que o dialogo irá executar.
         self.set_action(action=Gtk.FileChooserAction.SAVE)
         # Nome inicial do arquivo.
-        self.set_current_name(name= fileName)
+        self.set_current_name(name=fileName)
         # Pasta onde o diálogo será aberto.
         self.set_current_folder(filename=str(self.home))
         # Adicionando confirmação de sobrescrita.
@@ -377,6 +390,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         # print(f'Caminho até o arquivo: {self.get_filename()}')
         # print(f'URI até o arquivo: {self.get_uri()}')
         return self.get_filename()
+
 
 class DialogSelectImage(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
@@ -438,6 +452,7 @@ class DialogSelectImage(Gtk.FileChooserDialog):
     def show_file_info(self):
         return self.get_filename()
 
+
 class DialogSelectFile(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
     appConfig = AppConfig()
@@ -481,9 +496,8 @@ class DialogSelectFile(Gtk.FileChooserDialog):
         txt_filter = Gtk.FileFilter()
         txt_filter.set_name(name='Capivara Files (*.capivara)')
         txt_filter.add_pattern(pattern='*.capivara')
-        #txt_filter.add_mime_type(mime_type='text/plain')
+        # txt_filter.add_mime_type(mime_type='text/plain')
         self.add_filter(filter=txt_filter)
-
 
         all_filter = Gtk.FileFilter()
         all_filter.set_name(name='todos')
@@ -495,6 +509,7 @@ class DialogSelectFile(Gtk.FileChooserDialog):
 
     def show_file_info(self):
         return self.get_filename()
+
 
 class DialogUpdateAutomatically(Gtk.Dialog):
     def __init__(self, parent):
@@ -514,6 +529,7 @@ class DialogUpdateAutomatically(Gtk.Dialog):
         box.add(label3)
         self.show_all()
 
+
 def getPlugins():
     plugins = []
     possibleplugins = os.listdir(PluginFolder)
@@ -525,8 +541,10 @@ def getPlugins():
         plugins.append({"name": i, "info": info})
     return plugins
 
+
 def loadPlugin(plugin):
-    return importlib.import_module(plugin, PluginFolder )
+    return importlib.import_module(plugin, PluginFolder)
+
 
 def alert(widget, message):
     dialog = Gtk.MessageDialog(widget, 0, Gtk.MessageType.ERROR,
@@ -551,6 +569,7 @@ def imageToBase64(widget, imageFile):
 
     return base64_string
 
+
 def base64ToImage(widget, base64_string):
     try:
         imgdata = base64.b64decode(base64_string)
@@ -560,6 +579,7 @@ def base64ToImage(widget, base64_string):
         imgdata = ""
 
     return imgdata
+
 
 def get_pixbuf_from_base64string(base64string):
     if base64string is None:
