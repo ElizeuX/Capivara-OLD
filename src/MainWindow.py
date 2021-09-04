@@ -10,13 +10,16 @@ from gi.repository import Gio, Gtk, GdkPixbuf, GLib
 
 import Global
 from Global import Global
-from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, Treeview
+from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage
 import PluginsManager
 import webbrowser
 from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup
 import Utils
 from src.logger import Logs
+from TreeviewCtrl import Treeview
+from collections import namedtuple
+
 
 # importar Telas
 from Preferences import Preferences
@@ -42,6 +45,16 @@ class MainWindow(Gtk.ApplicationWindow):
     # spinner = Gtk.Template.Child(name='spinner')
     info_bar = Gtk.Template.Child(name='info_bar')
     list_store = Gtk.Template.Child(name='list_store')
+    imgCharacter = Gtk.Template.Child(name='imgCharacter')
+
+    # campos da tela
+    txtName = Gtk.Template.Child(name='gtkEntryName')
+    txtDate = Gtk.Template.Child(name='gtkEntryDate')
+    txtHeigth = Gtk.Template.Child(name='gtkEntryHeigth')
+    txtWeigth = Gtk.Template.Child(name='gtkEntryWeigth')
+    txtBodyType = Gtk.Template.Child(name='gtkEntryBodyType')
+    txtEyeColor = Gtk.Template.Child(name='gtkEntryEyeColor')
+    txtHairColor = Gtk.Template.Child(name='gtkEntryHairColor')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
 
@@ -120,7 +133,14 @@ class MainWindow(Gtk.ApplicationWindow):
 
             self.show_all()
 
-        Treeview(self.treeView, capivara)
+        voCharacter = namedtuple('voCharacter',
+                                 ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'picture'])
+
+        # Passa os campos da tela para treeview
+        vo = voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                         self.txtHairColor, self.imgCharacter)
+
+        Treeview(self.treeView, capivara, vo)
 
     @Gtk.Template.Callback()
     def on_btnEditPhoto_clicked(self, widget):
@@ -2018,6 +2038,7 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
 
             pixbuf = Utils.get_pixbuf_from_base64string(stringBase64)
             pixbuf = pixbuf.scale_simple(170, 200, 2)
+            print(stringBase64)
             self.imgCharacter.set_from_pixbuf(pixbuf)
 
 
@@ -2062,7 +2083,14 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
 
                 dlgMessage.destroy()
             else:
-                Treeview(self.treeView, capivara)
+                #self.txtName.set_text("character.name")
+
+                voCharacter = namedtuple('voCharacter',
+                                         ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'picture'])
+
+                # Passa os campos da tela para treeview
+                vo =voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.imgCharacter)
+                Treeview(self.treeView, capivara, vo)
 
                 projectProperties = ProjectProperties.get()
                 self.header_bar.set_title(projectProperties.title)

@@ -215,8 +215,12 @@ class Character(Base):
         d = cls()
         d.id = character['id']
         d.name = character['name']
-        d.sex = character['sex']
-        d.local = character['local']
+        # d.sex = character['sex']
+        # d.local = character['local']
+        d.height = character['height']
+        d.weight = character['weight']
+        d.body_type = character['body type']
+        d.picture = character['picture']
         return d
 
     @classmethod
@@ -406,6 +410,7 @@ class DataUtils():
 
         c = Character()
         c.name = "unnamed"
+        c.body_type = "Nada"
         s.add(c)
         s.commit()
 
