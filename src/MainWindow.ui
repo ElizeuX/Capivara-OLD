@@ -411,7 +411,7 @@
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <property name="margin-start">14</property>
+                                                <property name="margin-start">10</property>
                                                 <property name="margin-end">9</property>
                                                 <property name="label" translatable="yes">Signo Zodiacal :</property>
                                               </object>
@@ -425,9 +425,9 @@
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <property name="margin-start">4</property>
+                                                <property name="halign">start</property>
+                                                <property name="margin-start">5</property>
                                                 <property name="label" translatable="yes">Gêmeos</property>
-                                                <property name="width-chars">17</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -463,6 +463,7 @@
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
+                                                <property name="width-chars">7</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -474,7 +475,7 @@
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <property name="margin-start">5</property>
+                                                <property name="margin-start">10</property>
                                                 <property name="label" translatable="yes">Peso :</property>
                                               </object>
                                               <packing>
@@ -489,11 +490,65 @@
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
+                                                <property name="width-chars">7</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
                                                 <property name="fill">True</property>
                                                 <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="margin-start">10</property>
+                                                <property name="margin-end">5</property>
+                                                <property name="label" translatable="yes">IMC :</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">3</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="orientation">vertical</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="label" translatable="yes">Sobrepeso</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLevelBar">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="valign">center</property>
+                                                    <property name="value">3</property>
+                                                    <property name="max-value">5</property>
+                                                    <property name="mode">discrete</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">4</property>
                                               </packing>
                                             </child>
                                           </object>
@@ -521,7 +576,7 @@
                                             <property name="margin-bottom">5</property>
                                             <child>
                                               <object class="GtkComboBox">
-                                                <property name="width-request">0</property>
+                                                <property name="width-request">96</property>
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
                                                 <property name="margin-start">5</property>
@@ -579,7 +634,7 @@
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <property name="margin-start">5</property>
+                                                <property name="margin-start">10</property>
                                                 <property name="label" translatable="yes">Cor do Cabelos :</property>
                                               </object>
                                               <packing>
@@ -663,7 +718,7 @@
                                               <object class="GtkLabel">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <property name="margin-start">55</property>
+                                                <property name="margin-start">42</property>
                                                 <property name="label" translatable="yes">Passatempos :</property>
                                               </object>
                                               <packing>
@@ -676,6 +731,7 @@
                                               <object class="GtkEntry">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
+                                                <property name="margin-end">5</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -724,11 +780,12 @@
                                       <object class="GtkBox">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
+                                        <property name="margin-start">26</property>
                                         <property name="orientation">vertical</property>
                                         <child>
                                           <object class="GtkImage" id="imgCharacter">
-                                            <property name="width-request">100</property>
-                                            <property name="height-request">100</property>
+                                            <property name="width-request">200</property>
+                                            <property name="height-request">150</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="pixbuf">assets\image\gabriela.png</property>
@@ -748,6 +805,7 @@
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
                                             <property name="halign">center</property>
+                                            <property name="margin-top">10</property>
                                             <property name="hexpand">False</property>
                                             <property name="use-stock">True</property>
                                             <property name="always-show-image">True</property>
@@ -760,47 +818,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkLabel">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="margin-top">33</property>
-                                            <property name="label" translatable="yes">IMC</property>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">2</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="orientation">vertical</property>
-                                            <child>
-                                              <object class="GtkLevelBar">
-                                                <property name="width-request">10</property>
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">False</property>
-                                                <property name="value">3</property>
-                                                <property name="max-value">5</property>
-                                                <property name="mode">discrete</property>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
-                                            </child>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">3</property>
-                                          </packing>
+                                          <placeholder/>
                                         </child>
                                       </object>
                                       <packing>
@@ -1082,7 +1100,6 @@
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>

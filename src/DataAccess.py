@@ -9,8 +9,8 @@ import json
 import os
 from datetime import datetime
 
-#engine = create_engine('sqlite:///capivara.db', echo=False)
-engine = create_engine('sqlite://', echo=False)
+engine = create_engine('sqlite:///capivara.db', echo=False)
+#engine = create_engine('sqlite://', echo=False)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 connection = engine.connect()
@@ -135,7 +135,7 @@ class SmartGroup(Base):
         return s.query(SmartGroup).all()
 
     @classmethod
-    def dictBuffer(cls):
+    def toDict(cls):
         s = Session()
         smartGroups = s.query(SmartGroup).all()
         retorno = []
@@ -175,7 +175,7 @@ class Core(Base):
         return s.query(Core).all()
 
     @classmethod
-    def dictBuffer(cls):
+    def toDict(cls):
         s = Session()
         cores = s.query(Core).all()
         retorno = []
@@ -245,7 +245,7 @@ class Character(Base):
         result = s.query(Character, Biography).filter_by(id).all()
 
     @classmethod
-    def dictBuffer(cls):
+    def toDict(cls):
         s = Session()
         characters = s.query(Character).all()
 
@@ -334,31 +334,10 @@ class Character(Base):
 class DataUtils():
 
     def __init__(self):
-        pass
-        # self.drop_table('character')
-        # self.drop_table('group')
-        # self.drop_table('smart_group')
-        # self.drop_table('tag')
-        # self.drop_table('biography')
+        Base.metadata.create_all()
 
     def truncate_db(self):
         # delete all table data (but keep tables)
-        # we do cleanup before test 'cause if previous test errored,
-        # DB can contain dust
-        #meta = MetaData(bind=engine, reflect=True)
-        # trans = connection.begin()
-        # connection.execute('SET FOREIGN_KEY_CHECKS = 0;')
-        # for table in metadata.sorted_tables:
-        #     connection.execute(table.delete())
-        # connection.execute('SET FOREIGN_KEY_CHECKS = 1;')
-        # trans.commit()
-        # meta = Base.metadata
-        # s = Session()
-        # for table in reversed(meta.sorted_tables):
-        #     print('Clear table %s' % table)
-        #     s.execute(table.delete())
-        # s.commit()
-        # for all records
         s = Session()
         s.query(CoreCharacterLink).delete()
         s.query(TagCharacterLink).delete()
@@ -380,156 +359,6 @@ class DataUtils():
         if table is not None:
             logging.info(f'Deleting {table_name} table')
             base.metadata.drop_all(engine, [table], checkfirst=True)
-
-    def LoadCapivaraFileEmpty(self, propertiesProject):
-        logging.info("Gravando objetos na base de dados.")
-
-        Base.metadata.create_all()
-        self.truncate_db()
-        now = datetime.now()
-
-        s = Session()
-        # Incluir dados do arquivo
-        c = FileInformation()
-        c.versionModel = "0.1.0"
-        c.creator = "Capivara 0.1.0"
-        c.device = os.environ['COMPUTERNAME']
-        c.modified = str(now.today())
-        s.add(c)
-        s.commit()
-
-        # Incluir propriedades do projeto
-        c = ProjectProperties()
-        c.title = propertiesProject['title']
-        c.authorsFullName = propertiesProject['authors full name']
-        c.surname = propertiesProject['surname']
-        c.forename = propertiesProject['forename']
-        c.pseudonym = propertiesProject['pseudonym']
-        s.add(c)
-        s.commit()
-
-        c = Character()
-        c.name = "unnamed"
-        c.body_type = "Nada"
-        s.add(c)
-        s.commit()
-
-        # Retornar o dict com os dados carregados no banco de dados
-        c = SmartGroup()
-        __smartgroups__ = '"smart group":' + c.dictBuffer()
-        dictReturn = __smartgroups__ + ','
-        c = Core()
-        __cores__ = '"core" :' + c.dictBuffer()
-        dictReturn = dictReturn + __cores__ + ','
-
-        c = Character()
-        __charaters__ = '"character":' + c.dictBuffer()
-        dictReturn = '{' + dictReturn + __charaters__ + '}'
-
-        json_acceptable_string = dictReturn.replace("'", "\"")
-        dict_object = json.loads(json_acceptable_string)
-
-        return dict_object
-
-    def loadCapivaraFile(self, fileOpen):
-        capivara = JsonTools.loadFile(fileOpen)
-        if not capivara:
-            return ""
-
-        logging.info("Gravando objetos na base de dados.")
-
-        Base.metadata.create_all()
-
-        self.truncate_db()
-
-        s = Session()
-        # Incluir dados do arquivo
-        c = FileInformation()
-        c.versionModel = capivara['version model']
-        c.creator = capivara['creator']
-        c.device = capivara['device']
-        c.modified = capivara['modified']
-        s.add(c)
-        s.commit()
-
-        #Incluir propriedades do projeto
-        c = ProjectProperties()
-        c.title = capivara['project properties']['title']
-        c.abbreviatedTitle = capivara['project properties']['abbreviated title']
-        c.authorsFullName = capivara['project properties']['authors full name']
-        c.surname = capivara['project properties']['surname']
-        c.forename = capivara['project properties']['forename']
-        c.pseudonym = capivara['project properties']['pseudonym']
-        s.add(c)
-        s.commit()
-
-        # INCLUIR TODOS OS OBJETOS DO ARQUIVO JSON
-        for character in capivara['character']:
-            c = Character.add(character)
-            s.add(c)
-            s.commit()
-
-        for core in capivara['core']:
-            c = Core.add(core)
-            s.add(c)
-            s.commit()
-
-        for smart_group in capivara['smart group']:
-            c = SmartGroup.add(smart_group)
-            s.add(c)
-            s.commit()
-
-        for tag in capivara['tag']:
-            c = Tag.add(tag)
-            s.add(c)
-            s.commit()
-
-        for character in capivara['character']:
-            for bio in character['biography']:
-                bioDict = {}
-                bioDict['id_character'] = character['id']
-                bioDict['year'] = bio['year']
-                bioDict['description'] = bio['description']
-                c = Biography.add(bioDict)
-                s.add(c)
-                s.commit()
-
-        # MARCAR OS RELACIONAMENTOS
-        for character_um in capivara['character']:
-            characterId = character_um['id']
-            for relationship in character_um['relationship']:
-                if relationship['destination'] == 'core':
-                    for i in relationship['idrefs']:
-                        c = CoreCharacterLink()
-                        c.character_id = characterId
-                        c.core_id = i
-                        s.add(c)
-                        s.commit()
-
-                elif relationship['destination'] == 'tag':
-                    for i in relationship['idrefs']:
-                        c = TagCharacterLink()
-                        c.character_id = characterId
-                        c.tag_id = i
-                        s.add(c)
-                        s.commit()
-
-        # Retornar o dict com os dados carregados no banco de dados
-        c = SmartGroup()
-        __smartgroups__ =  '"smart group":' + c.dictBuffer()
-        dictReturn = __smartgroups__ + ','
-        c = Core()
-        __cores__ = '"core" :' +c.dictBuffer()
-        dictReturn = dictReturn + __cores__ + ','
-
-        c = Character()
-        __charaters__ = '"character":' + c.dictBuffer()
-        dictReturn = '{' + dictReturn + __charaters__ +'}'
-
-        json_acceptable_string = dictReturn.replace("'", "\"")
-        dict_object = json.loads(json_acceptable_string)
-
-        return dict_object
 
     def saveCapivaraFile(self, capivaraFile):
 
@@ -574,19 +403,19 @@ class DataUtils():
 
         # INCLUINDO PERSONAGEM
         characters = Character()
-        dadosPersonagem = characters.dictBuffer()
+        dadosPersonagem = characters.toDict()
         dadosPersonagem = '"character" : ' + dadosPersonagem
         arquivo = arquivo + ',' + dadosPersonagem
 
         # Incluindo Core
         core = Core()
-        dadosCore = core.dictBuffer()
+        dadosCore = core.toDict()
         dadosCore = '"core" : ' + dadosCore
         arquivo = arquivo + ',' + dadosCore
 
         # Incluindo Smart Group
         smartGroup = SmartGroup()
-        dadosSmartGroup = smartGroup.dictBuffer()
+        dadosSmartGroup = smartGroup.toDict()
         dadosSmartGroup = '"smart group" : ' + dadosSmartGroup
         arquivo = arquivo + ',' + dadosSmartGroup
 

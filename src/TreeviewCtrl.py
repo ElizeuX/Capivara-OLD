@@ -105,7 +105,7 @@ class Treeview():
         """
         itemIsHeader = parent == None
         itemIcon = Gtk.IconTheme.get_default().load_icon(
-            "document-open-symbolic" if itemIsHeader else "user-info-symbolic", 22, 0)
+            "system-file-manager-symbolic" if itemIsHeader else "document-open-symbolic", 22, 0)
         myiter = self.treemodel.insert_after(parent, None)
         self.treemodel.set_value(myiter, 0, name)
         self.treemodel.set_value(myiter, 1, itemIcon)

@@ -19,6 +19,9 @@ import Utils
 from src.logger import Logs
 from TreeviewCtrl import Treeview
 from collections import namedtuple
+import LoadCapivaraFile
+from Utils import JsonTools
+import json
 
 
 # importar Telas
@@ -112,16 +115,23 @@ class MainWindow(Gtk.ApplicationWindow):
         # menu_item = Gtk.MenuItem("Imprimir Capivara")
         # popover.append(menu_item)
 
-        # ABRE UM PROJETO VAZIO
-        propertiesProject = {}
-        propertiesProject['title'] = "Untitled"
-        propertiesProject['authors full name'] = ""
-        propertiesProject['surname'] = ""
-        propertiesProject['forename'] = ""
-        propertiesProject['pseudonym'] = ""
 
-        dataUtils = DataUtils()
-        capivara = dataUtils.LoadCapivaraFileEmpty(propertiesProject)
+        LoadCapivaraFile.loadCapivaraFile()
+
+        # Retornar o dict com os dados carregados no banco de dados
+        c = SmartGroup()
+        __smartgroups__ = '"smart group":' + c.toDict()
+        dictReturn = __smartgroups__ + ','
+        c = Core()
+        __cores__ = '"core" :' + c.toDict()
+        dictReturn = dictReturn + __cores__ + ','
+
+        c = Character()
+        __charaters__ = '"character":' + c.toDict()
+        dictReturn = '{' + dictReturn + __charaters__ + '}'
+
+        json_acceptable_string = dictReturn.replace("'", "\"")
+        dict_object = json.loads(json_acceptable_string)
 
         Biografia_Character = [
             (1965, 'Nascimento'), (1974, 'Evento 1'), (1976, 'Evento 2'), (1979, 'Evento 3'),
@@ -140,7 +150,7 @@ class MainWindow(Gtk.ApplicationWindow):
         vo = voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
                          self.txtHairColor, self.imgCharacter)
 
-        Treeview(self.treeView, capivara, vo)
+        Treeview(self.treeView, dict_object, vo)
 
     @Gtk.Template.Callback()
     def on_btnEditPhoto_clicked(self, widget):
@@ -2038,9 +2048,7 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
 
             pixbuf = Utils.get_pixbuf_from_base64string(stringBase64)
             pixbuf = pixbuf.scale_simple(170, 200, 2)
-            print(stringBase64)
             self.imgCharacter.set_from_pixbuf(pixbuf)
-
 
         elif response == Gtk.ResponseType.NO:
             pass
@@ -2066,10 +2074,46 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
 
             # Carregar Capivara salva
             fileOpen = dialog.show_file_info()
-            dataUtils = DataUtils()
-            capivara = dataUtils.loadCapivaraFile(fileOpen)
 
-            if not capivara:
+            try:
+                dialog.destroy()
+
+                #TODO: Colocar um spinner indicando  que o arquivo está sendo carregado
+
+                LoadCapivaraFile.loadCapivaraFile(fileOpen)
+
+                # TODO: Livrar o código dessa massaroca
+
+                # Retornar o dict com os dados carregados no banco de dados
+                c = SmartGroup()
+                __smartgroups__ = '"smart group":' + c.toDict()
+                dictReturn = __smartgroups__ + ','
+                c = Core()
+                __cores__ = '"core" :' + c.toDict()
+                dictReturn = dictReturn + __cores__ + ','
+
+                c = Character()
+                __charaters__ = '"character":' + c.toDict()
+                dictReturn = '{' + dictReturn + __charaters__ + '}'
+
+                json_acceptable_string = dictReturn.replace("'", "\"")
+                dict_object = json.loads(json_acceptable_string)
+
+                voCharacter = namedtuple('voCharacter',
+                                         ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color',
+                                          'picture'])
+
+                # Passa os campos da tela para treeview
+                vo = voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                                 self.txtHairColor, self.imgCharacter)
+                Treeview(self.treeView, dict_object, vo)
+
+                projectProperties = ProjectProperties.get()
+                self.header_bar.set_title(projectProperties.title)
+                self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+
+            except:
+                logs.record("Não foi possível abrir o arquivo" + fileOpen)
                 dialog.destroy()
                 dlgMessage = Gtk.MessageDialog(
                     transient_for=self,
@@ -2080,27 +2124,15 @@ f+3TlNM/5dv+vM/0oooryz6c/9k='''
                 )
                 dlgMessage.format_secondary_text("Não foi possível carregar o arquivo.")
                 dlgMessage.run()
-
                 dlgMessage.destroy()
-            else:
-                #self.txtName.set_text("character.name")
 
-                voCharacter = namedtuple('voCharacter',
-                                         ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'picture'])
+            finally:
+                pass
 
-                # Passa os campos da tela para treeview
-                vo =voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.imgCharacter)
-                Treeview(self.treeView, capivara, vo)
-
-                projectProperties = ProjectProperties.get()
-                self.header_bar.set_title(projectProperties.title)
-                self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
-
-                # Destruindo a janela de dialogo.
-                dialog.destroy()
 
         elif response == Gtk.ResponseType.NO:
-            pass
+            logs.record("Não foi aberto um novo arquivo.", type="info", colorize=True)
+
 
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):
