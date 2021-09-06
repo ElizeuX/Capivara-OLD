@@ -1,3 +1,5 @@
+#coding: utf-8
+
 from sqlalchemy import create_engine, Column, Unicode, Integer, Float, ForeignKey, MetaData, Table
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,7 +36,6 @@ class ProjectProperties(Base):
     __tablename__ = 'project_properties'
     id = Column(Integer(), primary_key=True)
     title = Column(Unicode(100))
-    abbreviatedTitle = Column(Unicode(100))
     authorsFullName = Column(Unicode(100))
     surname = Column(Unicode(100))
     forename = Column(Unicode(100))
@@ -207,20 +208,30 @@ class Character(Base):
     hobbies = Column(Unicode())
     picture = Column(Unicode(200000))
     notes = Column(Unicode(1000))
-    tag = Column(Unicode(50))
-    biography = relationship("Biography")
 
     @classmethod
     def add(cls, character):
         d = cls()
         d.id = character['id']
         d.name = character['name']
-        # d.sex = character['sex']
-        # d.local = character['local']
+        d.sex = character['sex']
+        d.age = character['age']
+        d.local = character['local']
+        d.occupation = character['occupation']
+        d.position_social = character['position social']
         d.height = character['height']
         d.weight = character['weight']
         d.body_type = character['body type']
+        d.appearance = character['appearance']
+        d.eye_color = character['eye color']
+        d.hair_color = character['hair color']
+        d.ethnicity = character['ethnicity']
+        d.health = character['health']
+        d.standing_features = character['standing features']
+        d.background = character['background']
+        d.hobbies = character['hobbies']
         d.picture = character['picture']
+        d.notes = character['notes']
         return d
 
     @classmethod
@@ -253,78 +264,92 @@ class Character(Base):
         for character in characters:
             characterStr = JsonTools.putMap('"id"', str(character.id)) + ','
             #characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"')
-            # characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"height"', '"' + str(character.height) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"weight"', '"' + str(character.weight) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"standing features"', '"' + str(character.standing_features) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
-            # # characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"height"', '"' + str(character.height) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"weight"', '"' + str(character.weight) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"standing features"', '"' + str(character.standing_features) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
             # characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"')
 
-            # i = character.id
-            # strBiografia = ""
-            # result = s.query(Biography).filter(Biography.id_character == i)
-            #
-            # if result.count() > 0:
-            #     for row in result:
-            #         strBio = ""
-            #         strBio = strBio + JsonTools.putMap('"year"', str(row.year)) + ','
-            #         strBio = strBio + JsonTools.putMap('"description"', '"' + str(row.description) + '"')
-            #         strBio = JsonTools.putObject(strBio) + ','
-            #         strBiografia = strBiografia + strBio
-            #     strBiografia = JsonTools.putMap('"biography"', JsonTools.putArray(strBiografia[:-1]))
-            # else:
-            #     strBiografia = JsonTools.putMap('"biography"', "[]")
-            #
-            # characterStr = characterStr + strBiografia
-            #
-            # # OBTER OS RELACIONAMENTOS COM O CORE
-            # result = s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == i)
-            # strIdCore = []
-            # if result.count() > 0:
-            #     for row in result:
-            #         strIdCore.append(str(row.core_id))
-            #     strIdCore = ",".join(strIdCore)
-            #     strIdCore = JsonTools.putArray(strIdCore.replace("'", ""))
-            # else:
-            #     strIdCore = JsonTools.putMap("[]")
-            #
-            # strDestinationCore = JsonTools.putMap('"destination"', '"core"')  + ", "
-            # strDestinationCore = strDestinationCore + JsonTools.putMap('"idrefs"', strIdCore)
-            # strDestinationCore = JsonTools.putObject(strDestinationCore)
-            #
-            # # OBTER OS RELACIONAMENTOS COM O TAG
-            # result = s.query(TagCharacterLink).filter(TagCharacterLink.character_id == i)
-            # strIdTag = []
-            # if result.count() > 0:
-            #     for row in result:
-            #         strIdTag.append(str(row.tag_id))
-            #     strIdTag = ",".join(strIdTag)
-            #     strIdTag = JsonTools.putArray(strIdTag.replace("'", ""))
-            # else:
-            #     strIdTag  = JsonTools.putMap("[]")
-            #
-            # strDestinationTag = JsonTools.putMap('"destination"', '"tag"') + ", "
-            # strDestinationTag = strDestinationTag + JsonTools.putMap('"idrefs"', strIdTag)
-            # strDestinationTag = JsonTools.putObject(strDestinationTag)
-            #
-            # strRelationship = strDestinationCore + ", " + strDestinationTag
-            # strRelationship = JsonTools.putMap('"relationship"', JsonTools.putArray(strRelationship))
-            #
-            # characterStr = characterStr + ", " + strRelationship
-            #
+            i = character.id
+            strBiografia = ""
+            result = s.query(Biography).filter(Biography.id_character == i)
+
+            if result.count() > 0:
+                for row in result:
+                    strBio = ""
+                    strBio = strBio + JsonTools.putMap('"year"', str(row.year)) + ','
+                    strBio = strBio + JsonTools.putMap('"description"', '"' + str(row.description) + '"')
+                    strBio = JsonTools.putObject(strBio) + ','
+                    strBiografia = strBiografia + strBio
+                strBiografia = JsonTools.putMap('"biography"', JsonTools.putArray(strBiografia[:-1]))
+            else:
+                strBiografia = JsonTools.putMap('"biography"', "[]")
+
+            characterStr = characterStr + strBiografia
+
+            # OBTER OS RELACIONAMENTOS
+            strDestinationCore = ""
+            strDestinationTag = ""
+            strRelationship = ""
+
+            result = s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == i)
+            strIdCore = []
+            if result.count() > 0:
+                for row in result:
+                    strIdCore.append(str(row.core_id))
+                strIdCore = ",".join(strIdCore)
+                strIdCore = JsonTools.putArray(strIdCore.replace("'", ""))
+            else:
+                strIdCore = ""
+
+            if strIdCore:
+                strDestinationCore = JsonTools.putMap('"destination"', '"core"')  + ", "
+                strDestinationCore = strDestinationCore + JsonTools.putMap('"idrefs"', strIdCore)
+                strDestinationCore = JsonTools.putObject(strDestinationCore)
+
+            # OBTER OS RELACIONAMENTOS COM O TAG
+            result = s.query(TagCharacterLink).filter(TagCharacterLink.character_id == i)
+            strIdTag = []
+            if result.count() > 0:
+                for row in result:
+                    strIdTag.append(str(row.tag_id))
+                strIdTag = ",".join(strIdTag)
+                strIdTag = JsonTools.putArray(strIdTag.replace("'", ""))
+            else:
+                strIdTag  = ""
+
+            if strIdTag:
+                strDestinationTag = JsonTools.putMap('"destination"', '"tag"') + ", "
+                strDestinationTag = strDestinationTag + JsonTools.putMap('"idrefs"', strIdTag)
+                strDestinationTag = JsonTools.putObject(strDestinationTag)
+
+            if strDestinationCore:
+                strRelationship = strDestinationCore
+                if strDestinationTag:
+                    strRelationship +=  ", " + strDestinationTag
+            else:
+                if strDestinationTag:
+                    strRelationship +=  strDestinationTag
+
+
+            strRelationship = JsonTools.putMap('"relationship"', JsonTools.putArray(strRelationship))
+
+            characterStr = characterStr + ", " + strRelationship
+
 
             retorno.append(JsonTools.putObject(characterStr))
 
@@ -336,19 +361,12 @@ class DataUtils():
     def __init__(self):
         Base.metadata.create_all()
 
-    def truncate_db(self):
-        # delete all table data (but keep tables)
-        s = Session()
-        s.query(CoreCharacterLink).delete()
-        s.query(TagCharacterLink).delete()
-        s.query(Biography).delete()
-        s.query(Character).delete()
-        s.query(Core).delete()
-        s.query(SmartGroup).delete()
-        s.query(Tag).delete()
-        s.query(FileInformation).delete()
-        s.query(ProjectProperties).delete()
-        s.commit()
+    def clear_data(self, session):
+        meta = Base.metadata
+        for table in reversed(meta.sorted_tables):
+            print('Clear table %s' % table)
+            session.execute(table.delete())
+        session.commit()
 
 
 
@@ -360,82 +378,82 @@ class DataUtils():
             logging.info(f'Deleting {table_name} table')
             base.metadata.drop_all(engine, [table], checkfirst=True)
 
-    def saveCapivaraFile(self, capivaraFile):
-
-        logging.info("Salvando arquivo " + capivaraFile)
-
-        jsonTools = JsonTools()
-        dataUtils = DataUtils()
-        now = datetime.now()
-
-        versionModel = "0.1.0"
-        creator = "Capivara 0.1.0"
-        device = os.environ['COMPUTERNAME']
-        modified = str(now.today())
-
-        # DADOS GERAIS DO ARQUIVO
-        arquivo = JsonTools.putMap('"version model"', '"' + versionModel + '"') + ','
-        arquivo = arquivo + JsonTools.putMap('"creator"',  '"' + creator + '"') + ','
-        arquivo = arquivo + JsonTools.putMap('"device"', '"' + device + '"') + ','
-        arquivo = arquivo + JsonTools.putMap('"modified"', '"' + modified + '"')
-        logging.info(arquivo)
-
-        # PEGAR PROPRIEDADES DO PROJETO
-        projectProperties = ProjectProperties.get()
-        abbreviatedTitle = "TSCF"
-        title = projectProperties.title
-        authorsFullName = projectProperties.authorsFullName
-        surname = projectProperties.surname
-        forename = projectProperties.forename
-        pseudonym = projectProperties.pseudonym
-
-        # PROPRIEDADE DO PROJETO
-        propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
-        propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"', '"' + abbreviatedTitle + '"') + ','
-        propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"authors full name"', '"' + authorsFullName + '"') + ','
-        propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
-        propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"forename"', '"' + forename + '"') + ','
-        propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"')
-        propriedadesDoProjeto = '"project properties" : ' + JsonTools.putObject(propriedadesDoProjeto)
-
-        # Juntando dados do arquivo com as propriedades do projeto
-        arquivo = arquivo + ', ' + propriedadesDoProjeto
-
-        # INCLUINDO PERSONAGEM
-        characters = Character()
-        dadosPersonagem = characters.toDict()
-        dadosPersonagem = '"character" : ' + dadosPersonagem
-        arquivo = arquivo + ',' + dadosPersonagem
-
-        # Incluindo Core
-        core = Core()
-        dadosCore = core.toDict()
-        dadosCore = '"core" : ' + dadosCore
-        arquivo = arquivo + ',' + dadosCore
-
-        # Incluindo Smart Group
-        smartGroup = SmartGroup()
-        dadosSmartGroup = smartGroup.toDict()
-        dadosSmartGroup = '"smart group" : ' + dadosSmartGroup
-        arquivo = arquivo + ',' + dadosSmartGroup
-
-        # Incluindo tags
-        tag = Tag()
-        dadosTags = tag.dictBuffer()
-        dadosTags = '"tag" : ' + dadosTags
-        arquivo = arquivo + ',' + dadosTags
-
-        arquivo = JsonTools.putObject(arquivo)
-
-        logging.info(arquivo)
-
-        json_acceptable_string = arquivo.replace("'", "\"")
-        logging.info('json_acceptable_string =' + json_acceptable_string)
-        json_object = json.loads(json_acceptable_string)
-
-        # Write JSON file
-        with open(capivaraFile, 'w', encoding='utf8') as outfile:
-            str_ = json.dumps(json_object,
-                              indent=4, sort_keys=False,
-                              separators=(',', ': '), ensure_ascii=False)
-            outfile.write(str_)
+    # def saveCapivaraFile(self, capivaraFile):
+    #
+    #     logging.info("Salvando arquivo " + capivaraFile)
+    #
+    #     jsonTools = JsonTools()
+    #     dataUtils = DataUtils()
+    #     now = datetime.now()
+    #
+    #     versionModel = "0.1.0"
+    #     creator = "Capivara 0.1.0"
+    #     device = os.environ['COMPUTERNAME']
+    #     modified = str(now.today())
+    #
+    #     # DADOS GERAIS DO ARQUIVO
+    #     arquivo = JsonTools.putMap('"version model"', '"' + versionModel + '"') + ','
+    #     arquivo = arquivo + JsonTools.putMap('"creator"',  '"' + creator + '"') + ','
+    #     arquivo = arquivo + JsonTools.putMap('"device"', '"' + device + '"') + ','
+    #     arquivo = arquivo + JsonTools.putMap('"modified"', '"' + modified + '"')
+    #     logging.info(arquivo)
+    #
+    #     # PEGAR PROPRIEDADES DO PROJETO
+    #     projectProperties = ProjectProperties.get()
+    #     abbreviatedTitle = "TSCF"
+    #     title = projectProperties.title
+    #     authorsFullName = projectProperties.authorsFullName
+    #     surname = projectProperties.surname
+    #     forename = projectProperties.forename
+    #     pseudonym = projectProperties.pseudonym
+    #
+    #     # PROPRIEDADE DO PROJETO
+    #     propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
+    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"', '"' + abbreviatedTitle + '"') + ','
+    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"authors full name"', '"' + authorsFullName + '"') + ','
+    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
+    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"forename"', '"' + forename + '"') + ','
+    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"')
+    #     propriedadesDoProjeto = '"project properties" : ' + JsonTools.putObject(propriedadesDoProjeto)
+    #
+    #     # Juntando dados do arquivo com as propriedades do projeto
+    #     arquivo = arquivo + ', ' + propriedadesDoProjeto
+    #
+    #     # INCLUINDO PERSONAGEM
+    #     characters = Character()
+    #     dadosPersonagem = characters.toDict()
+    #     dadosPersonagem = '"character" : ' + dadosPersonagem
+    #     arquivo = arquivo + ',' + dadosPersonagem
+    #
+    #     # Incluindo Core
+    #     core = Core()
+    #     dadosCore = core.toDict()
+    #     dadosCore = '"core" : ' + dadosCore
+    #     arquivo = arquivo + ',' + dadosCore
+    #
+    #     # Incluindo Smart Group
+    #     smartGroup = SmartGroup()
+    #     dadosSmartGroup = smartGroup.toDict()
+    #     dadosSmartGroup = '"smart group" : ' + dadosSmartGroup
+    #     arquivo = arquivo + ',' + dadosSmartGroup
+    #
+    #     # Incluindo tags
+    #     tag = Tag()
+    #     dadosTags = tag.dictBuffer()
+    #     dadosTags = '"tag" : ' + dadosTags
+    #     arquivo = arquivo + ',' + dadosTags
+    #
+    #     arquivo = JsonTools.putObject(arquivo)
+    #
+    #     logging.info(arquivo)
+    #
+    #     json_acceptable_string = arquivo.replace("'", "\"")
+    #     logging.info('json_acceptable_string =' + json_acceptable_string)
+    #     json_object = json.loads(json_acceptable_string)
+    #
+    #     # Write JSON file
+    #     with open(capivaraFile, 'w', encoding='utf8') as outfile:
+    #         str_ = json.dumps(json_object,
+    #                           indent=4, sort_keys=False,
+    #                           separators=(',', ': '), ensure_ascii=False)
+    #         outfile.write(str_)

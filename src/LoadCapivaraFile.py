@@ -1,3 +1,5 @@
+#coding: utf-8
+
 from sqlalchemy import create_engine, Column, Unicode, Integer, Float, ForeignKey, MetaData, Table
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -78,16 +80,17 @@ def loadCapivaraFile(fileOpen=None):
     logs.record("Gravando os dados na base do Capivara", type="info")
 
     dataUtils = DataUtils()
-    dataUtils.truncate_db()
+
 
     session = Session()
+    dataUtils.clear_data(session)
 
     try:
         registro = "FileInformation"
         __InsertFileInformationOnBase(session, capivara)
 
         registro = "Project properties"
-        __InsertProjectProperties(session, capivara)
+        __InsertProjectPropertiesOnBase(session, capivara)
 
         registro = "Character"
         __InsertCharaterOnBase(session, capivara)
@@ -107,7 +110,10 @@ def loadCapivaraFile(fileOpen=None):
         registro = "Relationships"
         __CreateAllRelationships(session, capivara)
 
+        session.commit()
+
     except:
+        session.rollback()
         # TODO: Obter o código da exception
         logs.record("Não foi possível gravar o registro " + registro)
         raise WritingRecordError(20, "Não foi possível gravar o registro" + registro)
@@ -139,7 +145,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.core_id = i
                     s.add(c)
-                    s.commit()
+                    #s.commit()
 
             elif relationship['destination'] == 'tag':
                 for i in relationship['idrefs']:
@@ -147,7 +153,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.tag_id = i
                     s.add(c)
-                    s.commit()
+                    #s.commit()
 
 
 def __IncludeBiographyOnBase(s, capivara):
@@ -159,47 +165,46 @@ def __IncludeBiographyOnBase(s, capivara):
             bioDict['description'] = bio['description']
             c = Biography.add(bioDict)
             s.add(c)
-            s.commit()
+            #s.commit()
 
 
 def __InsertTagOnBase(s, capivara):
     for tag in capivara['tag']:
         c = Tag.add(tag)
         s.add(c)
-        s.commit()
+        #s.commit()
 
 
 def __InsertSmartGroupOnBase(s, capivara):
     for smart_group in capivara['smart group']:
         c = SmartGroup.add(smart_group)
         s.add(c)
-        s.commit()
+        #s.commit()
 
 
 def __InsertCoreOnBase(s, capivara):
     for core in capivara['core']:
         c = Core.add(core)
         s.add(c)
-        s.commit()
+        #s.commit()
 
 
 def __InsertCharaterOnBase(s, capivara):
     for character in capivara['character']:
         c = Character.add(character)
         s.add(c)
-        s.commit()
+        #s.commit()
 
 
-def __InsertProjectProperties(s, capivara):
+def __InsertProjectPropertiesOnBase(s, capivara):
     c = ProjectProperties()
     c.title = capivara['project properties']['title']
-    c.abbreviatedTitle = capivara['project properties']['abbreviated title']
     c.authorsFullName = capivara['project properties']['authors full name']
     c.surname = capivara['project properties']['surname']
     c.forename = capivara['project properties']['forename']
     c.pseudonym = capivara['project properties']['pseudonym']
     s.add(c)
-    s.commit()
+    #s.commit()
 
 
 def __InsertFileInformationOnBase(s, capivara):
@@ -213,4 +218,4 @@ def __InsertFileInformationOnBase(s, capivara):
     c.device = device
     c.modified = modified
     s.add(c)
-    s.commit()
+    #s.commit()
