@@ -52,6 +52,7 @@ class MainWindow(Gtk.ApplicationWindow):
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
     # campos da tela
+    lblId = Gtk.Template.Child(name='lblId')
     txtName = Gtk.Template.Child(name='gtkEntryName')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
     txtHeigth = Gtk.Template.Child(name='gtkEntryHeigth')
@@ -59,6 +60,7 @@ class MainWindow(Gtk.ApplicationWindow):
     txtBodyType = Gtk.Template.Child(name='gtkEntryBodyType')
     txtEyeColor = Gtk.Template.Child(name='gtkEntryEyeColor')
     txtHairColor = Gtk.Template.Child(name='gtkEntryHairColor')
+    txtLocal = Gtk.Template.Child(name='gtkEntryLocal')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
     capivaraFile = ""
@@ -147,11 +149,11 @@ class MainWindow(Gtk.ApplicationWindow):
             self.show_all()
 
         voCharacter = namedtuple('voCharacter',
-                                 ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'picture'])
+                                 ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'picture'])
 
         # Passa os campos da tela para treeview
-        vo = voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
-                         self.txtHairColor, self.imgCharacter)
+        vo = voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                         self.txtHairColor, self.txtLocal, self.imgCharacter)
 
         Treeview(self.treeView, dict_object, vo)
 
@@ -171,6 +173,9 @@ class MainWindow(Gtk.ApplicationWindow):
             pixbuf = Utils.get_pixbuf_from_base64string(stringBase64)
             pixbuf = pixbuf.scale_simple(170, 200, 2)
             self.imgCharacter.set_from_pixbuf(pixbuf)
+            c = Character()
+            intId = int(self.lblId.get_text().replace('#', '0'))
+            c.set_image(intId, stringBase64)
 
         elif response == Gtk.ResponseType.NO:
             pass
@@ -218,16 +223,17 @@ class MainWindow(Gtk.ApplicationWindow):
                 __charaters__ = '"character":' + c.toDict()
                 dictReturn = '{' + dictReturn + __charaters__ + '}'
 
+                dictReturn = dictReturn.replace('\n', '')
+
                 json_acceptable_string = dictReturn.replace("'", "\"")
                 dict_object = json.loads(json_acceptable_string)
 
                 voCharacter = namedtuple('voCharacter',
-                                         ['name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color',
-                                          'picture'])
+                                         ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'picture'])
 
                 # Passa os campos da tela para treeview
-                vo = voCharacter(self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
-                                 self.txtHairColor, self.imgCharacter)
+                vo = voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                                 self.txtHairColor, self.txtLocal, self.imgCharacter)
                 Treeview(self.treeView, dict_object, vo)
 
                 projectProperties = ProjectProperties.get()
@@ -255,6 +261,37 @@ class MainWindow(Gtk.ApplicationWindow):
         elif response == Gtk.ResponseType.NO:
             logs.record("Não foi aberto um novo arquivo.", type="info", colorize=True)
 
+    @Gtk.Template.Callback()
+    def on_gtkEntryName_focus_out_event(self, widget, event):
+        #Utils.mensagem(str(self.lblId.get_text()) + "-" + self.txtName.get_text(), self)
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_name(intId, self.txtName.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryHeigth_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_height(intId, self.txtHeigth.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryWeigth_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_weight(intId, self.txtWeigth.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryLocal_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_local(intId, self.txtLocal.get_text())
+
+
+    # @Gtk.Template.Callback()
+    # def on_gtkEntryName_focus_out_event(self, widget, event):
+    #     # c = Character()
+    #     # c.set_name(self.txtName.get_text())
+    #     print("Saiu do campo nome.")
 
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):
@@ -515,6 +552,7 @@ class MainWindow(Gtk.ApplicationWindow):
         about.set_website(website='https://github.com/ElizeuX/Capivara/wiki')
         about.run()
         about.destroy()
+
 
     # CALL BACK SEARCH
     def _show_hidden_search_bar(self):

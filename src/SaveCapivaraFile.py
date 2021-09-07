@@ -36,6 +36,8 @@ def saveCapivaraFile(capivaraFile = None):
 
         arquivo = JsonTools.putObject(arquivo)
 
+        arquivo = arquivo.replace('\n', '')
+
         json_acceptable_string = arquivo.replace("'", "\"")
         json_object = json.loads(json_acceptable_string)
     except:

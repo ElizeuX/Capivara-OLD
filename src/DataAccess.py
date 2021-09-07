@@ -1,6 +1,6 @@
 #coding: utf-8
 
-from sqlalchemy import create_engine, Column, Unicode, Integer, Float, ForeignKey, MetaData, Table
+from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -192,6 +192,7 @@ class Character(Base):
     id = Column(Integer(), primary_key=True)
     name = Column(Unicode(200))
     sex = Column(Unicode(1))
+    age = Column(Unicode(3))
     local = Column(Unicode(200))
     occupation = Column(Unicode(200))
     position_social = Column(Unicode(1))
@@ -206,8 +207,48 @@ class Character(Base):
     standing_features = Column(Unicode(100))
     background = Column(Unicode(1000))
     hobbies = Column(Unicode())
-    picture = Column(Unicode(200000))
+    picture = Column(String(200000))
     notes = Column(Unicode(1000))
+
+    @classmethod
+    def set_name(cls, intId, strName):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'name': strName})
+        s.commit()
+
+    @classmethod
+    def set_image(cls, intId, strBase64Image):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'picture': str(strBase64Image, 'UTF-8')})
+        s.commit()
+
+    @classmethod
+    def set_height(cls, intId, intHeight):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'height': float(intHeight)})
+        s.commit()
+
+    @classmethod
+    def set_weight(cls, intId, intWeight):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'weight': float(intWeight)})
+        s.commit()
+
+    @classmethod
+    def set_local(cls, intId, strLocal):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'local': strLocal})
+        s.commit()
 
     @classmethod
     def add(cls, character):
@@ -266,6 +307,7 @@ class Character(Base):
             #characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
@@ -368,8 +410,6 @@ class DataUtils():
             session.execute(table.delete())
         session.commit()
 
-
-
     def drop_table(self, table_name):
         base = declarative_base()
         metadata = MetaData(engine, reflect=True)
@@ -377,83 +417,3 @@ class DataUtils():
         if table is not None:
             logging.info(f'Deleting {table_name} table')
             base.metadata.drop_all(engine, [table], checkfirst=True)
-
-    # def saveCapivaraFile(self, capivaraFile):
-    #
-    #     logging.info("Salvando arquivo " + capivaraFile)
-    #
-    #     jsonTools = JsonTools()
-    #     dataUtils = DataUtils()
-    #     now = datetime.now()
-    #
-    #     versionModel = "0.1.0"
-    #     creator = "Capivara 0.1.0"
-    #     device = os.environ['COMPUTERNAME']
-    #     modified = str(now.today())
-    #
-    #     # DADOS GERAIS DO ARQUIVO
-    #     arquivo = JsonTools.putMap('"version model"', '"' + versionModel + '"') + ','
-    #     arquivo = arquivo + JsonTools.putMap('"creator"',  '"' + creator + '"') + ','
-    #     arquivo = arquivo + JsonTools.putMap('"device"', '"' + device + '"') + ','
-    #     arquivo = arquivo + JsonTools.putMap('"modified"', '"' + modified + '"')
-    #     logging.info(arquivo)
-    #
-    #     # PEGAR PROPRIEDADES DO PROJETO
-    #     projectProperties = ProjectProperties.get()
-    #     abbreviatedTitle = "TSCF"
-    #     title = projectProperties.title
-    #     authorsFullName = projectProperties.authorsFullName
-    #     surname = projectProperties.surname
-    #     forename = projectProperties.forename
-    #     pseudonym = projectProperties.pseudonym
-    #
-    #     # PROPRIEDADE DO PROJETO
-    #     propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
-    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"', '"' + abbreviatedTitle + '"') + ','
-    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"authors full name"', '"' + authorsFullName + '"') + ','
-    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
-    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"forename"', '"' + forename + '"') + ','
-    #     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"')
-    #     propriedadesDoProjeto = '"project properties" : ' + JsonTools.putObject(propriedadesDoProjeto)
-    #
-    #     # Juntando dados do arquivo com as propriedades do projeto
-    #     arquivo = arquivo + ', ' + propriedadesDoProjeto
-    #
-    #     # INCLUINDO PERSONAGEM
-    #     characters = Character()
-    #     dadosPersonagem = characters.toDict()
-    #     dadosPersonagem = '"character" : ' + dadosPersonagem
-    #     arquivo = arquivo + ',' + dadosPersonagem
-    #
-    #     # Incluindo Core
-    #     core = Core()
-    #     dadosCore = core.toDict()
-    #     dadosCore = '"core" : ' + dadosCore
-    #     arquivo = arquivo + ',' + dadosCore
-    #
-    #     # Incluindo Smart Group
-    #     smartGroup = SmartGroup()
-    #     dadosSmartGroup = smartGroup.toDict()
-    #     dadosSmartGroup = '"smart group" : ' + dadosSmartGroup
-    #     arquivo = arquivo + ',' + dadosSmartGroup
-    #
-    #     # Incluindo tags
-    #     tag = Tag()
-    #     dadosTags = tag.dictBuffer()
-    #     dadosTags = '"tag" : ' + dadosTags
-    #     arquivo = arquivo + ',' + dadosTags
-    #
-    #     arquivo = JsonTools.putObject(arquivo)
-    #
-    #     logging.info(arquivo)
-    #
-    #     json_acceptable_string = arquivo.replace("'", "\"")
-    #     logging.info('json_acceptable_string =' + json_acceptable_string)
-    #     json_object = json.loads(json_acceptable_string)
-    #
-    #     # Write JSON file
-    #     with open(capivaraFile, 'w', encoding='utf8') as outfile:
-    #         str_ = json.dumps(json_object,
-    #                           indent=4, sort_keys=False,
-    #                           separators=(',', ': '), ensure_ascii=False)
-    #         outfile.write(str_)

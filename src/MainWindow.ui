@@ -280,6 +280,60 @@
                           <object class="GtkFrame">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="margin-start">15</property>
+                            <property name="margin-end">15</property>
+                            <property name="margin-top">10</property>
+                            <property name="label-xalign">0</property>
+                            <property name="shadow-type">out</property>
+                            <child>
+                              <object class="GtkAlignment">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="left-padding">12</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel" id="lblId">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="margin-start">20</property>
+                                        <property name="margin-top">10</property>
+                                        <property name="margin-bottom">10</property>
+                                        <property name="label" translatable="yes">#0001</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child type="label">
+                              <object class="GtkLabel">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label" translatable="yes">REGISTRO Nro :</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFrame">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
                             <property name="halign">baseline</property>
                             <property name="margin-start">15</property>
                             <property name="margin-end">15</property>
@@ -297,7 +351,7 @@
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <child>
-                                      <!-- n-columns=2 n-rows=11 -->
+                                      <!-- n-columns=2 n-rows=12 -->
                                       <object class="GtkGrid">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
@@ -312,7 +366,7 @@
                                           </object>
                                           <packing>
                                             <property name="left-attach">0</property>
-                                            <property name="top-attach">0</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -324,7 +378,7 @@
                                           </object>
                                           <packing>
                                             <property name="left-attach">0</property>
-                                            <property name="top-attach">1</property>
+                                            <property name="top-attach">2</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -334,10 +388,11 @@
                                             <property name="margin-start">5</property>
                                             <property name="margin-bottom">5</property>
                                             <property name="width-chars">60</property>
+                                            <signal name="focus-out-event" handler="on_gtkEntryName_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
-                                            <property name="top-attach">0</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -349,7 +404,7 @@
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
-                                            <property name="top-attach">1</property>
+                                            <property name="top-attach">2</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -367,6 +422,7 @@
                                                 <property name="max-length">10</property>
                                                 <property name="width-chars">10</property>
                                                 <property name="max-width-chars">0</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryDate_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -432,6 +488,7 @@
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
                                                 <property name="width-chars">4</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryHeigth_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -459,6 +516,7 @@
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
                                                 <property name="width-chars">5</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryWeigth_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -484,8 +542,10 @@
                                               <object class="GtkEntry" id="gtkEntryBodyType">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
+                                                <property name="halign">end</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
+                                                <property name="hexpand">True</property>
                                                 <property name="width-chars">28</property>
                                               </object>
                                               <packing>
@@ -684,17 +744,27 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry">
+                                          <object class="GtkEntry" id="gtkEntryLocal">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="margin-start">5</property>
                                             <property name="margin-top">5</property>
                                             <property name="margin-bottom">5</property>
+                                            <signal name="focus-out-event" handler="on_gtkEntryLocal_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
                                             <property name="top-attach">10</property>
                                           </packing>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
                                         </child>
                                         <child>
                                           <placeholder/>
@@ -813,11 +883,8 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <object class="GtkFrame">
@@ -1064,6 +1131,12 @@
                             <property name="position">3</property>
                           </packing>
                         </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
                       </object>
                       <packing>
                         <property name="name">page_0</property>
@@ -1072,6 +1145,7 @@
                     </child>
                     <child>
                       <object class="GtkBox">
+                        <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
@@ -1717,9 +1791,6 @@
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
-                </child>
-                <child>
-                  <placeholder/>
                 </child>
               </object>
               <packing>

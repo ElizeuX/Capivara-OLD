@@ -19,6 +19,24 @@ PluginFolder = "../plugins/"
 MainModule = "__init__"
 
 
+def mensagem(texto, janela= None):
+    '''
+    Uso: Mensagem(texto, janela)
+    texto   ->      texto a ser exibido nos padrões pango
+    janela ->       janela ativa
+
+    Apresenta uma caixa de dialogo com o botão 'OK'
+    com o texto     definido pelo desenvolvedor e o ícone de informação
+
+    Endereço das referências do pango:
+    http://www.pygtk.org/pygtk2reference/pango-markup-language.html
+    '''
+
+    dialogo= Gtk.MessageDialog(janela, Gtk.DIALOG_MODAL, Gtk.MESSAGE_INFO, \
+    Gtk.BUTTONS_OK, texto)
+    dialogo.set_markup(texto) # texto formatado nos padrões pango
+    dialogo.run()
+    dialogo.destroy()
 
 class JsonTools():
 

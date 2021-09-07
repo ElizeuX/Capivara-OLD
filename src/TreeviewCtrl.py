@@ -111,6 +111,7 @@ class Treeview():
         self.treemodel.set_value(myiter, 1, itemIcon)
         self.treemodel.set_value(myiter, 2, str(id))
         self.order = Gtk.SortType.ASCENDING
+        self.treemodel.set_sort_column_id(2, self.order)
 
         return myiter
 
