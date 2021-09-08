@@ -4,24 +4,24 @@ gi.require_version(namespace='Gtk', version='3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 
+from DataAccess import Character, Core, SmartGroup
 from CharacterCtrl import CharacterControl
 
 
 class Treeview():
     treeview = None
     treemodel = None
-    vo = None
+    #vo = None
 
     selected = 'workspace'
 
-    def __init__(self, treeview, data, voCharacter):
+    def __init__(self, treeview, vo = None):
 
+        self.data = vo
         for column in treeview.get_columns():
             treeview.remove_column(column)
 
         self.treeview = treeview
-        self.data = data
-        self.vo = voCharacter
 
         self.treeview.connect('row-activated', self.selection)
         self.treeview.connect('button_press_event', self.mouse_click)
@@ -29,7 +29,7 @@ class Treeview():
         # create a storage model in this case a treemodel
         self.treemodel = Gtk.TreeStore(str, Pixbuf, str)
         self.treeview.set_model(self.treemodel)
-        #self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, [], DRAG_ACTION)
+        # self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, [], DRAG_ACTION)
         # self.drop_area = DropArea()
 
         # add columns usually only one in case of the treeview
@@ -66,14 +66,7 @@ class Treeview():
 
         self.populate()
         treeview.expand_all()
-        # selecionar primeiro personagem
-        # last = self.treemodel.iter_n_children()
-        # last = last - 1  # iter_n_children starts at 1 ; set_cursor starts at 0
-        # c = self.treeview.get_column(0)
-        # self.treeview.set_cursor(last, c, True)  # set the cursor to the last appended item
-        # self.treeview.row_activated(Gtk.TreePath(row), Gtk.TreeViewColumn(None))
-        # self.treeview.set_cursor(Gtk.TreePath(row))
-        #
+
         c = self.treeview.get_column(0)
         self.treeview.set_cursor(Gtk.TreePath.new_from_string("0:0"), c,
                                  True)  # set the cursor to the last appended item
@@ -87,16 +80,26 @@ class Treeview():
     def populate(self):
         self.treemodel.clear()
 
-        galhos = self.data.keys()
+        # Adicionando Smart Groups
+        c = SmartGroup()
+        smartGroups = c.list()
+        iter_level_1 = self.append_tree("SmartGroups")
+        for smartGroup in smartGroups:
+            iter_level_2 = self.append_tree(smartGroup.description, smartGroup.id, iter_level_1)
 
-        for cabec in galhos:
-            iter_level_1 = self.append_tree(cabec.capitalize())
-            for dados in self.data[cabec]:
-                dictlist = []
-                for k, v in dados.items():
-                    temp = v
-                    dictlist.append(temp)
-                iter_level_2 = self.append_tree(dictlist[1], dictlist[0], iter_level_1)
+        # Adicionando núcleos
+        c = Core()
+        cores = c.list()
+        iter_level_1 = self.append_tree("Cores")
+        for core in cores:
+            iter_level_2 = self.append_tree(core.description, core.id, iter_level_1)
+
+        # Adicionando personagens
+        c = Character()
+        characters = c.list()
+        iter_level_1 = self.append_tree("Character")
+        for character in characters:
+            iter_level_2 = self.append_tree(character.name, character.id, iter_level_1)
 
     def append_tree(self, name=None, id=None, parent=None):
         """
@@ -153,6 +156,7 @@ class Treeview():
             value = model.get_value(tree_iter, 2)
         if value:
             print(str(value))
-            c = CharacterControl(value, self.vo)
+            c = CharacterControl(value, self.data)
 
-
+    def get_Core_Iter(self):
+        pass

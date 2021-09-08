@@ -11,7 +11,7 @@ import Utils
 
 class CharacterControl:
     characterId = ""
-    voCharacter = namedtuple('voCharacter', ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'picture'])
+    voCharacter = namedtuple('voCharacter', ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'background','picture'])
 
     def __init__(self, characterId, voCharacter):
         self.strCharacterId = characterId
@@ -52,6 +52,13 @@ class CharacterControl:
         voCharacter.local.set_text(character.local)
 
         voCharacter.body_type.set_text(character.body_type)
+
+        if  voCharacter.background == None:
+            print("sem background")
+        else:
+            print(voCharacter.background.get_buffer())
+
+
 
         if not character.picture:
             pixbuf = Utils.get_pixbuf_from_base64string(__NOIMAGE)

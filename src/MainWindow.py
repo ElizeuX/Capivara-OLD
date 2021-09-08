@@ -17,6 +17,7 @@ from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup
 import Utils
 from src.logger import Logs
+#from TreeviewCtrl import Treeview
 from TreeviewCtrl import Treeview
 from collections import namedtuple
 import LoadCapivaraFile
@@ -61,7 +62,13 @@ class MainWindow(Gtk.ApplicationWindow):
     txtEyeColor = Gtk.Template.Child(name='gtkEntryEyeColor')
     txtHairColor = Gtk.Template.Child(name='gtkEntryHairColor')
     txtLocal = Gtk.Template.Child(name='gtkEntryLocal')
+    txtBackground = Gtk.Template.Child(name='txtBackground')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
+
+    # Vo com os elementos da tela
+    voCharacter = namedtuple('voCharacter',
+                             ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local','background',
+                              'picture'])
 
     capivaraFile = ""
 
@@ -123,21 +130,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         LoadCapivaraFile.loadCapivaraFile()
 
-        # Retornar o dict com os dados carregados no banco de dados
-        c = SmartGroup()
-        __smartgroups__ = '"smart group":' + c.toDict()
-        dictReturn = __smartgroups__ + ','
-        c = Core()
-        __cores__ = '"core" :' + c.toDict()
-        dictReturn = dictReturn + __cores__ + ','
-
-        c = Character()
-        __charaters__ = '"character":' + c.toDict()
-        dictReturn = '{' + dictReturn + __charaters__ + '}'
-
-        json_acceptable_string = dictReturn.replace("'", "\"")
-        dict_object = json.loads(json_acceptable_string)
-
         Biografia_Character = [
             (1965, 'Nascimento'), (1974, 'Evento 1'), (1976, 'Evento 2'), (1979, 'Evento 3'),
             (1980, 'Evento 4'), (1985, 'Evento 5'), (1987, 'Evento 6'),
@@ -148,14 +140,12 @@ class MainWindow(Gtk.ApplicationWindow):
 
             self.show_all()
 
-        voCharacter = namedtuple('voCharacter',
-                                 ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'picture'])
-
         # Passa os campos da tela para treeview
-        vo = voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
-                         self.txtHairColor, self.txtLocal, self.imgCharacter)
+        vo = self.voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                         self.txtHairColor, self.txtLocal, self.txtBackground, self.imgCharacter)
 
-        Treeview(self.treeView, dict_object, vo)
+        Treeview(self.treeView, vo)
+
 
     @Gtk.Template.Callback()
     def on_btnEditPhoto_clicked(self, widget):
@@ -210,31 +200,13 @@ class MainWindow(Gtk.ApplicationWindow):
                 LoadCapivaraFile.loadCapivaraFile(fileOpen)
                 self.capivaraFile = fileOpen
 
-                # TODO: Livrar o código dessa massaroca
-                # Retornar o dict com os dados carregados no banco de dados
-                c = SmartGroup()
-                __smartgroups__ = '"smart group":' + c.toDict()
-                dictReturn = __smartgroups__ + ','
-                c = Core()
-                __cores__ = '"core" :' + c.toDict()
-                dictReturn = dictReturn + __cores__ + ','
 
-                c = Character()
-                __charaters__ = '"character":' + c.toDict()
-                dictReturn = '{' + dictReturn + __charaters__ + '}'
-
-                dictReturn = dictReturn.replace('\n', '')
-
-                json_acceptable_string = dictReturn.replace("'", "\"")
-                dict_object = json.loads(json_acceptable_string)
-
-                voCharacter = namedtuple('voCharacter',
-                                         ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'picture'])
 
                 # Passa os campos da tela para treeview
-                vo = voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
-                                 self.txtHairColor, self.txtLocal, self.imgCharacter)
-                Treeview(self.treeView, dict_object, vo)
+                vo = self.voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType, self.txtEyeColor,
+                                 self.txtHairColor, self.txtLocal, self.txtBackground, self.imgCharacter)
+
+                Treeview(self.treeView, vo)
 
                 projectProperties = ProjectProperties.get()
                 self.header_bar.set_title(projectProperties.title)
@@ -414,9 +386,21 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Verificando qual botão foi pressionado.
         if response == Gtk.ResponseType.YES:
+            # itemIcon = Gtk.IconTheme.get_default().load_icon("document-open-symbolic", 22, 0)
+            # Get path pointing to 5th child of 3rd row in tree store
+            # treeStore = self.treeView.get_model()
+            # rootiter = treeStore.get_iter_first()
+            # print(type(rootiter))
+            # myiter = self.treeView.get_model()
+            # myiter = myiter.treemodel.insert_after(rootiter, None)
+            # self.treemodel.set_value(myiter, 0, "Teste")
+            # self.treemodel.set_value(myiter, 1, itemIcon)
+            # self.treemodel.set_value(myiter, 2, str(10))
+
             core = Core()
             core.description = dialog.newGroup()
             core.insertCore(core)
+            Treeview(self.treeView)
 
         elif response == Gtk.ResponseType.NO:
             print('Botão NÃO pressionado')
@@ -432,6 +416,8 @@ class MainWindow(Gtk.ApplicationWindow):
         c.name = "unnamed"
         c.insertCharacter(c)
 
+        Treeview(self.treeView)
+
 
     @Gtk.Template.Callback()
     def on_btn_group_category_clicked(self, widget):
@@ -445,6 +431,8 @@ class MainWindow(Gtk.ApplicationWindow):
             smartGroup = SmartGroup()
             smartGroup.description = dialog.newSmartGroup()
             smartGroup.insertSmartGroup(smartGroup)
+
+            Treeview(self.treeView)
 
         elif response == Gtk.ResponseType.NO:
             print('Botão NÃO pressionado')

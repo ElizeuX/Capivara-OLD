@@ -396,7 +396,7 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkComboBox">
+                                          <object class="GtkComboBox" id="cboArchtype">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="margin-start">5</property>
@@ -721,18 +721,6 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkSeparator">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="margin-top">5</property>
-                                            <property name="margin-bottom">5</property>
-                                          </object>
-                                          <packing>
-                                            <property name="left-attach">1</property>
-                                            <property name="top-attach">2</property>
-                                          </packing>
-                                        </child>
-                                        <child>
                                           <object class="GtkLabel">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
@@ -913,7 +901,7 @@
                                     <property name="can-focus">True</property>
                                     <property name="shadow-type">in</property>
                                     <child>
-                                      <object class="GtkTextView">
+                                      <object class="GtkTextView" id="txtBackground">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-start">5</property>

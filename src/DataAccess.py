@@ -311,8 +311,8 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"height"', '"' + str(character.height) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"weight"', '"' + str(character.weight) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"height"', str("{:.2f}".format(character.height))) + ','
+            characterStr = characterStr + JsonTools.putMap('"weight"', str("{:.2f}".format(character.weight))) + ','
             characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
@@ -324,7 +324,6 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
-            # characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"')
 
             i = character.id
             strBiografia = ""
