@@ -7,18 +7,8 @@ def loadCharacterMap():
     c = Character()
     characters = c.list()
 
-    characterMap = CharacterMap()
+    #characterMap = CharacterMap()
 
-    # for core in cores:
-    #     coreDescription = core.description
-    #     c = Character()
-    #     coreXcaracter = c.getCores(core.id)
-    #     for x in coreXcaracter:
-    #         cm = CharacterMap()
-    #         cm.character_one = core.description
-    #         coreDescription = c.get(x.character_id).name
-    #         cm.character_two = coreDescription
-    #         cm.insertCharacterMap(cm)
 
     for character in characters:
         characterOne = character.name
@@ -26,6 +16,7 @@ def loadCharacterMap():
             if characterOne != character2.name:
                 c = CharacterMap()
                 c.character_one = characterOne
+                c.character_relationship = "amigo"
                 c.character_two = character2.name
                 c.insertCharacterMap(c)
         # incluir os cores
