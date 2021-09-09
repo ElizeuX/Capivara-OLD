@@ -144,7 +144,7 @@ class Treeview():
         """
         model = tv.get_model()
         treeiter = model.get_iter(treepath)
-        self.selected = model.get_value(treeiter, 1)
+        self.selected = model.get_value(treeiter, 0)
         # self.entry.set_text(self.selected)
         print(self.selected)
 

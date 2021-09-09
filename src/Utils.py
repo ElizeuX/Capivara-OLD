@@ -18,26 +18,6 @@ import json
 PluginFolder = "../plugins/"
 MainModule = "__init__"
 
-
-def mensagem(texto, janela= None):
-    '''
-    Uso: Mensagem(texto, janela)
-    texto   ->      texto a ser exibido nos padrões pango
-    janela ->       janela ativa
-
-    Apresenta uma caixa de dialogo com o botão 'OK'
-    com o texto     definido pelo desenvolvedor e o ícone de informação
-
-    Endereço das referências do pango:
-    http://www.pygtk.org/pygtk2reference/pango-markup-language.html
-    '''
-
-    dialogo= Gtk.MessageDialog(janela, Gtk.DIALOG_MODAL, Gtk.MESSAGE_INFO, \
-    Gtk.BUTTONS_OK, texto)
-    dialogo.set_markup(texto) # texto formatado nos padrões pango
-    dialogo.run()
-    dialogo.destroy()
-
 class JsonTools():
 
     # CARREGAR O ARQUIVO JSON
@@ -229,15 +209,15 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         )
 
         # Adicionando class action nos botões.
-        btn_cancel = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.CANCEL,
-        )
-        btn_cancel.get_style_context().add_class(class_name='destructive-action')
-
-        btn_save = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.OK,
-        )
-        btn_save.get_style_context().add_class(class_name='suggested-action')
+        # btn_cancel = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.CANCEL,
+        # )
+        # btn_cancel.get_style_context().add_class(class_name='destructive-action')
+        #
+        # btn_save = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.OK,
+        # )
+        # btn_save.get_style_context().add_class(class_name='suggested-action')
 
         # Criando e adicionando filtros.
         txt_filter = Gtk.FileFilter()
@@ -294,15 +274,15 @@ class DialogSelectImage(Gtk.FileChooserDialog):
         )
 
         # Adicionando class action nos botões.
-        btn_cancel = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.CANCEL,
-        )
-        btn_cancel.get_style_context().add_class(class_name='destructive-action')
-
-        btn_save = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.OK,
-        )
-        btn_save.get_style_context().add_class(class_name='suggested-action')
+        # btn_cancel = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.CANCEL,
+        # )
+        # btn_cancel.get_style_context().add_class(class_name='destructive-action')
+        #
+        # btn_save = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.OK,
+        # )
+        # btn_save.get_style_context().add_class(class_name='suggested-action')
 
         # Criando e adicionando filtros.
         img_filter = Gtk.FileFilter()
@@ -357,15 +337,15 @@ class DialogSelectFile(Gtk.FileChooserDialog):
         )
 
         # Adicionando class action nos botões.
-        btn_cancel = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.CANCEL,
-        )
-        btn_cancel.get_style_context().add_class(class_name='destructive-action')
-
-        btn_save = self.get_widget_for_response(
-            response_id=Gtk.ResponseType.OK,
-        )
-        btn_save.get_style_context().add_class(class_name='suggested-action')
+        # btn_cancel = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.CANCEL,
+        # )
+        # btn_cancel.get_style_context().add_class(class_name='destructive-action')
+        #
+        # btn_save = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.OK,
+        # )
+        # btn_save.get_style_context().add_class(class_name='suggested-action')
 
         # Criando e adicionando filtros.
         txt_filter = Gtk.FileFilter()

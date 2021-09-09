@@ -5,13 +5,18 @@ import gi
 gi.require_version(namespace='Gtk', version='3.0')
 
 from gi.repository import Gtk
-from DataAccess import Character
+from DataAccess import Character, Biography, Tag
 from collections import namedtuple
 import Utils
 
 class CharacterControl:
     characterId = ""
-    voCharacter = namedtuple('voCharacter', ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'background','picture'])
+    #voCharacter = namedtuple('voCharacter', ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'background','picture', 'biography'])
+    voCharacter = namedtuple('voCharacter',
+                             ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
+                              'hobby', 'tag', 'local',
+                              'background',
+                              'picture', 'biography'])
 
     def __init__(self, characterId, voCharacter):
         self.strCharacterId = characterId
@@ -19,12 +24,9 @@ class CharacterControl:
 
         c = Character()
         character = c.get(characterId)
-        print(character.name)
-        print(character.height)
-        print(character.weight)
 
-        m = self.voCharacter
-        teste = m
+        # m = self.voCharacter
+        # teste = m
 
         voCharacter.id.set_text("#" + str(character.id).zfill(5))
 
@@ -50,15 +52,15 @@ class CharacterControl:
             voCharacter.hair_color.set_text(character.hair_color)
 
         voCharacter.local.set_text(character.local)
-
         voCharacter.body_type.set_text(character.body_type)
+        voCharacter.ethinicity.set_text(character.ethnicity)
+        voCharacter.hobby.set_text(character.hobbies)
 
         if  voCharacter.background == None:
             print("sem background")
         else:
-            print(voCharacter.background.get_buffer())
-
-
+            textbuffer = voCharacter.background.get_buffer()
+            textbuffer.set_text(character.background)
 
         if not character.picture:
             pixbuf = Utils.get_pixbuf_from_base64string(__NOIMAGE)
@@ -68,6 +70,27 @@ class CharacterControl:
             pixbuf = pixbuf.scale_simple(170, 200, 2)
 
         voCharacter.picture.set_from_pixbuf(pixbuf)
+
+
+        biography = c.getBiografia(character.id)
+        voCharacter.biography.clear()
+        bioTupla = ()
+        for bio in biography:
+            bioTupla = (bio.year, bio.description)
+            voCharacter.biography.append(row=bioTupla)
+
+        #Carregando as tags
+        t = Tag()
+        tags = character.getTags(character.id)
+        strTag = ""
+        for tag in tags:
+            c =t.get(tag.tag_id)
+            strTag += c.description + ' '
+
+        voCharacter.tag.set_text(strTag)
+
+
+
 
 
 

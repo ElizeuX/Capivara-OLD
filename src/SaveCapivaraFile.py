@@ -1,16 +1,15 @@
-from sqlalchemy import create_engine, Column, Unicode, Integer, Float, ForeignKey, MetaData, Table
-from sqlalchemy.orm import sessionmaker, relationship
-from sqlalchemy.ext.declarative import declarative_base
+# -*- coding: utf-8 -*-
 
-from logger import Logs
-import os, json
+import json
+import os
 from datetime import datetime
 
+from DataAccess import ProjectProperties, Character, Core, SmartGroup, Tag
 from Utils import JsonTools
-from DataAccess import DataUtils, FileInformation, ProjectProperties, Character, Core, SmartGroup, Tag, Biography, \
-    CoreCharacterLink, TagCharacterLink
+from logger import Logs
 
-def saveCapivaraFile(capivaraFile = None):
+
+def saveCapivaraFile(capivaraFile=None):
     logs = Logs(filename="capivara.log")
     logs.record("Salvando arquivo:  %s" % capivaraFile, type="info")
 
@@ -65,11 +64,13 @@ class WritingFileError(Exception):
         super(WritingFileError, self).__init__(*args, **kwargs)
         self.error_code = error_code
 
+
 # TODO: Atribuir código de erro
 class UnexpectedError(Exception):
     def __init__(self, error_code, *args, **kwargs):
         super(UnexpectedError, self).__init__(*args, **kwargs)
         self.error_code = error_code
+
 
 def __InsertTagOnFile():
     # Incluindo tags

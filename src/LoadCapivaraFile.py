@@ -1,4 +1,4 @@
-#coding: utf-8
+# -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine, Column, Unicode, Integer, Float, ForeignKey, MetaData, Table
 from sqlalchemy.orm import sessionmaker, relationship
@@ -21,8 +21,7 @@ metadata = MetaData(bind=engine, reflect=True)
 
 
 def loadCapivaraFile(fileOpen=None):
-
-    #TODO: Colocar o loadcapivarafile em uma transaction
+    # TODO: Colocar o loadcapivarafile em uma transaction
     logs = Logs(filename="capivara.log")
 
     if fileOpen == None:
@@ -81,45 +80,44 @@ def loadCapivaraFile(fileOpen=None):
 
     dataUtils = DataUtils()
 
-
-    session = Session()
-    dataUtils.clear_data(session)
+    s = Session()
+    dataUtils.clear_data(s)
 
     try:
         registro = "FileInformation"
-        __InsertFileInformationOnBase(session, capivara)
+        __InsertFileInformationOnBase(s, capivara)
 
         registro = "Project properties"
-        __InsertProjectPropertiesOnBase(session, capivara)
+        __InsertProjectPropertiesOnBase(s, capivara)
 
         registro = "Character"
-        __InsertCharaterOnBase(session, capivara)
+        __InsertCharaterOnBase(s, capivara)
 
         registro = "Core"
-        __InsertCoreOnBase(session, capivara)
+        __InsertCoreOnBase(s, capivara)
 
         registro = "SmartGroup"
-        __InsertSmartGroupOnBase(session, capivara)
+        __InsertSmartGroupOnBase(s, capivara)
 
         registro = "Tag"
-        __InsertTagOnBase(session, capivara)
+        __InsertTagOnBase(s, capivara)
 
         registro = "Biografia"
-        __IncludeBiographyOnBase(session, capivara)
+        __IncludeBiographyOnBase(s, capivara)
 
         registro = "Relationships"
-        __CreateAllRelationships(session, capivara)
+        __CreateAllRelationships(s, capivara)
 
-        session.commit()
+        s.commit()
 
     except:
-        session.rollback()
+        s.rollback()
         # TODO: Obter o código da exception
         logs.record("Não foi possível gravar o registro " + registro)
         raise WritingRecordError(20, "Não foi possível gravar o registro" + registro)
 
     finally:
-        session.close()
+        s.close()
         engine.dispose()
 
 
@@ -145,7 +143,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.core_id = i
                     s.add(c)
-                    #s.commit()
+                    # s.commit()
 
             elif relationship['destination'] == 'tag':
                 for i in relationship['idrefs']:
@@ -153,7 +151,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.tag_id = i
                     s.add(c)
-                    #s.commit()
+                    # s.commit()
 
 
 def __IncludeBiographyOnBase(s, capivara):
@@ -165,35 +163,35 @@ def __IncludeBiographyOnBase(s, capivara):
             bioDict['description'] = bio['description']
             c = Biography.add(bioDict)
             s.add(c)
-            #s.commit()
+            # s.commit()
 
 
 def __InsertTagOnBase(s, capivara):
     for tag in capivara['tag']:
         c = Tag.add(tag)
         s.add(c)
-        #s.commit()
+        # s.commit()
 
 
 def __InsertSmartGroupOnBase(s, capivara):
     for smart_group in capivara['smart group']:
         c = SmartGroup.add(smart_group)
         s.add(c)
-        #s.commit()
+        # s.commit()
 
 
 def __InsertCoreOnBase(s, capivara):
     for core in capivara['core']:
         c = Core.add(core)
         s.add(c)
-        #s.commit()
+        # s.commit()
 
 
 def __InsertCharaterOnBase(s, capivara):
     for character in capivara['character']:
         c = Character.add(character)
         s.add(c)
-        #s.commit()
+        # s.commit()
 
 
 def __InsertProjectPropertiesOnBase(s, capivara):
@@ -204,7 +202,7 @@ def __InsertProjectPropertiesOnBase(s, capivara):
     c.forename = capivara['project properties']['forename']
     c.pseudonym = capivara['project properties']['pseudonym']
     s.add(c)
-    #s.commit()
+    # s.commit()
 
 
 def __InsertFileInformationOnBase(s, capivara):
@@ -218,4 +216,4 @@ def __InsertFileInformationOnBase(s, capivara):
     c.device = device
     c.modified = modified
     s.add(c)
-    #s.commit()
+    # s.commit()

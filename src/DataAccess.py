@@ -1,4 +1,4 @@
-#coding: utf-8
+# -*- coding: utf-8 -*-
 
 from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table
 from sqlalchemy.orm import sessionmaker, relationship
@@ -18,6 +18,24 @@ Session = sessionmaker(bind=engine)
 connection = engine.connect()
 metadata = MetaData(bind=engine, reflect=True)
 
+
+class CharacterMap(Base):
+    __tablename__ = 'characterMap'
+    id = Column(Integer(), primary_key=True)
+    character_one = Column(Unicode(100))
+    character_relationship = Column(Unicode(100))
+    character_two = Column(Unicode(100))
+
+    @classmethod
+    def insertCharacterMap(cls, character_map):
+        s = Session()
+        s.add(character_map)
+        s.commit()
+
+    @classmethod
+    def list(cls):
+        s = Session()
+        return s.query(CharacterMap).all()
 
 class FileInformation(Base):
     __tablename__ ='file_information'
@@ -99,6 +117,11 @@ class Tag(Base):
         return d
 
     @classmethod
+    def get(cls, id):
+        s = Session()
+        return s.query(Tag).get(id)
+
+    @classmethod
     def dictBuffer(cls):
         s = Session()
         tags = s.query(Tag).all()
@@ -142,9 +165,9 @@ class SmartGroup(Base):
         retorno = []
         for smartGroup in smartGroups:
             smartGroupStr = JsonTools.putMap('"id"', str(smartGroup.id)) + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
-            #smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description  + '"') + ','
-            #smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule  + '"')
+            #smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description  + '"') + ','
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule  + '"')
             retorno.append(JsonTools.putObject(smartGroupStr))
 
         return JsonTools.putArray(', '.join(retorno))
@@ -169,6 +192,10 @@ class Core(Base):
         s.add(core)
         s.commit()
 
+    @classmethod
+    def get(cls, id):
+        s = Session()
+        return s.query(Core).get(id)
 
     @classmethod
     def list(cls):
@@ -292,9 +319,19 @@ class Character(Base):
         return s.query(Character).all()
 
     @classmethod
-    def getBiografia(cls):
+    def getBiografia(cls, id):
         s = Session()
-        result = s.query(Character, Biography).filter_by(id).all()
+        return s.query(Biography).filter_by(id_character=id)
+
+    @classmethod
+    def getCores(cls, id):
+        s = Session()
+        return s.query(CoreCharacterLink).filter_by(character_id=id)
+
+    @classmethod
+    def getTags(cls, id):
+        s = Session()
+        return s.query(TagCharacterLink).filter_by(character_id=id)
 
     @classmethod
     def toDict(cls):
