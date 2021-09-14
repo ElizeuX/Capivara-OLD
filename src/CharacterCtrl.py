@@ -8,13 +8,14 @@ from gi.repository import Gtk
 from DataAccess import Character, Biography, Tag
 from collections import namedtuple
 import Utils
+import re
+from datetime import datetime
 
 class CharacterControl:
     characterId = ""
-    #voCharacter = namedtuple('voCharacter', ['id','name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'local', 'background','picture', 'biography'])
     voCharacter = namedtuple('voCharacter',
-                             ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
-                              'hobby', 'tag', 'local',
+                             ['id', 'name', 'archtype', 'date_of_birth','sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
+                              'health', 'tag', 'local',
                               'background',
                               'picture', 'biography'])
 
@@ -28,13 +29,32 @@ class CharacterControl:
         # m = self.voCharacter
         # teste = m
 
+
         voCharacter.id.set_text("#" + str(character.id).zfill(5))
 
         voCharacter.name.set_text(character.name)
+
         if character.height == None:
             voCharacter.height.set_text('0.00')
         else:
             voCharacter.height.set_text(str("{:.2f}".format(character.height)))
+
+        if not character.archtype:
+            voCharacter.archtype.set_active(-1)
+        else:
+            sem_espacos_a_mais = re.sub(' {2,}', ' ', str(character.archtype)).strip(' ')
+            voCharacter.archtype.set_active_id(sem_espacos_a_mais)
+
+        dateBirth = character.date_of_birth
+        if dateBirth != None:
+            dateBirth = "{}/{}/{}".format(dateBirth.day, dateBirth.month, dateBirth.year)
+            voCharacter.date_of_birth.set_text(dateBirth)
+
+        if not character.sex:
+            voCharacter.sex.set_active(-1)
+        else:
+            sem_espacos_a_mais = re.sub(' {2,}', ' ', str(character.sex)).strip(' ')
+            voCharacter.sex.set_active_id(sem_espacos_a_mais)
 
         if character.weight==None:
             voCharacter.weight.set_text('0.00')
@@ -54,7 +74,7 @@ class CharacterControl:
         voCharacter.local.set_text(character.local)
         voCharacter.body_type.set_text(character.body_type)
         voCharacter.ethinicity.set_text(character.ethnicity)
-        voCharacter.hobby.set_text(character.hobbies)
+        voCharacter.health.set_text(character.health)
 
         if  voCharacter.background == None:
             print("sem background")

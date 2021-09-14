@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table
+from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table, Date
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -22,9 +22,9 @@ metadata = MetaData(bind=engine, reflect=True)
 class CharacterMap(Base):
     __tablename__ = 'characterMap'
     id = Column(Integer(), primary_key=True)
-    character_one = Column(Unicode(100))
+    character_one = Column(Integer())
     character_relationship = Column(Unicode(100))
-    character_two = Column(Unicode(100))
+    character_two = Column(Integer())
 
     @classmethod
     def insertCharacterMap(cls, character_map):
@@ -33,9 +33,37 @@ class CharacterMap(Base):
         s.commit()
 
     @classmethod
+    def set_relationship(cls, idRelationship, strRelationship):
+        s = Session()
+        d = cls()
+        d = d.get(idRelationship)
+        s.query(CharacterMap).filter(CharacterMap.id == d.id).update({'character_relationship': strRelationship})
+        s.commit()
+
+    @classmethod
+    def get(cls, id):
+        s = Session()
+        return s.query(CharacterMap).get(id)
+
+    @classmethod
     def list(cls):
         s = Session()
         return s.query(CharacterMap).all()
+
+
+    @classmethod
+    def toDict(cls):
+        s = Session()
+        charactersMap = s.query(CharacterMap).all()
+        strRelationship = []
+        for cm in charactersMap:
+            cmStr = JsonTools.putMap('"relationship"', '"' + cm.character_relationship) + '",'
+            idRefsStr = JsonTools.putArray(str(cm.character_one) + ',' + str(cm.character_two))
+            cmStr = cmStr + JsonTools.putMap('"idrefs"', idRefsStr)
+            strRelationship.append(JsonTools.putObject(cmStr))
+
+        strRelationship = ",".join(strRelationship)
+        return JsonTools.putArray(strRelationship)
 
 class FileInformation(Base):
     __tablename__ ='file_information'
@@ -218,7 +246,9 @@ class Character(Base):
     __tablename__ = 'character'
     id = Column(Integer(), primary_key=True)
     name = Column(Unicode(200))
-    sex = Column(Unicode(1))
+    archtype = Column(Unicode(30))
+    date_of_birth = Column(Date())
+    sex = Column(Unicode(5))
     age = Column(Unicode(3))
     local = Column(Unicode(200))
     occupation = Column(Unicode(200))
@@ -227,13 +257,13 @@ class Character(Base):
     weight = Column(Float(1, 2))
     body_type = Column(Unicode(100))
     appearance = Column(Unicode(100))
-    eye_color = Column(Unicode())
-    hair_color = Column(Unicode())
+    eye_color = Column(Unicode(20))
+    hair_color = Column(Unicode(20))
     ethnicity = Column(Unicode(1))
     health = Column(Unicode(100))
     standing_features = Column(Unicode(100))
     background = Column(Unicode(1000))
-    hobbies = Column(Unicode())
+    hobbies = Column(Unicode(500))
     picture = Column(String(200000))
     notes = Column(Unicode(1000))
 
@@ -243,6 +273,30 @@ class Character(Base):
         d = cls()
         d = d.get(intId)
         s.query(Character).filter(Character.id == d.id).update({'name': strName})
+        s.commit()
+
+    @classmethod
+    def set_archtype(cls, intId, strArchtype):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'archtype': strArchtype})
+        s.commit()
+
+    @classmethod
+    def set_sex(cls, intId, strSex):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'sex': strSex})
+        s.commit()
+
+    @classmethod
+    def set_dateOfBirth(cls, intId, datDate):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'date_of_birth': datDate})
         s.commit()
 
     @classmethod
@@ -270,6 +324,54 @@ class Character(Base):
         s.commit()
 
     @classmethod
+    def set_bodyType(cls, intId, strBodyType):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'body_type': strBodyType})
+        s.commit()
+
+    @classmethod
+    def set_eyeColor(cls, intId, strEyeColor):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'eye_color': strEyeColor})
+        s.commit()
+
+    @classmethod
+    def set_hairColor(cls, intId, strHairColor):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'hair_color': strHairColor})
+        s.commit()
+
+    @classmethod
+    def set_ethinicity(cls, intId, strEthinicity):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'ethnicity': strEthinicity})
+        s.commit()
+
+    @classmethod
+    def set_health(cls, intId, strHealth):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'health': strHealth})
+        s.commit()
+
+    @classmethod
+    def set_background(cls, intId, strBackground):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'background': strBackground})
+        s.commit()
+
+    @classmethod
     def set_local(cls, intId, strLocal):
         s = Session()
         d = cls()
@@ -280,8 +382,12 @@ class Character(Base):
     @classmethod
     def add(cls, character):
         d = cls()
+        dateformat = "%Y-%m-%d"
         d.id = character['id']
         d.name = character['name']
+        d.archtype = character['archtype']
+        if character['date of birth']:
+            d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
         d.sex = character['sex']
         d.age = character['age']
         d.local = character['local']
@@ -344,6 +450,8 @@ class Character(Base):
             #characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"date of birth"', '"' + str(character.date_of_birth) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
@@ -442,7 +550,6 @@ class DataUtils():
     def clear_data(self, session):
         meta = Base.metadata
         for table in reversed(meta.sorted_tables):
-            print('Clear table %s' % table)
             session.execute(table.delete())
         session.commit()
 

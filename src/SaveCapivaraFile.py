@@ -4,7 +4,7 @@ import json
 import os
 from datetime import datetime
 
-from DataAccess import ProjectProperties, Character, Core, SmartGroup, Tag
+from DataAccess import ProjectProperties, Character, Core, SmartGroup, Tag, CharacterMap
 from Utils import JsonTools
 from logger import Logs
 
@@ -33,6 +33,9 @@ def saveCapivaraFile(capivaraFile=None):
         dadosTags = __InsertTagOnFile()
         arquivo = arquivo + ',' + dadosTags
 
+        dadosRelationships = __InsertRelationshipOnFile()
+        arquivo = arquivo + ',' + dadosRelationships
+
         arquivo = JsonTools.putObject(arquivo)
 
         arquivo = arquivo.replace('\n', '')
@@ -48,7 +51,7 @@ def saveCapivaraFile(capivaraFile=None):
         with open(capivaraFile, 'w', encoding='utf8') as outfile:
             str_ = json.dumps(json_object,
                               indent=4, sort_keys=False,
-                              separators=(',', ': '), ensure_ascii=False)
+                              separators=(',', ': '), ensure_ascii=True)
             outfile.write(str_)
     except:
         logs.record("Não foi possível salvar o arquivo %s " + capivaraFile)
@@ -107,7 +110,7 @@ def __InsertCharaterOnFile():
 def __InsertProjectPropertiesOnFile():
     # PEGAR PROPRIEDADES DO PROJETO
     projectProperties = ProjectProperties.get()
-    abbreviatedTitle = "TSCF"
+    # abbreviatedTitle = "TSCF"
     title = projectProperties.title
     authorsFullName = projectProperties.authorsFullName
     surname = projectProperties.surname
@@ -116,8 +119,8 @@ def __InsertProjectPropertiesOnFile():
 
     # PROPRIEDADE DO PROJETO
     propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
-    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"',
-                                                                     '"' + abbreviatedTitle + '"') + ','
+    # propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"',
+    #                                                                  '"' + abbreviatedTitle + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"authors full name"',
                                                                      '"' + authorsFullName + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
@@ -139,3 +142,11 @@ def __InsertFileInformationOnFile():
     arquivo = arquivo + JsonTools.putMap('"device"', '"' + device + '"') + ','
     arquivo = arquivo + JsonTools.putMap('"modified"', '"' + modified + '"')
     return arquivo
+
+def __InsertRelationshipOnFile():
+    charactersMap = CharacterMap()
+    dadosMap = charactersMap.toDict()
+    dadosMap = '"Relationship map":' + dadosMap
+    return dadosMap
+
+

@@ -10,7 +10,7 @@ from datetime import datetime
 
 from Utils import JsonTools
 from DataAccess import DataUtils, FileInformation, ProjectProperties, Character, Core, SmartGroup, Tag, Biography, \
-    CoreCharacterLink, TagCharacterLink
+    CoreCharacterLink, TagCharacterLink, CharacterMap
 
 engine = create_engine('sqlite:///capivara.db', echo=False)
 # engine = create_engine('sqlite://', echo=False)
@@ -42,6 +42,8 @@ def loadCapivaraFile(fileOpen=None):
                 {
                     "id": 1,
                     "name": "unnamed",
+                    "archtype" : "",
+                    "date of birth" : "",
                     "sex": "",
                     "age": "",
                     "local": "",
@@ -66,7 +68,8 @@ def loadCapivaraFile(fileOpen=None):
             ],
             "core": [],
             "smart group": [],
-            "tag": []
+            "tag": [],
+            "Relationship map": []
         }
 
     else:
@@ -108,6 +111,8 @@ def loadCapivaraFile(fileOpen=None):
         registro = "Relationships"
         __CreateAllRelationships(s, capivara)
 
+        __CreateRelationshipMap(s, capivara)
+
         s.commit()
 
     except:
@@ -143,7 +148,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.core_id = i
                     s.add(c)
-                    # s.commit()
+                    s.commit()
 
             elif relationship['destination'] == 'tag':
                 for i in relationship['idrefs']:
@@ -151,7 +156,7 @@ def __CreateAllRelationships(s, capivara):
                     c.character_id = characterId
                     c.tag_id = i
                     s.add(c)
-                    # s.commit()
+                    s.commit()
 
 
 def __IncludeBiographyOnBase(s, capivara):
@@ -163,35 +168,35 @@ def __IncludeBiographyOnBase(s, capivara):
             bioDict['description'] = bio['description']
             c = Biography.add(bioDict)
             s.add(c)
-            # s.commit()
+            s.commit()
 
 
 def __InsertTagOnBase(s, capivara):
     for tag in capivara['tag']:
         c = Tag.add(tag)
         s.add(c)
-        # s.commit()
+        s.commit()
 
 
 def __InsertSmartGroupOnBase(s, capivara):
     for smart_group in capivara['smart group']:
         c = SmartGroup.add(smart_group)
         s.add(c)
-        # s.commit()
+        s.commit()
 
 
 def __InsertCoreOnBase(s, capivara):
     for core in capivara['core']:
         c = Core.add(core)
         s.add(c)
-        # s.commit()
+        s.commit()
 
 
 def __InsertCharaterOnBase(s, capivara):
     for character in capivara['character']:
         c = Character.add(character)
         s.add(c)
-        # s.commit()
+        s.commit()
 
 
 def __InsertProjectPropertiesOnBase(s, capivara):
@@ -202,7 +207,7 @@ def __InsertProjectPropertiesOnBase(s, capivara):
     c.forename = capivara['project properties']['forename']
     c.pseudonym = capivara['project properties']['pseudonym']
     s.add(c)
-    # s.commit()
+    s.commit()
 
 
 def __InsertFileInformationOnBase(s, capivara):
@@ -216,4 +221,26 @@ def __InsertFileInformationOnBase(s, capivara):
     c.device = device
     c.modified = modified
     s.add(c)
-    # s.commit()
+    s.commit()
+
+def __CreateRelationshipMap(s, capivara):
+    for relationship in capivara['Relationship map']:
+        c = Character()
+        mp = CharacterMap()
+        mp.character_relationship = relationship['relationship']
+        c = c.get(relationship['idrefs'][0])
+        mp.character_one = c.id
+        c = c.get(relationship['idrefs'][1])
+        mp.character_two = c.id
+        s.add(mp)
+        s.commit()
+
+
+
+
+
+
+
+        
+
+

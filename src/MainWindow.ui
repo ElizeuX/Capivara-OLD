@@ -412,18 +412,6 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkComboBox" id="cboArchtype">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="margin-start">5</property>
-                                            <property name="margin-bottom">5</property>
-                                          </object>
-                                          <packing>
-                                            <property name="left-attach">1</property>
-                                            <property name="top-attach">2</property>
-                                          </packing>
-                                        </child>
-                                        <child>
                                           <object class="GtkBox">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
@@ -461,13 +449,12 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkComboBox">
-                                                <property name="width-request">96</property>
+                                              <object class="GtkComboBoxText" id="cboSex">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
                                                 <property name="margin-start">5</property>
-                                                <property name="margin-top">5</property>
                                                 <property name="margin-bottom">5</property>
+                                                <signal name="changed" handler="on_cboSex_changed" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -563,6 +550,7 @@
                                                 <property name="margin-bottom">5</property>
                                                 <property name="hexpand">True</property>
                                                 <property name="width-chars">28</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryBodyType_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -598,6 +586,7 @@
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryEyeColor_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -626,6 +615,7 @@
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
                                                 <property name="hexpand">True</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryHairColor_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -660,6 +650,7 @@
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryEthinicity_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -672,7 +663,7 @@
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
                                                 <property name="margin-start">42</property>
-                                                <property name="label" translatable="yes">Passatempos :</property>
+                                                <property name="label" translatable="yes">Saúde :</property>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -681,11 +672,12 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkEntry" id="gtkEntryHobby">
+                                              <object class="GtkEntry" id="gtkEntryHealth">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="halign">end</property>
                                                 <property name="hexpand">True</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryHealth_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -759,6 +751,19 @@
                                           <packing>
                                             <property name="left-attach">1</property>
                                             <property name="top-attach">10</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkComboBoxText" id="cboArchtype">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="margin-start">5</property>
+                                            <property name="margin-bottom">5</property>
+                                            <signal name="changed" handler="on_cboArchtype_changed" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">2</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -927,6 +932,7 @@
                                         <property name="margin-bottom">5</property>
                                         <property name="wrap-mode">word</property>
                                         <property name="justification">fill</property>
+                                        <signal name="focus-out-event" handler="on_txtBackground_focus_out_event" swapped="no"/>
                                       </object>
                                     </child>
                                   </object>
@@ -1769,7 +1775,7 @@
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkBox">
+                          <object class="GtkBox" id="abaRelationship">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="orientation">vertical</property>
@@ -1857,9 +1863,7 @@
                                               <object class="GtkTreeViewColumn" id="col-id1">
                                                 <property name="title" translatable="yes">ID</property>
                                                 <child>
-                                                  <object class="GtkCellRendererText" id="cellrender-id1">
-                                                    <property name="editable">True</property>
-                                                  </object>
+                                                  <object class="GtkCellRendererText" id="cellrender-id1"/>
                                                   <attributes>
                                                     <attribute name="text">0</attribute>
                                                   </attributes>
@@ -1870,9 +1874,7 @@
                                               <object class="GtkTreeViewColumn" id="col-character1">
                                                 <property name="title" translatable="yes">Character 1</property>
                                                 <child>
-                                                  <object class="GtkCellRendererText" id="cellrender-character1">
-                                                    <property name="editable">True</property>
-                                                  </object>
+                                                  <object class="GtkCellRendererText" id="cellrender-character1"/>
                                                   <attributes>
                                                     <attribute name="text">1</attribute>
                                                   </attributes>
@@ -1883,8 +1885,12 @@
                                               <object class="GtkTreeViewColumn" id="col-relationship">
                                                 <property name="title" translatable="yes">Relationship</property>
                                                 <child>
-                                                  <object class="GtkCellRendererText" id="cellrender_relationship"/>
+                                                  <object class="GtkCellRendererText" id="cellrender_relationship">
+                                                    <property name="editable">True</property>
+                                                    <signal name="edited" handler="on_cellrender_relationship_edited" swapped="no"/>
+                                                  </object>
                                                   <attributes>
+                                                    <attribute name="family">1</attribute>
                                                     <attribute name="text">2</attribute>
                                                   </attributes>
                                                 </child>
@@ -2195,12 +2201,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="item1">
+          <object class="GtkModelButton" id="mnuCapivaraPrint">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="text" translatable="yes">Imprimir Capivara</property>
-            <signal name="clicked" handler="menu_item_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_mnuCapivaraPrint_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import gi
 
 gi.require_version(namespace='Gtk', version='3.0')
@@ -7,17 +9,31 @@ from gi.repository.GdkPixbuf import Pixbuf
 from DataAccess import Character, Core, SmartGroup
 from CharacterCtrl import CharacterControl
 
+DRAG_ACTION = Gdk.DragAction.COPY
+
+dnd_internal_target = ''
+dnd_external_targets = {}
+
+TARGETS = [
+        ('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_WIDGET, 0),
+        ('text/plain', 0, 1),
+        ('TEXT', 0, 2),
+        ('STRING', 0, 3),
+        ]
+
 
 class Treeview():
     treeview = None
     treemodel = None
     #vo = None
 
+
     selected = 'workspace'
 
     def __init__(self, treeview, vo = None):
 
         self.data = vo
+
         for column in treeview.get_columns():
             treeview.remove_column(column)
 
@@ -29,8 +45,13 @@ class Treeview():
         # create a storage model in this case a treemodel
         self.treemodel = Gtk.TreeStore(str, Pixbuf, str)
         self.treeview.set_model(self.treemodel)
-        # self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, [], DRAG_ACTION)
-        # self.drop_area = DropArea()
+
+        self.dnd_internal_target = 'gtk/task-iter-str'
+        self.__init_dnd()
+        self.treeview.connect('drag_data_get', self.on_drag_data_get)
+        self.treeview.connect('drag_data_received', self.on_drag_data_received)
+        self.treeview.connect('drag_failed', self.on_drag_fail)
+
 
         # add columns usually only one in case of the treeview
         column = Gtk.TreeViewColumn("Projeto")
@@ -72,6 +93,64 @@ class Treeview():
                                  True)  # set the cursor to the last appended item
 
         # self.menu()
+
+    def __init_dnd(self):
+        """ Initialize Drag'n'Drop support
+
+        Firstly build list of DND targets:
+            * name
+            * scope - just the same widget / same application
+            * id
+
+        Enable DND by calling enable_model_drag_dest(),
+        enable_model-drag_source()
+
+        It didnt use support from Gtk.Widget(drag_source_set(),
+        drag_dest_set()). To know difference, look in PyGTK FAQ:
+        http://faq.pygtk.org/index.py?file=faq13.033.htp&req=show
+        """
+        # defer_select = False
+
+        if self.dnd_internal_target == '':
+            error = 'Cannot initialize DND without a valid name\n'
+            error += 'Use set_dnd_name() first'
+            raise Exception(error)
+
+        dnd_targets = [(dnd_internal_target, Gtk.TargetFlags.SAME_WIDGET, 0)]
+        for target in dnd_external_targets:
+            name = dnd_external_targets[target][0]
+            dnd_targets.append((name, Gtk.TARGET_SAME_APP, target))
+
+        self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK,
+                                    dnd_targets, Gdk.DragAction.DEFAULT | DRAG_ACTION)
+
+        self.treeview.enable_model_drag_dest(dnd_targets, Gdk.DragAction.DEFAULT | DRAG_ACTION)
+
+        self.treeview.drag_dest_add_text_targets()
+        self.treeview.drag_source_add_text_targets()
+
+    def on_drag_fail(widget, dc, result):
+        print("Failed dragging", widget, dc, result)
+
+    def on_drag_data_get(self, treeview, context, selection, info, timestamp):
+        print("on_drag_data_get(", treeview, context, selection, info, timestamp)
+        treeselection = treeview.get_selection()
+        model, paths = treeselection.get_selected_rows()
+        iters = [model.get_iter(path) for path in paths]
+        iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
+        #data = model.get_value(iter, 0)
+        #selection.set(selection.get_taget(), 0, iter_str)
+        selection.set(selection.get_target(),  0, 1 )
+        #self, iter_str)
+
+        print("Sending", iter_str)
+
+    def on_drag_data_received(self, treeview, context, x, y, selection, info, \
+                              timestamp):
+        print("on_drag_data_received", treeview, context, x, y, selection, info, timestamp)
+        text = selection.get_text()
+        print(text)
+
 
     def get_handler_id(self, obj, signal_name):
         signal_id, detail = GObject.signal_parse_name(signal_name, obj, True)
@@ -160,3 +239,4 @@ class Treeview():
 
     def get_Core_Iter(self):
         pass
+

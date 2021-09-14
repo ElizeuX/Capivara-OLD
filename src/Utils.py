@@ -14,9 +14,14 @@ from pathlib import Path
 import importlib
 import os
 import json
+import random
+import string
+
+from Global import Global
 
 PluginFolder = "../plugins/"
 MainModule = "__init__"
+
 
 class JsonTools():
 
@@ -58,6 +63,8 @@ class JsonTools():
         return '[' + dataJson + ']'
 
     def putMap(strKey, strValue):
+        if not strValue:
+            strValue = '""'
         return strKey + ' : ' + strValue
 
     def dict_from_str(dict_str):
@@ -175,7 +182,7 @@ class AppConfig:
         self.config.set(section, key, value)
 
 
-class DialogSaveFile(Gtk.FileChooserDialog):
+class DialogSaveRelationshipImage(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
     # home = Path.home()
     # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
@@ -184,12 +191,10 @@ class DialogSaveFile(Gtk.FileChooserDialog):
     def __init__(self):
         super().__init__()
 
-        fileName = 'Untitled.capivara'
-
-        # if Global.__file_load__ == "":
-        #     fileName = 'Untitled.capivara'
-        # else:
-        #     fileName = os.path.basename(Global.__file_load__)
+        fileName = 'Untitled'
+        # dirname, basename = os.path.split(self.textbox.get_text())
+        # self.chooser.set_current_name(basename)
+        # self.chosser.set_current_folder(dirname)
 
         self.set_title(title='Salvar como')
         self.set_modal(modal=True)
@@ -197,6 +202,82 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         self.set_action(action=Gtk.FileChooserAction.SAVE)
         # Nome inicial do arquivo.
         self.set_current_name(name=fileName)
+        # Pasta onde o diálogo será aberto.
+        self.set_current_folder(filename=str(self.home))
+        # Adicionando confirmação de sobrescrita.
+        self.set_do_overwrite_confirmation(do_overwrite_confirmation=True)
+
+        # Botões que serão exibidos.
+        self.add_buttons(
+            '_Cancelar', Gtk.ResponseType.CANCEL,
+            '_Salvar', Gtk.ResponseType.OK
+        )
+
+        # Criando e adicionando filtros.
+        imgFilter = Gtk.FileFilter()
+        imgFilter.set_name("png")
+        imgFilter.add_mime_type("image/png")
+        imgFilter.add_pattern("*.png")
+        self.add_filter(filter=imgFilter)
+
+        imgFilter = Gtk.FileFilter()
+        imgFilter.set_name("jpg")
+        imgFilter.add_mime_type("image/jpeg")
+        imgFilter.add_pattern("*.jpg")
+        self.add_filter(filter=imgFilter)
+
+        pdfFilter = Gtk.FileFilter()
+        pdfFilter.set_name("pdf")
+        pdfFilter.add_mime_type("application/pdf")
+        pdfFilter.add_pattern("*.pdf")
+        self.add_filter(filter=pdfFilter)
+
+        svgFilter = Gtk.FileFilter()
+        svgFilter.set_name("svg")
+        svgFilter.add_mime_type("image/svg+xml")
+        svgFilter.add_pattern("*.svg")
+        self.add_filter(filter=svgFilter)
+
+        # É obrigatório utilizar ``show_all()``.
+        self.show_all()
+
+    def save_file(self):
+        fileName = self.get_filename()
+        fileName += "." + self.get_filter().get_name()
+        # print(f'Caminho até o arquivo: {self.get_filename()}')
+        # print(f'URI até o arquivo: {self.get_uri()}')
+        return fileName
+
+
+class DialogSaveFile(Gtk.FileChooserDialog):
+    # Definindo o diretório padrão.
+    # home = Path.home()
+    # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
+
+    # TODO: Usar o caminho do próprio arquivo e o nome do arquivo original
+    #home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
+    home = ""
+    capivaraFile = ""
+
+    def __init__(self):
+        super().__init__()
+
+        self.home = Global.config("my_capivara")
+        self.capivaraFile = Global.config("title")
+
+        if not Global.config("title"):
+            capivaraFile = 'Untitled.capivara'
+        else:
+            fileOpen = Global.config("capivara_file_open")
+            self.capivaraFile = os.path.basename(fileOpen)
+            self.home = os.path.dirname(os.path.realpath(fileOpen))
+
+        self.set_title(title='Salvar como')
+        self.set_modal(modal=True)
+        # Tipo de ação que o dialogo irá executar.
+        self.set_action(action=Gtk.FileChooserAction.SAVE)
+        # Nome inicial do arquivo.
+        self.set_current_name(name=self.capivaraFile)
         # Pasta onde o diálogo será aberto.
         self.set_current_folder(filename=str(self.home))
         # Adicionando confirmação de sobrescrita.
@@ -225,12 +306,6 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         txt_filter.add_pattern(pattern='*.capivara')
         txt_filter.add_mime_type(mime_type='text/plain')
         self.add_filter(filter=txt_filter)
-
-        py_filter = Gtk.FileFilter()
-        py_filter.set_name(name='python')
-        py_filter.add_pattern(pattern='.py')
-        py_filter.add_mime_type(mime_type='text/x-python')
-        self.add_filter(filter=py_filter)
 
         all_filter = Gtk.FileFilter()
         all_filter.set_name(name='todos')

@@ -9,11 +9,12 @@ from gi.repository import Gio, Gtk, GdkPixbuf, GLib
 
 import Global
 from Global import Global
-from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage
+from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, \
+    DialogSaveRelationshipImage
 import PluginsManager
 import webbrowser
 from CapivaraSmartGroup import CapivaraSmartGroup
-from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup
+from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup, CharacterMap
 import Utils
 from src.logger import Logs
 # from TreeviewCtrl import Treeview
@@ -21,9 +22,12 @@ from TreeviewCtrl import Treeview
 from collections import namedtuple
 import LoadCapivaraFile
 import SaveCapivaraFile
+from datetime import datetime
 from Utils import JsonTools
 import json
 import os
+from pathlib import Path
+from Constants import Capivara
 
 import LoadCharacterMap
 import GraphTools
@@ -33,6 +37,7 @@ from Preferences import Preferences
 from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
+from CapivaraPrint import PrintOperation
 
 logs = Logs(filename="capivara.log")
 
@@ -58,7 +63,9 @@ class MainWindow(Gtk.ApplicationWindow):
     # campos da tela
     lblId = Gtk.Template.Child(name='lblId')
     txtName = Gtk.Template.Child(name='gtkEntryName')
+    cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
+    cboSex = Gtk.Template.Child(name='cboSex')
     txtHeigth = Gtk.Template.Child(name='gtkEntryHeigth')
     txtWeigth = Gtk.Template.Child(name='gtkEntryWeigth')
     txtBodyType = Gtk.Template.Child(name='gtkEntryBodyType')
@@ -66,14 +73,16 @@ class MainWindow(Gtk.ApplicationWindow):
     txtHairColor = Gtk.Template.Child(name='gtkEntryHairColor')
     txtLocal = Gtk.Template.Child(name='gtkEntryLocal')
     txtEthinicity = Gtk.Template.Child(name='gtkEntryEthinicity')
-    txtHobby = Gtk.Template.Child(name='gtkEntryHobby')
+    txtHealth = Gtk.Template.Child(name='gtkEntryHealth')
     txtTag = Gtk.Template.Child(name='gtkEntryTag')
     txtBackground = Gtk.Template.Child(name='txtBackground')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
-                             ['id', 'name', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity', 'hobby', 'tag', 'local',
+                             ['id', 'name', 'archtype', 'date_of_birth', 'sex', 'height', 'weight', 'body_type',
+                              'eye_color',
+                              'hair_color', 'ethinicity', 'health', 'tag', 'local',
                               'background',
                               'picture', 'biography'])
 
@@ -81,6 +90,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
     # Obtendo as configurações
     appConfig = AppConfig()
+
+    capivaraPathFile = appConfig.getCapivaraDirectory()
+
+    Global.set("my_capivara", capivaraPathFile)
 
     if appConfig.getDarkmode() == 'yes':
         settings.set_property('gtk-application-prefer-dark-theme', True)
@@ -91,7 +104,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
 
         # IMAGEM INICIAL DO PERSONAGEM
         __NOIMAGE = '''/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAG4AfQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD3+iiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooqG5urezhM11PFBEOryuFUfiaAJqK4jVPi34J0lykmtxXDjOVtVaYce6jH61zt1+0L4OgB8mDU7gjpshQD9XB/SgD1mivDbn9pPTF/wCPXw9cyf8AXW4CfyVqS2/aTsJJAtx4dnjBOMpdhv5qtAHudFeSW/7Q3hGQ4ntNUhbufLjZfzD/ANK3tO+MvgXUpViXW1t5G6C5iaMH/gRG0fnQB3tFVbLUbLUoBPYXlvdQnpJBKsin8QatUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRWdrGu6XoFmbvVb+C0gH8UrYz7AdSfYV4n4w/aFKh7bwrZgdvtl0Ofqqf1b8qAPdL3ULPTbZrm+uoLWBesk0gRR+JrzHxJ8fPC2jl4dMWbVrhf8AnkPLiB/3yMn8Aa+a9a8Rat4huzc6pf3F1Ked0rk4+g6AewrLoA9N1746+MtYdltbiHTLc9I7VPm/Fzk/livP9Q1jUtWm87UL+5upM53TSs5/MmqVFADzNIYvKMjmPO7buOM+uPWmUUUAFFFFABRRRQBastRvNOnE9ncywTL92SJyjL9CCDXc6H8a/G2iugfUhqEC9Yr1fMz/AMD4f9a88ooA+nvDn7Qnh7UFSLXLabTJj1lT97F+g3D6YP1r1PS9Y03W7QXWl39veQH+OCQMAfQ46H2PNfB1XNN1W/0i7W60+7mtp16SQyFGH4igD7zor508HftBX9uEtvEtp9uiHW6twFmUepXhW/Db+Ne5eH/FWh+KbX7Ro2ow3QAy6KcSJ/vIeR+IoA2aKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKo6vq9joWlz6jqU6wWsK5Z2/kPUn0oAtTTxW0LzTypFEg3O7sFVR6knpXjPjj482WniWy8Lol3OODeyD90h/wBkdW+vT615b8RvibqHjO/kRXkg0tDiC1D4B/23x1P8v5+fvK8n3m49BwPyoA09X8R6nrl+17qN5LdXLdZJzuwPQA8AewrKJLEkkknkk96SigAooooAKKKKACiiigAooooAKKKKACiiigAooooAUEqwZSQRyCO1aNlrN1YTx3NtPLb3cRylxAxRx+Ix7896zaKAPoLwR8f8GOx8WoHHRdQt05/7aIPx5X2+XvXuljf2mp2cd5YXUVzbSjKSwuGVu3BHvXwTXV+BvHmr+B9YjubGRpLZ2Ans3ciOVe/HZvRuo9xkEA+1KKxvDHifTPF2iRappc2+F/ldG4eJ+6OOxH68EZBBrZoAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAK2oX1vpmnXN/dyBLe2iaWRj2VRk/wAq+SPiV8SNQ8a6ttAe302E5t7Y+n95vViP0r1b9oLxcNP0S28N28uJ70iW4CnkRKflB+rDP/AfevmtmLMSepoATqaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigDrfAnjnU/BetpeWLGRHwlxbM2EuE9D6MOzDkE9wSD9e+HdfsfE+g2usaezG3uV3BXGGQg4KsPUEEV8K17t+zx4uEOo3Xhe5k+W6BuLYH/noo+cD6qAf+AH1oA+iaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKrahfW+l6bdaheSeXbWsTzTPgnaigknA5PA7VZrzb4465/ZHw3urZH2zai62y4PO37zfouP8AgVAHzN4x8S3Hi7xVfazcZAnkPlIf+WcY4VfwGPxzWFRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABV/RNTudG1q01KzcJc20qyxsem4HIz6jjBHeqFFAH3Z4e1u28R+H7HWLQ/ubuISBc5KHoyn3BBB9xWnXjP7O+ufa/DGoaPI2Xs51mTJ/gkHIA9mUn/gVezUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV82ftGa8bjxLp2ixP8lnAZJB/tydv++VB/wCBV9J18S+P9YfXfHWsXzMWV7pxGc5+QHao/wC+QKAOaooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA9N+BuvDSfiLZ2zuI4r6N7V8ngk/Mn47lUfjX1lXwZpWoS6VqltfwErNbyrLG3oysGB/MV912V3Ff2FveQHMVxEsqH1VgCP0NAFiiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAyfE2pDR/C+q6iW2m2tZJFP+0FOP1xXwxISZXJOSWO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zAa1fqdhB5gi5Bk+uRhffJ/hwfk+gAooooAKKKKACiiigAooooAKKKKACiiigArt/hFp51H4oaJGBlY5vPJ9NgL/APstcRXsf7O1ibnxpd3bZKWlo5X2Zyq/yDflQB9OUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB5l8eNKOpfDOeZRlrG4iuBgc4zsP4fPn8K+Ta+5/FeknXfCWraWqgvc2skcef7+07T/31ivhuUETOGBBDHIPWgBlFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH2h8LNMXSfhh4et1cv5lotySfWXMuPw34/Cul1LULfStMu9Ru3KW1rC88rAZIRQSeO/AqS0tYLGygs7aNY7eCNYokUYCqowAPoBXmfx+1l9L+Gz2kRAfUbmO3bDYIQZdiPX7gU+zUAfNXinxHe+LPEd5rN87GS4kJRC2REn8KDpwBx79epNY9FFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABX0r+znpgi8OarqmwL9onSAf8ATJP4mT9K+aq+yfhNpLaR8NdIjljKTTo1zJnqd7FlP8A3ztoA7aiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvj/4w+G/+Ed+IOoBI9lvdv9qgwMAq+S35MGH4V9gV5N8fPDEer+Cl1iNP9K0twcgdYnIVh+B2n2Ab1oA+WaKKKACiiigAooooAKKKKACiiigAooooAK2/BkEd1458P28q7o5dStkceoMqg1iVr+FL630vxjoeoXb+XbWuoQTzPtJ2osisxwOTwD0oA+6K+d/2l72F9R8O2KsPPhinmdfRXKBT+cbflXpH/C7fh5/0MP8A5JXH/wAbrwf41eKtG8XeM7W/0O7N1axWCQNIYmT5xJIxGGAPRh2oA84ooooAKKKKACiiigAooooAKKKKACiiigAooooA3/BXh+TxR4w03SIwcTzDzCP4UHLH8FBr7dijSGJIo1CRooVVA4AHQV4R+zp4WRLfUPE86ZlZvslvkfdAwXP45Ufga96oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKxvFiW8ng7W0uhm3NjP5g/2dhzj3rZrlfiSzr8N/EBj6/Y3B+h6/pmgD4qooooAKKKKACiiigAooooAKKKKACiiigAorS0DQ77xLrtpo+mxh7u6fYgY4A4yWJ9AASfYV9c+B/hloHgiyi+z28d1qQX97fzIDIzd9vXYvsPxJPNAHxpRX3/VLVNI03W7NrTVLG3vLdusc8YcfUZ6H3FAHwbRXpvxc+F3/CC3seo6azSaHdybIw5y9vJgnyyf4gQCVPXAIPIy3mVABRRRQAUUUUAFFFFABRRRQAUUUUAFKpwwPoaSigD7G+D6W6/CzRGtgNrpIzH1bzG3fqP0rua80+BMkj/C+0DklVnlCZ7DOePxJr0ugAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArn/HUZl8AeIkAyf7NuCPwjY10FRXNvDd2sttcRrJDMhjkRujKRgg/hQB8C9Dg0+SJo8bu9e/XX7Okkmvu1tq0MelGTcrOC0yp/d24Ckjn5s+nFcJ8aPD1v4b8aQWVpHstzYQGP1IVfLyff5KAPOaKKKACiiigAooooAKKKKACiiigD2/8AZs0qOfxBreqsfntLaOBFI/56sST9f3WPxNfSFfOv7NN/BHqviHTmJ8+eCGdBjjbGzK36yrX0VQAUUUUAcn8TtNg1X4Z+IYJx8sdlJcKR1DRDzF/VRXxZX2x8RryCx+G3iSW4cIjadNECf7zoUUfizAfjXxPQAUUUUAFFFFABRRRQAUUUUAFFFFAD4VV540YsFZgCVGTjPYU0jBIPauu+FumrqvxL0K2aMSKLkSsrAEEIC5yD7LXqWofs6ynXN+n6tENNZw375T5sS55GAMMQOhyPpQB3/wAFofJ+Feknj940z4Hb96w/pXf1n6Jo9n4f0W10mwQpa2ybEBOSe5J9yST+NaFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV86ftLWqJq/h+7AG+WCaMnvhWUj/0M19F18/ftMgbvC7dyLof+iaAPAaKKKACiiigAooooAKKKKACiiigDc8IeKLzwd4ntNbshveAkSRFiFlQjDKfqOnXBAPavsfwr4u0bxjpEeo6RdCRSB5kLYEkLf3XXsf0PYkV8OVZsdQvdMulutPvLi0uFGBLbytG4/EEGgD72prukUbSSMqIoLMzHAAHUk18Rf8J34w/6GvXP/BjN/wDFVU1DxPr+r2/2fUtc1O9gzny7m7kkXPrhiRQB6f8AGv4pW3iZl8OaFKZNMt5Q9xdKxC3Eg6Kvqg65PU4I4AJ8boooAKKKKACiiigAooooAKKKKACiiigD1T9n62Sf4lrK3WCzldfqcL/JjX1XXzJ+zjEreONQkIyV05wPb95HX03QAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABXz/+01/zK/8A29/+0a+gK8p/aA01rz4ex3KDDWl4js2OisGQ/hlloA+VqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPbf2blB8T6u+ORZ4z9XX/CvpKvBf2atOxZa9qbL96SKBG+gLN/Na96oAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArlfiTp39qfDjXrULuItGlCjuY8OP1WuqqK5gjuraW3lXdHKhRx6gjBoA+CJWLTOzHJLEk0yrWpWM2mapd2FwMT20zQyD0ZSQf1FVaACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKOpop0f+sX6igD61+Bunmy+GtvOVAa9uJZ+BjjOwf8AoFekVh+DdMOjeDNG09l2vBaRq4x/HtBb9Sa3KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAPmL4/+Ev7L8VRa9bRkW+ppmXHQTKAD9MrtPud1eO19p/EjwsPF/ge/01EDXSr59qe4lXoB9Rlf+BV8WsjIxV1KsOoIwaAEooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvQfg54U/4Sfx7ameLfZWP+lT7hkHaflX3y2PwzXn4G5gB34r60+CfhU+HvA0V5cR7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'''
@@ -107,24 +119,10 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # NOVA VERSÃO
         # TODO: Verificar se existe nova versão e apresentar no Info
-        newVersion = True
+        newVersion = False
         if not self.info_bar.get_revealed() and newVersion:
             self.info_bar.set_revealed(revealed=True)
             GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
-
-        # # Verifica se existe nova versão disponível
-        # if self.appConfig.getUpdateAutomatically() == "yes":
-        #     # TODO: Criar função para verificar se existe nova versão disponível
-        #     newVersion = True
-        #     if newVersion:
-        #         dialog = DialogUpdateAutomatically(self)
-        #         response = dialog.run()
-        #         if response == Gtk.ResponseType.OK:
-        #             print("The OK button was clicked")
-        #         elif response == Gtk.ResponseType.CANCEL:
-        #             print("The Cancel button was clicked")
-        #
-        #         dialog.destroy()
 
         # CONSTRUINDO O MENU POPOVER DINAMICAMENTE
         popover = Gtk.Template.Child(name='menu-popover')
@@ -133,21 +131,50 @@ class MainWindow(Gtk.ApplicationWindow):
         # menu_item = Gtk.MenuItem("Imprimir Capivara")
         # popover.append(menu_item)
 
+        # Carregar os comboboxies
+        archetypes = [
+            ("No archtype", "No archtype"),
+            ("The Hero", "The Hero"),
+            ("The Lover", "The Lover"),
+            ("The Magician", "The Magician"),
+            ("The Outlaw.", "The Outlaw"),
+            ("The Explorer", "The Explorer"),
+            ("The Sage", "The Sage"),
+            ("The Innocent", "The Innocent"),
+            ("The Creator", "The Creator"),
+            ("The Ruler", "The Ruler"),
+            ("The Caregiver", "The Caregiver"),
+            ("The Everyman", "The Everyman"),
+            ("The Jester", "The Jester"),
+            ("Hero", "Hero"),
+            ("Mentor", "Mentor"),
+            ("Ally", "Ally"),
+            ("Herald", "Herald"),
+            ("Trickster", "Trickster"),
+            ("Shapeshifter", "Shapeshifter"),
+            ("Guardian", "Guardian"),
+            ("Shadow", "Shadow"),
+        ]
+        self.cboArchtype.set_entry_text_column(0)
+        self.cboArchtype.connect("changed", self.on_cboArchtype_changed)
+        for archetype in archetypes:
+            self.cboArchtype.append(archetype[0], archetype[1])
+
+        sex = [("Male", "Male"),
+               ("Female", "Female"),
+               ]
+        self.cboSex.set_entry_text_column(0)
+        self.cboSex.connect("changed", self.on_cboSex_changed)
+        for s in sex:
+            self.cboSex.append(s[0], s[1])
+
         LoadCapivaraFile.loadCapivaraFile()
 
-        # Biografia_Character = [
-        #     (1965, 'Nascimento'), (1974, 'Evento 1'), (1976, 'Evento 2'), (1979, 'Evento 3'),
-        #     (1980, 'Evento 4'), (1985, 'Evento 5'), (1987, 'Evento 6'),
-        # ]
-        #
-        # for state in Biografia_Character:
-        #     self.list_store.append(row=state)
-        #
-        #     self.show_all()
-
         # Passa os campos da tela para treeview
-        vo = self.voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType,
-                              self.txtEyeColor,self.txtHairColor, self.txtEthinicity, self.txtHobby, self.txtTag,self.txtLocal, self.txtBackground, self.imgCharacter, self.list_store)
+        vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex, self.txtHeigth,
+                              self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtEthinicity,
+                              self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
+                              self.list_store)
 
         Treeview(self.treeView, vo)
 
@@ -194,43 +221,41 @@ class MainWindow(Gtk.ApplicationWindow):
             logs.record("Abrindo arquivo : " + dialog.show_file_info(), type="info", colorize=True)
 
             # Carregar Capivara salva
-            __fileOpen__ = dialog.show_file_info()
+            capivaraFile = dialog.show_file_info()
 
             try:
                 dialog.destroy()
 
                 # TODO: Colocar um spinner indicando  que o arquivo está sendo carregado
 
-                LoadCapivaraFile.loadCapivaraFile(__fileOpen__)
-                self.capivaraFile = __fileOpen__
+                LoadCapivaraFile.loadCapivaraFile(capivaraFile)
+                #self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
 
-                # Carrega os mapeamentos
-                LoadCharacterMap.loadCharacterMap()
-
-                # TODO: Ler os relacionamentos da tabela
-                brazilian_states = [
-                    (1, 'Personagem 1', 'é casado com', 'Personagem 2'), (2, 'Personagem 1', 'é amante de', 'Personagem 3'), (3, 'Personagem 2', 'Personagem 3', '2'), (4, 'Amazonas', '1', '2')]
-
-                self.lstStoreMap.clear()
-                for state in brazilian_states:
-                    self.lstStoreMap.append(row=state)
+                self.LoadRelationships()
+                Global.set("capivara_file_open", capivaraFile)
 
                 # Passa os campos da tela para treeview
-                vo = self.voCharacter(self.lblId, self.txtName, self.txtHeigth, self.txtWeigth, self.txtBodyType,
-                                      self.txtEyeColor, self.txtHairColor, self.txtEthinicity, self.txtHobby,
-                                      self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter, self.list_store)
+                vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex,
+                                      self.txtHeigth,
+                                      self.txtWeigth, self.txtBodyType,
+                                      self.txtEyeColor, self.txtHairColor, self.txtEthinicity, self.txtHealth,
+                                      self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
+                                      self.list_store)
 
                 Treeview(self.treeView, vo)
 
                 # Coloca nome do projeto e autor na header bar
-                projectProperties = ProjectProperties.get()
-                self.header_bar.set_title(projectProperties.title)
-                self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+                # projectProperties = ProjectProperties.get()
+                # self.header_bar.set_title(projectProperties.title)
+                # self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+                # Global.set("title", projectProperties.title)
+                self.putHeaderBar()
 
             except:
-                logs.record("Não foi possível abrir o arquivo %s" % __fileOpen__)
+                logs.record("Não foi possível abrir o arquivo %s" % capivaraFile)
                 dialog.destroy()
-                self.messagebox("error" ,"Erro", "Não foi possível carregar o arquivo %s" % os.path.basename(__fileOpen__))
+                self.messagebox("error", "Erro",
+                                "Não foi possível carregar o arquivo %s" % os.path.basename(capivaraFile))
 
             finally:
                 pass
@@ -245,16 +270,72 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_btnSaveGraph_clicked(self, widget):
-        print("Gerar aarquivo")
+        dialog = DialogSaveRelationshipImage()
+        dialog.set_transient_for(parent=self)
 
+        # Executando a janela de dialogo e aguardando uma resposta.
+        response = dialog.run()
 
+        # Verificando a resposta recebida.
+        if response == Gtk.ResponseType.OK:
+            logs.record("Salvando o gráfico de relacionamento entre personagens: " + dialog.save_file(), type="info",
+                        colorize=True)
 
+            __fileOpen__ = dialog.save_file()
+
+            dialog.destroy()
+
+            try:
+                GraphTools.GraphMake(__fileOpen__)
+
+            except:
+                pass
+
+            finally:
+                pass
+        else:
+            logs.record("Operação de salvar gráfico cancelada.", type="info", colorize=True)
+            dialog.destroy()
+
+    @Gtk.Template.Callback()
+    def on_cellrender_relationship_edited(self, widget, row, value):
+        self.lstStoreMap[row][2] = value
+        c = CharacterMap()
+        c.set_relationship(self.lstStoreMap[row][0], value)
+
+    # ATUALIZAÇÃO DOS CAMPOS DA TELA
     @Gtk.Template.Callback()
     def on_gtkEntryName_focus_out_event(self, widget, event):
         c = Character()
         intId = int(self.lblId.get_text().replace('#', '0'))
         c.set_name(intId, self.txtName.get_text())
+        self.LoadRelationships()
         Treeview(self.treeView)
+
+    @Gtk.Template.Callback()
+    def on_cboArchtype_changed(self, combo):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        text = combo.get_active_text()
+        if text is not None:
+            c.set_archtype(intId, text)
+
+    @Gtk.Template.Callback()
+    def on_cboSex_changed(self, combo):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        text = combo.get_active_text()
+        if text is not None:
+            c.set_sex(intId, text)
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryDate_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        date = self.txtDate.get_text()
+        date = date[0:2] + '/' + date[2:4] + '/' + date[4:]
+        self.txtDate.set_text(date)
+        c.set_dateOfBirth(intId, datetime.strptime(date, "%d/%m/%Y"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryHeigth_focus_out_event(self, widget, event):
@@ -269,6 +350,45 @@ class MainWindow(Gtk.ApplicationWindow):
         c.set_weight(intId, self.txtWeigth.get_text())
 
     @Gtk.Template.Callback()
+    def on_gtkEntryBodyType_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_bodyType(intId, self.txtBodyType.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryEyeColor_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_eyeColor(intId, self.txtEyeColor.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryHairColor_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_hairColor(intId, self.txtHairColor.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryEthinicity_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_ethinicity(intId, self.txtEthinicity.get_text())
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryHealth_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        c.set_health(intId, self.txtHealth.get_text())
+
+    @Gtk.Template.Callback()
+    def on_txtBackground_focus_out_event(self, widget, event):
+        c = Character()
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        textbuffer = self.txtBackground.get_buffer()
+        first_iter = textbuffer.get_start_iter()
+        end_iter = textbuffer.get_end_iter()
+        c.set_background(intId, textbuffer.get_text(first_iter, end_iter, False))
+
+    @Gtk.Template.Callback()
     def on_gtkEntryLocal_focus_out_event(self, widget, event):
         c = Character()
         intId = int(self.lblId.get_text().replace('#', '0'))
@@ -277,7 +397,7 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):
         projectProperties = ProjectProperties()
-        projectProperties.title = "Untitled"
+        projectProperties.title = ""
         projectProperties.authorsFullName = ""
         projectProperties.surname = ""
         projectProperties.forename = ""
@@ -338,10 +458,16 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_btn_save_clicked(self, widget):
 
         try:
-            SaveCapivaraFile.saveCapivaraFile(self.capivaraFile)
+            # Pegar o nome do projeto
+            c = ProjectProperties()
+            c = c.get()
+
+            SaveCapivaraFile.saveCapivaraFile(self.capivaraPathFile + '/' + c.title + '.capivara')
+
         except:
             logs.record("Não foi possível salvar o arquivo")
-            self.messagebox("error", "ERRO", "Não foi possível salvar o arquivo %s" % os.path.basename(self.capivaraFile))
+            self.messagebox("error", "ERRO",
+                            "Não foi possível salvar o arquivo %s" % os.path.basename(self.capivaraFile))
 
     # SALVAR COMO
     @Gtk.Template.Callback()
@@ -355,16 +481,37 @@ class MainWindow(Gtk.ApplicationWindow):
         if response == Gtk.ResponseType.OK:
 
             capivaraFile = dialog.save_file()
+
             dialog.destroy()
 
             try:
+                c = ProjectProperties()
+                c = c.get()
+                c.title = Path(capivaraFile).stem
+                c.update(c)
+
                 SaveCapivaraFile.saveCapivaraFile(capivaraFile)
+
                 logs.record("Arquivo salvo com sucesso!", type="info")
-                self.messagebox(Gtk.MessageType.INFO, "INFORMATION", "O arquivo %s foi salvo com sucesso." % os.path.basename(self.capivaraFile))
+                self.messagebox(Gtk.MessageType.INFO, "INFORMATION",
+                                "O arquivo %s foi salvo com sucesso." % os.path.basename(capivaraFile))
+
+                LoadCapivaraFile.loadCapivaraFile(capivaraFile)
+                Global.set("capivara_file_open", capivaraFile)
+
+                self.LoadRelationships()
+
+                # # Coloca nome do projeto e autor na header bar
+                self.putHeaderBar()
+                # projectProperties = ProjectProperties.get()
+                # self.header_bar.set_title(projectProperties.title)
+                # self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+
 
             except:
-                logs.record("Não foi possível salvar o arquivo %s" % self.capivaraFile)
-                self.messagebox("error", "ERRO","Não foi possível salvar o arquivo %s" % os.path.basename(self.capivaraFile))
+                logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
+                self.messagebox("error", "ERRO",
+                                "Não foi possível salvar o arquivo %s" % os.path.basename(self.capivaraFile))
 
         else:
             dialog.destroy()
@@ -373,6 +520,100 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def menu_item_clicked(self, widget):
         print(widget.props)
+
+    @Gtk.Template.Callback()
+    def on_mnuCapivaraPrint_clicked(self, button):
+        self.builder = Gtk.Builder.new_from_file('CapivaraPrint.ui')
+        self.builder.connect_signals(self)
+        window = self.builder.get_object('CapivaraPrint')
+        # window = Gtk.Window.new(type=Gtk.WindowType.TOPLEVEL)
+        window.set_transient_for(parent=self)
+        window.set_modal(modal=True)
+        window.set_title(title='Gtk.Window')
+        window.set_default_size(width=800, height=600)
+        # window.set_default_icon_from_file(filename='../../../assets/icons/person.png')
+        window.show_all()
+        self.text_buffer_print = Gtk.Template.Child(name='text_buffer_print')
+        self.text_view_print = Gtk.Template.Child(name='text_view_print')
+
+        textbuffer = self.text_view_print
+        textbuffer.set_text("This is some text ")
+
+        # start_iter = self.text_buffer_print.get_start_iter()
+        #
+        # self.text_buffer_print.insert(start_iter, "This is some text ")
+        # self.text_buffer_print.insert_markup(self.text_buffer_print.get_end_iter(), "<b>and some bold text</b>", -1)
+
+        text = """<span size="xx-large">Lorem</span>
+        Lorem <b>ipsum</b> <span foreground="red">dolor</span> <big>sit</big> amet,
+        <i>consectetur</i> adipiscing <s>elit</s>, sed <sub>do</sub> 
+        <span background="green">eiusmod</span> <sup>tempor</sup> incididunt 
+        <small>ut</small> <tt>labore</tt> et <u>dolore</u> magna aliqua.
+        <span size="xx-large">Lorem</span>
+        Lorem <b>ipsum</b> <span foreground="red">dolor</span> <big>sit</big> amet,
+        <i>consectetur</i> adipiscing <s>elit</s>, sed <sub>do</sub> 
+        <span background="green">eiusmod</span> <sup>tempor</sup> incididunt 
+        <small>ut</small> <tt>labore</tt> et <u>dolore</u> magna aliqua.\n
+        """
+        # self.text_buffer_print.insert_markup(self.textbuffer.get_end_iter(), text, -1)
+        # # Adicionando texto renderizado ao Gtk.TextView.
+        # text_buffer_iter = self.text_buffer_print.get_end_iter()
+        # self.text_buffer_print.insert_markup(
+        #     iter=text_buffer_iter,
+        #     markup=text,
+        #     len=-1,
+        # )
+
+    # @Gtk.Template.Callback()
+    # def open_print_dialog(self, widget):
+    #     """Dialogo de impressão do sistema."""
+    #
+    #     # Variável auxilizar com as configurações do papel.
+    #     page_setup = PrintOperation.page_setup(self)
+    #
+    #     print_operation = PrintOperation(text_buffer=self.text_buffer_print)
+    #     print_operation.set_default_page_setup(default_page_setup=page_setup)
+    #
+    #     # Resposta da operação de impressão.
+    #     response = print_operation.run(action=Gtk.PrintOperationAction.PRINT_DIALOG, parent=self)
+    #     if response == Gtk.PrintOperationResult.ERROR:
+    #         print('ERROR')
+    #     elif response == Gtk.PrintOperationResult.APPLY:
+    #         print('APPLY')
+    #     elif response == Gtk.PrintOperationResult.CANCEL:
+    #         print('CANCEL')
+    #     elif response == Gtk.PrintOperationResult.IN_PROGRESS:
+    #         print('IN_PROGRESS')
+
+    # @Gtk.Template.Callback()
+    # def open_preview(self, widget):
+    #
+    #     """Pré visualizador do sistema."""
+    #     print_operation = PrintOperation(text_buffer=self.text_buffer_print)
+    #     response = print_operation.run(action=Gtk.PrintOperationAction.PREVIEW, parent=self)
+    #
+    # @Gtk.Template.Callback()
+    # def open_page_setup_dialog(self, widget):
+    #     """Diálogo para configuração da página."""
+    #
+    #     # Verificando o tamanho da página ANTES do diálogo.
+    #     print(self.page_setup.get_page_width(unit=Gtk.Unit.MM))
+    #     self.page_setup = Gtk.print_run_page_setup_dialog(
+    #         parent=self,
+    #         page_setup=self.page_setup,
+    #         settings=self.print_settings,
+    #     )
+    #     # Verificando o tamanho da página DEPOIS do diálogo.
+    #     print(self.page_setup.get_page_width(unit=Gtk.Unit.MM))
+    #
+    # @Gtk.Template.Callback()
+    # def export_to_pdf(self, widget):
+    #     """Exportando para arquivo."""
+    #     print_operation = PrintOperation(text_buffer=self.text_buffer)
+    #     print_operation.set_export_filename('nome-do-arquivo.pdf')
+    #     response = print_operation.run(action=Gtk.PrintOperationAction.EXPORT, parent=self)
+    #     if response == Gtk.PrintOperationResult.APPLY:
+    #         print('Arquivo exportado com sucesso')
 
     @Gtk.Template.Callback()
     def on_btn_new_group_clicked(self, button):
@@ -393,6 +634,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_btn_new_person_clicked(self, button):
         c = Character()
         c.name = "unnamed"
+        c.archtype = ""
         c.sex = ""
         c.local = ""
         c.occupation = ""
@@ -412,7 +654,38 @@ class MainWindow(Gtk.ApplicationWindow):
         c.notes = ""
         c.insertCharacter(c)
 
+        characterOne = c.id
+        characterTwos = c.list()
+        for characterTwo in characterTwos:
+            if characterOne != characterTwo.id:
+                cm = CharacterMap()
+                cm.character_one = characterOne
+                cm.character_relationship = ""
+                cm.character_two = characterTwo.id
+                cm.insertCharacterMap(cm)
+                cm = CharacterMap()
+                cm.character_one = characterTwo.id
+                cm.character_relationship = ""
+                cm.character_two = characterOne
+                cm.insertCharacterMap(cm)
+
+        self.LoadRelationships()
         Treeview(self.treeView)
+
+    def LoadRelationships(self):
+        self.lstStoreMap.clear()
+        cmaps = CharacterMap()
+        cmaps = cmaps.list()
+        c = Character()
+        lstCharacterMap = []
+        for cm in cmaps:
+            characterOneId = cm.character_one
+            characterTwoId = cm.character_two
+            tplCharacterMap = (cm.id, c.get(characterOneId).name, cm.character_relationship, c.get(characterTwoId).name)
+            lstCharacterMap.append(tplCharacterMap)
+
+        for relationship in lstCharacterMap:
+            self.lstStoreMap.append(row=relationship)
 
     @Gtk.Template.Callback()
     def on_btn_group_category_clicked(self, widget):
@@ -456,14 +729,9 @@ class MainWindow(Gtk.ApplicationWindow):
             propriedades.pseudonym = _projectProperties['pseudonym']
             propriedades.update(propriedades)
 
-            capivara = {'version model': '0.1.0', 'creator': 'Capivara 0.1.0', 'device': 'ELIZEU-PC',
-                        'modified': '2021-08-19 14:08:59.496007',
-                        'project properties': {'title': 'Deixa-me enterrar meu pai',
-                                               'abbreviated title': 'Deixa-me enterrar meu pai',
-                                               'authors full name': 'Elizeu Xavier', 'surname': 'Xavier',
-                                               'forename': 'Elizeu', 'pseudonym': ''},
-                        'character': [{"name": "unnamed"}], 'core': [], 'smart group': [], 'tag': []}
-
+            # Atualiza a barra de título
+            self.header_bar.set_title(propriedades.title)
+            self.header_bar.set_subtitle(propriedades.surname + ', ' + propriedades.forename)
 
         elif response == Gtk.ResponseType.NO:
             pass
@@ -593,7 +861,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def info_bar_timeout(self):
         self.info_bar.set_revealed(revealed=False)
 
-    def messagebox(self, parMessage_type = None, msg1 = "Info", msg2 = "" ):
+    def messagebox(self, parMessage_type=None, msg1="Info", msg2=""):
         messageType = Gtk.MessageType.INFO
         buttonsType = Gtk.ButtonsType.OK
         if parMessage_type == "info":
@@ -608,13 +876,20 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog = Gtk.MessageDialog(
             transient_for=self,
             flags=0,
-            message_type= messageType,
+            message_type=messageType,
             buttons=buttonsType,
-            text= msg1,
+            text=msg1,
         )
         dialog.format_secondary_text(msg2)
         dialog.run()
         dialog.destroy()
+
+    def putHeaderBar(self):
+        # Coloca nome do projeto e autor na header bar
+        projectProperties = ProjectProperties.get()
+        self.header_bar.set_title(projectProperties.title)
+        self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
+        Global.set("title", projectProperties.title)
 
 class Application(Gtk.Application):
 
@@ -646,7 +921,7 @@ class Application(Gtk.Application):
             win = MainWindow(application=self)
 
         win.set_title("Untitled")
-        win.set_default_size( cfgWidth, cfgHeight)
+        win.set_default_size(cfgWidth, cfgHeight)
         win.set_position(Gtk.WindowPosition.CENTER)
         win.present()
 
@@ -665,8 +940,4 @@ class Application(Gtk.Application):
     def do_shutdown(self):
         Gtk.Application.do_shutdown(self)
 
-# if __name__ == '__main__':
-#     import sys
-#
-#     app = Application()
-#     app.run(sys.argv)
+# if _
