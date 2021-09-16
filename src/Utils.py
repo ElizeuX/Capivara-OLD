@@ -14,13 +14,88 @@ from pathlib import Path
 import importlib
 import os
 import json
+import datetime
 import random
 import string
+import secrets
+import uuid
+
+
 
 from Global import Global
 
 PluginFolder = "../plugins/"
 MainModule = "__init__"
+
+def generate_unique_key(size=15):
+    return secrets.token_urlsafe(size)[:size]
+
+def generate_uuid():
+    return str(uuid.uuid4())
+
+
+class Date:
+
+    def __init__(self):
+        pass
+
+    def stringToDate(strDate):
+        return strDate[0:2] + '/' + strDate[2:4] + '/' + strDate[4:]
+
+    def dateToString(strDate):
+        day, month, year  = strDate.split('/')
+        return day+month+year
+
+
+
+    def isValidDate(strDate):
+
+        day, month, year = strDate.split('/')
+
+        isValidDate = True
+        try:
+            datetime.datetime(int(year), int(month), int(day))
+        except ValueError:
+            isValidDate = False
+
+        finally:
+            return isValidDate
+
+        # intYear = int(datDate[0:4])
+        # intMonth = int(datDate[5:7])
+        # intDay = int(datDate[9:10])
+        # if len(datDate) == 10:
+        #     if 0 < intYear < 10000:
+        #         if 0 < intMonth <= 12:
+        #             if intMonth == 2 and (intYear % 4) == 0:
+        #                 if 0 < intDay <= 29:
+        #                     print('Esta é uma data válida.')
+        #                 else:
+        #                     print('Esta não é uma data válida.')
+        #             elif intMonth == 2 and (intYear % 4) != 0:
+        #                 if 0 < intDay <= 28:
+        #                     print('Esta é uma data válida.')
+        #                 else:
+        #                     print('Esta não é uma data válida.')
+        #             elif intMonth == 4 or intMonth == 6 or intMonth == 9 or intMonth == 11:
+        #                 if 0 < intDay <= 30:
+        #                     print('Esta é uma data válida.')
+        #                 else:
+        #                     print('Esta não é uma data válida.')
+        #             elif intMonth == 1 or intMonth == 3 or intMonth == 5 or intMonth == 7 or intMonth == 8 or intMonth == 10 or intMonth == 12:
+        #                 if 0 < intDay <= 31:
+        #                     print('Esta é uma data válida.')
+        #                 else:
+        #                     print('Esta não é uma data válida.')
+        #             else:
+        #                 print('Esta não é uma data válida.')
+        #         else:
+        #             print('Esta não é uma data válida.')
+        #     else:
+        #         print('Esta não é uma data válida.')
+        # else:
+        #     print('Esta não é uma data válida.')
+
 
 
 class JsonTools():
@@ -94,6 +169,13 @@ class AppConfig:
         self.releases = self.get_ini_value("PREFERENCES", "releases")
         self.untestedReleases = self.get_ini_value("PREFERENCES", "untested releases")
         self.capivaraDirectory = self.get_ini_value("DIRECTORY", "mycapivaras")
+        self.version = self.get_ini_value("CAPIVARA", "version")
+
+    def setCapivaraVersion(self, value):
+        self.version = value
+
+    def getCapivaraVersion(self):
+        return self.version
 
     def setCapivaraDirectory(self, value):
         self.capivaraDirectory = value
@@ -266,7 +348,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         self.capivaraFile = Global.config("title")
 
         if not Global.config("title"):
-            capivaraFile = 'Untitled.capivara'
+            self.capivaraFile = 'Untitled.capivara'
         else:
             fileOpen = Global.config("capivara_file_open")
             self.capivaraFile = os.path.basename(fileOpen)

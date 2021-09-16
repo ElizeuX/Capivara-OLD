@@ -14,8 +14,16 @@ class CapivaraSmartGroup(Gtk.Dialog):
 
     txtNewSmartGroup = Gtk.Template.Child(name='txtSmartGroupName')
 
+
     def __init__(self):
         super().__init__()
+        operators_store = Gtk.ListStore(int, str)
+        operators_store.append([1, "="])
+        operators_store.append([2, ">="])
+        operators_store.append([3, "<="])
+        operators_store.append([4, "<>"])
+
+
 
     def newSmartGroup(self):
         return str(self.txtNewSmartGroup.get_text())

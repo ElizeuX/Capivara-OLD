@@ -10,6 +10,7 @@ from collections import namedtuple
 import Utils
 import re
 from datetime import datetime
+from Utils import Date
 
 class CharacterControl:
     characterId = ""
@@ -47,8 +48,12 @@ class CharacterControl:
 
         dateBirth = character.date_of_birth
         if dateBirth != None:
-            dateBirth = "{}/{}/{}".format(dateBirth.day, dateBirth.month, dateBirth.year)
+            #dateBirth = "{}/{}/{}".format(dateBirth.day, dateBirth.month, dateBirth.year)
+            dateBirth = dateBirth.strftime('%m/%d/%Y')
             voCharacter.date_of_birth.set_text(dateBirth)
+        else:
+            voCharacter.date_of_birth.set_text("")
+
 
         if not character.sex:
             voCharacter.sex.set_active(-1)

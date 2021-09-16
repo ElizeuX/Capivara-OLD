@@ -15,6 +15,7 @@ __capivara_file__ = "Untitled.capivara"
 
 class Global:
   __conf = {
+    "version" : "",
     "title": "",
     "capivara_file_open": "",
     "darkMode": "",
@@ -23,7 +24,7 @@ class Global:
     "untestedReleases": "",
     "my_capivara": ""
   }
-  __setters = ["title","capivara_file_open", "darkMode", "update_automatically", "releases", "untestedReleases", "my_capivara"]
+  __setters = ["version", "title","capivara_file_open", "darkMode", "update_automatically", "releases", "untestedReleases", "my_capivara"]
 
   @staticmethod
   def config(name):

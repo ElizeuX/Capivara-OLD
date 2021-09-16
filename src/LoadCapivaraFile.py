@@ -31,7 +31,7 @@ def loadCapivaraFile(fileOpen=None):
             "device": "",
             "modified": "",
             "project properties": {
-                "title": "Untitled",
+                "title": "",
                 "abbreviated title": "",
                 "authors full name": "",
                 "surname": "",

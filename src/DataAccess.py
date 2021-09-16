@@ -18,7 +18,6 @@ Session = sessionmaker(bind=engine)
 connection = engine.connect()
 metadata = MetaData(bind=engine, reflect=True)
 
-
 class CharacterMap(Base):
     __tablename__ = 'characterMap'
     id = Column(Integer(), primary_key=True)
@@ -111,10 +110,35 @@ class CoreCharacterLink(Base):
     core_id = Column(Integer, ForeignKey('core.id'), primary_key=True)
     character_id = Column(Integer, ForeignKey('character.id'), primary_key=True)
 
+    @classmethod
+    def insertcoreCharacterLink(cls, coreCharacterLink):
+        s = Session()
+        s.add(coreCharacterLink)
+        s.commit()
+
+
 class TagCharacterLink(Base):
     __tablename__ = 'tag_character'
     tag_id = Column(Integer, ForeignKey('tag.id'), primary_key=True)
     character_id = Column(Integer, ForeignKey('character.id'), primary_key=True)
+
+    @classmethod
+    def add(cls, tagcharacterlink):
+        d = cls()
+        d.character_id = tagcharacterlink['character_id']
+        d.tag_id = tagcharacterlink['tag_id']
+        return d
+
+    @classmethod
+    def get(cls, id):
+        s = Session()
+        return s.query(TagCharacterLink).get(id)
+
+    @classmethod
+    def insertTagCharacterLink(cls, tagcharacterlink):
+        s = Session()
+        s.add(tagcharacterlink)
+        s.commit()
 
 class Biography(Base):
     __tablename__ = 'biography'
@@ -143,6 +167,30 @@ class Tag(Base):
         d.id = tag['id']
         d.description = tag['description']
         return d
+
+    @classmethod
+    def insertTag(cls, tag):
+        s = Session()
+        s.add(tag)
+        s.commit()
+
+
+    @classmethod
+    def hasTag(cls, tag):
+        s = Session()
+        return s.query(Tag).filter_by(description=tag).count() > 0
+
+    @classmethod
+    def getTag(cls, strDescription):
+        s = Session()
+        ret = s.query(Tag).filter_by(description=strDescription)
+        c = cls()
+        for tag in ret:
+            c = tag
+        return c
+
+
+
 
     @classmethod
     def get(cls, id):
@@ -187,6 +235,29 @@ class SmartGroup(Base):
         return s.query(SmartGroup).all()
 
     @classmethod
+    def listCharacter(cls, rule):
+        #rule = ( sex ==[cd] \"Male\" )
+        s = Session()
+        print("a regra é %s" %rule)
+        #lista = rule.split()
+        # filtro = []
+        # for elemento in lista:
+        #     if elemento != '(' and elemento != ')':
+        #         filtro.append(elemento)
+        #
+        # var1 = filtro[0]
+        # var2 = filtro[2]
+
+        # rs = s.execute('SELECT * FROM character WHERE ' + var1 + '=' + var2 +';')
+        strRule = rule.replace("(", "").replace(")", "").replace('[cd]', "")
+        rs = s.execute('SELECT * FROM character WHERE ' + strRule + ';')
+
+        return rs
+
+        # for row in rs:
+            #     print(row)
+
+    @classmethod
     def toDict(cls):
         s = Session()
         smartGroups = s.query(SmartGroup).all()
@@ -229,6 +300,12 @@ class Core(Base):
     def list(cls):
         s = Session()
         return s.query(Core).all()
+
+    @classmethod
+    def listCharacters(cls, id):
+        s = Session()
+        return s.query(CoreCharacterLink).filter_by(core_id=id)
+
 
     @classmethod
     def toDict(cls):
@@ -386,7 +463,7 @@ class Character(Base):
         d.id = character['id']
         d.name = character['name']
         d.archtype = character['archtype']
-        if character['date of birth']:
+        if character['date of birth'] and character['date of birth'] != "":
             d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
         d.sex = character['sex']
         d.age = character['age']
@@ -420,6 +497,13 @@ class Character(Base):
         return s.query(Character).get(id)
 
     @classmethod
+    def hasTag(cls, intCharacter, strTag):
+        s = Session()
+        t = Tag()
+        t = t.getTag(strTag)
+        return s.query(TagCharacterLink).filter_by(tag_id=t.id, character_id=intCharacter).count() > 0
+
+    @classmethod
     def list(cls):
         s = Session()
         return s.query(Character).all()
@@ -451,7 +535,10 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"date of birth"', '"' + str(character.date_of_birth) + '"') + ','
+            if character.date_of_birth != None:
+                characterStr = characterStr + JsonTools.putMap('"date of birth"', '"' + str(character.date_of_birth)  + '"') + ','
+            else:
+                characterStr = characterStr + JsonTools.putMap('"date of birth"','""' ) + ','
             characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','

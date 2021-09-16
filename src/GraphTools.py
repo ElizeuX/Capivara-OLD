@@ -6,7 +6,7 @@ import Utils
 import tempfile
 
 
-def GraphMake(mapFile=None):
+def GraphMake( chkCharacter, chkCore, mapFile=None):
 
     c = ProjectProperties()
     c = c.get()
@@ -36,10 +36,9 @@ def GraphMake(mapFile=None):
     f = graphviz.Digraph(comment = __title__,  filename=__fileName__)
 
 
-
     f.attr(rankdir='LR', size='8,5')
     f.attr(label="<<TABLE BORDER='0' CELLBORDER='1' CELLSPACING='0' CELLPADDING='4'><TR><TD ROWSPAN='3'>Relationships <BR/> Between Characters  <BR/>in " + __author__ +"'s <BR/>" + __title__  + "</TD></TR></TABLE>>")
-    f.attr(fontsize='25')
+    f.attr(fontsize='6')
 
     cr = Core()
     cores = cr.list()
@@ -52,30 +51,32 @@ def GraphMake(mapFile=None):
     relationShips = c.list()
 
 
-    # Criar os Núcleos
-    f.attr('node', shape='circle')
-    for core in cores:
-        f.node(core.description)
+    if chkCore:
+        # Criar os Núcleos
+        f.attr('node', shape='circle')
+        for core in cores:
+            f.node(core.description)
+
+    if chkCharacter:
+        # Cria os personagens
+        f.attr('node', shape='rect')
+        for character in characters:
+            f.node(character.name)
+
+        if chkCore:
+            # Criar os núcleos com personagens
+            for character in characters:
+                crs = character.getCores(character.id)
+                for i in crs:
+                    nameCore = cr.get(i.core_id).description
+                    f.edge(character.name, nameCore, arrowhead = 'none')
 
 
-    # Cria os personagens
-    f.attr('node', shape='rect')
-    for character in characters:
-        f.node(character.name)
-
-    # Criar os núcleos com personagens
-    for character in characters:
-        crs = character.getCores(character.id)
-        for i in crs:
-            nameCore = cr.get(i.core_id).description
-            f.edge(character.name, nameCore, arrowhead = 'none')
-
-
-    c = Character()
-    # Criar os relacionamentos
-    for relationShip in relationShips:
-        if relationShip.character_relationship != '':
-            f.edge(c.get(relationShip.character_one).name, c.get(relationShip.character_two).name, label=relationShip.character_relationship)
+        c = Character()
+        # Criar os relacionamentos
+        for relationShip in relationShips:
+            if relationShip.character_relationship != '':
+                f.edge(c.get(relationShip.character_one).name, c.get(relationShip.character_two).name, label=relationShip.character_relationship)
 
     if mapFile == None:
         f.view()
