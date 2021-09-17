@@ -174,7 +174,6 @@ class Tag(Base):
         s.add(tag)
         s.commit()
 
-
     @classmethod
     def hasTag(cls, tag):
         s = Session()
@@ -188,9 +187,6 @@ class Tag(Base):
         for tag in ret:
             c = tag
         return c
-
-
-
 
     @classmethod
     def get(cls, id):
@@ -227,6 +223,12 @@ class SmartGroup(Base):
     def insertSmartGroup(cls, smartGroup):
         s = Session()
         s.add(smartGroup)
+        s.commit()
+
+    @classmethod
+    def delete(cls, id):
+        s = Session()
+        s.query(SmartGroup).filter(SmartGroup.id == id).delete()
         s.commit()
 
     @classmethod
@@ -289,6 +291,14 @@ class Core(Base):
     def insertCore(cls, core):
         s = Session()
         s.add(core)
+        s.commit()
+
+    @classmethod
+    def delete(cls, id):
+        s = Session()
+        # deletar link character-core
+        s.query(CoreCharacterLink).filter(CoreCharacterLink.core_id==id).delete()
+        s.query(Core).filter(Core.id == id).delete()
         s.commit()
 
     @classmethod
@@ -484,6 +494,14 @@ class Character(Base):
         d.picture = character['picture']
         d.notes = character['notes']
         return d
+
+    @classmethod
+    def delete(cls, id):
+        s = Session()
+        s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == id).delete()
+        s.query(TagCharacterLink).filter(TagCharacterLink.character_id == id).delete()
+        s.query(Character).filter(Character.id == id).delete()
+        s.commit()
 
     @classmethod
     def insertCharacter(cls, character):
