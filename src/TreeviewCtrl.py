@@ -10,6 +10,7 @@ from DataAccess import Character, Core, SmartGroup, CoreCharacterLink
 from CharacterCtrl import CharacterControl
 
 
+
 #### Drag and drop stuff
 DRAG_ACTION = Gdk.DragAction.COPY
 dnd_internal_target = 'gtg/task-iter-str'
@@ -26,6 +27,14 @@ class Treeview():
     treemodel = None
     #vo = None
     dnd_internal_target = 'gtg/task-iter-str'
+    # CONSTANTES DO MENU
+    __DELETE_CHARACTER = 1
+    __DELETE_CORE = 2
+    __DELETE_SMARTGROUP = 3
+    __PRINT_CAPIVARA = 4
+    __DELETE_CAPIVARA = 5
+    __REMOVE_CHARACTER_CORE = 6
+    __EDIT_SMARTGROUP = 7
 
     selected = 'workspace'
 
@@ -49,10 +58,6 @@ class Treeview():
 
         #Drag and drop
         self.__init_dnd()
-
-
-
-
 
         # add columns usually only one in case of the treeview
         column = Gtk.TreeViewColumn("Projeto")
@@ -105,7 +110,7 @@ class Treeview():
         self.treeview.set_cursor(Gtk.TreePath.new_from_string("0:0"), c,
                                  True)  # set the cursor to the last appended item
 
-        # self.menu()
+        self.menu()
 
 
 
@@ -225,18 +230,96 @@ class Treeview():
         """
         popover menu shown on right clicking a treeview item.
         """
+
         self.treeview_menu = Gtk.Menu()
-        menu_item = Gtk.MenuItem("Excluir Capivara")
-        self.treeview_menu.append(menu_item)
-        menu_item = Gtk.MenuItem("Imprimir Capivara")
-        self.treeview_menu.append(menu_item)
+
 
         # for item in range(0, 5):
         #     menu_item = Gtk.MenuItem("Menu " + str(item))
         #     self.treeview_menu.append(menu_item)
 
+    def item_activated(self, wdg, i):
+        if (i == self.__DELETE_CAPIVARA):
+            print("Capivara deletada")
+        elif( i == self.__PRINT_CAPIVARA):
+            print("Imprimindo capivara")
+        elif(i == self.__REMOVE_CHARACTER_CORE):
+            print("Removendo personagem do core")
+        elif(i == self.__DELETE_CORE):
+            print("Deletando core")
+        else:
+            print(i)
+
     def mouse_click(self, tv, event):
         if event.button == 3:
+
+            treeselection = self.treeview.get_selection()
+            model, paths = treeselection.get_selected_rows()
+            iters = [model.get_iter(path) for path in paths]
+            iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
+
+            if iter_str == '0' or iter_str =='1' or iter_str == '2':
+                return
+
+            if iter_str[0] == '2' and len(iter_str)>3:
+                return
+
+            # remover todos os itens de menu
+            for i in self.treeview_menu.get_children():
+                self.treeview_menu.remove(i)
+
+            self.treeview_menu = Gtk.Menu()
+
+
+
+            # menu para se header for personagem
+            if iter_str[0] == "0":
+                menu_item = Gtk.MenuItem("Excluir Capivara")
+                self.treeview_menu.append(menu_item)
+                menu_item.connect("activate", self.item_activated, self.__DELETE_CAPIVARA)
+
+                menu_item = Gtk.MenuItem("Imprimir Capivara")
+                self.treeview_menu.append(menu_item)
+                menu_item.connect("activate", self.item_activated, self.__PRINT_CAPIVARA)
+
+            # grupo "1:0"
+            elif iter_str[0] == '1':
+                # item = 1:0:0
+                if len(iter_str) >= 5:
+                    menu_item = Gtk.MenuItem("Remover do grupo")
+                    self.treeview_menu.append(menu_item)
+                    menu_item.connect("activate", self.item_activated, self.__REMOVE_CHARACTER_CORE)
+                else:
+                    menu_item = Gtk.MenuItem("Excluir grupo")
+                    self.treeview_menu.append(menu_item)
+                    menu_item.connect("activate", self.item_activated, self.__DELETE_CORE)
+
+            # smartgrupo = "2:0"
+            elif iter_str[0] == "2":
+                if len(iter_str) <= 3 :
+                    menu_item = Gtk.MenuItem("Excluir smartgroup")
+                    self.treeview_menu.append(menu_item)
+                    menu_item.connect("activate", self.item_activated, self.__DELETE_SMARTGROUP)
+
+                    menu_item = Gtk.MenuItem("Editar smartgroup")
+                    self.treeview_menu.append(menu_item)
+                    menu_item.connect("activate", self.item_activated, self.__EDIT_SMARTGROUP)
+                else:
+                    # remover todos os itens de menu
+                    for i in self.treeview_menu.get_children():
+                        self.treeview_menu.remove(i)
+
+
+            value = ""
+            for path in paths:
+                tree_iter = model.get_iter(path)
+                value = model.get_value(tree_iter, 2)
+            if value:
+                iters = [model.get_iter(path) for path in paths]
+                iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
+                print("Id é " + str(value))
+                print("Path " + iter_str)
+
             # right mouse button pressed popup the menu
             self.treeview_menu.show_all()
             self.treeview_menu.popup(None, None, None, None, 1, 0)
@@ -249,7 +332,7 @@ class Treeview():
         treeiter = model.get_iter(treepath)
         self.selected = model.get_value(treeiter, 0)
         # self.entry.set_text(self.selected)
-        print(self.selected)
+        #print(self.selected)
 
     def onSelectionChanged(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
@@ -257,15 +340,17 @@ class Treeview():
         for path in pathlist:
             tree_iter = model.get_iter(path)
             value = model.get_value(tree_iter, 2)
+        iters = [model.get_iter(path) for path in pathlist]
+        iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
+        # TODO: Resolver essa gambiarra
         if value:
-            print(str(value))
-            c = CharacterControl(value, self.data)
+            try:
+                c = CharacterControl(value, self.data)
+            except:
+                pass
 
     def get_Core_Iter(self):
         pass
-
-
-
 
 
 def on_drag_fail(widget, dc, result):
@@ -273,9 +358,6 @@ def on_drag_fail(widget, dc, result):
 
 def on_drag_data_get(treeview, context, selection, info, timestamp):
     """ Extract data from the source of the DnD operation.
-
-
-
     Serialize iterators of selected tasks in format
     <iter>,<iter>,...,<iter> and set it as parameter of DND """
     model = treeview.get_model()
