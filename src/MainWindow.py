@@ -320,7 +320,17 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = int(self.lblId.get_text().replace('#', '0'))
         c.set_name(intId, self.txtName.get_text())
         self.LoadRelationships()
-        Treeview(self.treeView, self)
+
+        tree_selection = self.treeView.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            c = Character()
+            c = c.get(value)
+            model.set_value(tree_iter, 0, c.name)
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):

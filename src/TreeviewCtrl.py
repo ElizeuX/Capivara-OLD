@@ -320,8 +320,6 @@ class Treeview():
             if value:
                 iters = [model.get_iter(path) for path in paths]
                 iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
-                print("Id é " + str(value))
-                print("Path " + iter_str)
 
             # right mouse button pressed popup the menu
             self.treeview_menu.show_all()
