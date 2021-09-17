@@ -17,7 +17,6 @@ from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink
 import Utils
 from src.logger import Logs
-# from TreeviewCtrl import Treeview
 from TreeviewCtrl import Treeview
 from collections import namedtuple
 import LoadCapivaraFile
@@ -187,7 +186,7 @@ class MainWindow(Gtk.ApplicationWindow):
                               self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
                               self.list_store)
 
-        Treeview(self.treeView, vo)
+        Treeview(self.treeView, self, vo)
 
     @Gtk.Template.Callback()
     def on_btnEditPhoto_clicked(self, widget):
@@ -253,7 +252,7 @@ class MainWindow(Gtk.ApplicationWindow):
                                       self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
                                       self.list_store)
 
-                Treeview(self.treeView, vo)
+                Treeview(self.treeView, self, vo)
 
                 # Coloca nome do projeto e autor na header bar
                 # projectProperties = ProjectProperties.get()
@@ -321,7 +320,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = int(self.lblId.get_text().replace('#', '0'))
         c.set_name(intId, self.txtName.get_text())
         self.LoadRelationships()
-        Treeview(self.treeView)
+        Treeview(self.treeView, self)
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
@@ -476,7 +475,7 @@ class MainWindow(Gtk.ApplicationWindow):
                               self.txtEthinicity,
                               self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
                               self.list_store)
-        Treeview(self.treeView, vo)
+        Treeview(self.treeView, self, vo)
 
         # projectProperties = ProjectProperties()
         # projectProperties.title = ""
@@ -752,7 +751,7 @@ class MainWindow(Gtk.ApplicationWindow):
             core = Core()
             core.description = dialog.newGroup()
             core.insertCore(core)
-            Treeview(self.treeView)
+            Treeview(self.treeView, self)
 
         dialog.destroy()
 
@@ -796,7 +795,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 cm.insertCharacterMap(cm)
 
         self.LoadRelationships()
-        Treeview(self.treeView)
+        Treeview(self.treeView, self)
 
     def LoadRelationships(self):
         self.lstStoreMap.clear()
@@ -827,7 +826,7 @@ class MainWindow(Gtk.ApplicationWindow):
             smartGroup.rule = "a = a"
             smartGroup.insertSmartGroup(smartGroup)
 
-            Treeview(self.treeView)
+            Treeview(self.treeView, self)
 
         elif response == Gtk.ResponseType.NO:
             print('Botão NÃO pressionado')

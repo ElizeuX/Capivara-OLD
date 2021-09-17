@@ -8,6 +8,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 
 from DataAccess import Character, Core, SmartGroup, CoreCharacterLink
 from CharacterCtrl import CharacterControl
+from NewGroupDialog import NewGroupDialog
 
 
 
@@ -35,12 +36,16 @@ class Treeview():
     __DELETE_CAPIVARA = 5
     __REMOVE_CHARACTER_CORE = 6
     __EDIT_SMARTGROUP = 7
+    __EDIT_GROUP = 8
 
     selected = 'workspace'
+    widget = ""
 
-    def __init__(self, treeview, vo = None):
+    def __init__(self, treeview, widget, vo = None ):
 
         self.data = vo
+        self.widget = widget
+
 
         for column in treeview.get_columns():
             treeview.remove_column(column)
@@ -232,6 +237,10 @@ class Treeview():
             print("Removendo personagem do core")
             self.treeview_menu.popdown()
 
+        elif(i == self.__EDIT_GROUP):
+            self.groupEdit()
+            self.treeview_menu.popdown()
+
         elif(i == self.__DELETE_CORE):
             self.deleteCore()
             self.treeview_menu.popdown()
@@ -281,6 +290,10 @@ class Treeview():
                     self.treeview_menu.append(menu_item)
                     menu_item.connect("activate", self.item_activated, self.__REMOVE_CHARACTER_CORE)
                 else:
+                    menu_item = Gtk.MenuItem("Editar grupo")
+                    self.treeview_menu.append(menu_item)
+                    menu_item.connect("activate", self.item_activated, self.__EDIT_GROUP)
+
                     menu_item = Gtk.MenuItem("Excluir grupo")
                     self.treeview_menu.append(menu_item)
                     menu_item.connect("activate", self.item_activated, self.__DELETE_CORE)
@@ -342,6 +355,28 @@ class Treeview():
     def get_Core_Iter(self):
         pass
 
+    def groupEdit(self):
+        tree_selection = self.treeview.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            dialog = NewGroupDialog(value)
+            dialog.set_transient_for(parent= self.widget)
+            response = dialog.run()
+
+            # Verificando qual botão foi pressionado.
+            if response == Gtk.ResponseType.YES:
+                c = Core()
+                c.id = value
+                c.description = dialog.newGroup()
+                c.update(c)
+                model.set_value(tree_iter, 0, c.description)
+
+            dialog.destroy()
+
     def deleteCharacter(self):
         tree_selection = self.treeview.get_selection()
         (model, pathlist) = tree_selection.get_selected_rows()
@@ -352,18 +387,27 @@ class Treeview():
         if value:
             c = Character()
             c.delete(value)
+            model.remove(tree_iter)
+
+            last = self.treemodel.iter_n_children()
+            last = last - 1  # iter_n_children starts at 1 ; set_cursor starts at 0
+            c = self.treeview.get_column(0)
+            self.treeview.set_cursor(last, c, True)
+
 
     def deleteCore(self):
-        tree_selection = self.treeview.get_selection()
-        (model, pathlist) = tree_selection.get_selected_rows()
-        value = ""
-        for path in pathlist:
-            tree_iter = model.get_iter(path)
-            value = model.get_value(tree_iter, 2)
-        if value:
-            print(value)
-            c = Core()
-            c.delete(value)
+            tree_selection = self.treeview.get_selection()
+            (model, pathlist) = tree_selection.get_selected_rows()
+            value = ""
+            for path in pathlist:
+                tree_iter = model.get_iter(path)
+                value = model.get_value(tree_iter, 2)
+            if value:
+                print(value)
+                c = Core()
+                c.delete(value)
+                model.remove(tree_iter)
+
 
     def deleteSmartGroup(self):
         tree_selection = self.treeview.get_selection()
@@ -376,6 +420,7 @@ class Treeview():
             print(value)
             c = SmartGroup()
             c.delete(value)
+            model.remove(tree_iter)
 
 
 
@@ -388,9 +433,6 @@ def on_drag_data_get(treeview, context, selection, info, timestamp):
     Serialize iterators of selected tasks in format
     <iter>,<iter>,...,<iter> and set it as parameter of DND """
     model = treeview.get_model()
-
-    print("on_drag_data_get(", treeview, context, selection, info, timestamp)
-
     treeselection = treeview.get_selection()
     model, paths = treeselection.get_selected_rows()
     iters = [model.get_iter(path) for path in paths]
@@ -425,7 +467,7 @@ def on_drag_data_received(treeview, context, x, y, selection, info, timestamp):
             c.core_id = destination_tid
             c.insertcoreCharacterLink(c)
 
-    Treeview(treeview)
+    Treeview(treeview, Treeview.widget)
 
         # Get dragged iter as a TaskTreeModel iter
         # If there is no selected task (empty selection.data),

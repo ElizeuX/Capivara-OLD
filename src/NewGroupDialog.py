@@ -12,7 +12,7 @@ class NewGroupDialog(Gtk.Dialog):
     __gtype_name__ = 'NewGroupDialog'
     txtNewGroup= Gtk.Template.Child(name='txtGroup')
 
-    def __init__(self):
+    def __init__(self, id=None):
         super().__init__()
 
     def newGroup(self):

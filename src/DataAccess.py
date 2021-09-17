@@ -294,6 +294,12 @@ class Core(Base):
         s.commit()
 
     @classmethod
+    def update(cls, core):
+        s = Session()
+        s.query(Core).filter(Core.id == core.id).update({'description': core.description})
+        s.commit()
+
+    @classmethod
     def delete(cls, id):
         s = Session()
         # deletar link character-core
