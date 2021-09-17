@@ -521,6 +521,12 @@ class Character(Base):
         return s.query(Character).get(id)
 
     @classmethod
+    def removeCharacterOfCore(cls, id):
+        s = Session()
+        s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == id).delete()
+        s.commit()
+
+    @classmethod
     def hasTag(cls, intCharacter, strTag):
         s = Session()
         t = Tag()

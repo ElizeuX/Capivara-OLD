@@ -234,7 +234,7 @@ class Treeview():
             self.treeview_menu.popdown()
 
         elif(i == self.__REMOVE_CHARACTER_CORE):
-            print("Removendo personagem do core")
+            self.removeCharacterOfCore()
             self.treeview_menu.popdown()
 
         elif(i == self.__EDIT_GROUP):
@@ -354,6 +354,18 @@ class Treeview():
 
     def get_Core_Iter(self):
         pass
+
+    def removeCharacterOfCore(self):
+        tree_selection = self.treeview.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            c = Character()
+            c.removeCharacterOfCore(value)
+            model.remove(tree_iter)
 
     def groupEdit(self):
         tree_selection = self.treeview.get_selection()
