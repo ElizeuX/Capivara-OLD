@@ -34,6 +34,48 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 
+class CustomDialog(Gtk.Dialog):
+
+    def __init__(self, title):
+        super().__init__()
+        self.message(title)
+
+    def message(self, title):
+        self.set_title(title='Salvar documento?')
+
+        # Adicionando 1 botão.
+        self.add_button(button_text='Cancelar', response_id=5000)
+        # Adicionando mais de 1 botão.
+        self.add_buttons(
+            '_Não salvar', Gtk.ResponseType.NO,
+            '_Salvar', Gtk.ResponseType.YES,
+        )
+        # Adicionando class action nos botões.
+        btn_no = self.get_widget_for_response(
+            response_id=Gtk.ResponseType.NO,
+        )
+        btn_yes = self.get_widget_for_response(
+            response_id=Gtk.ResponseType.YES,
+        )
+
+        # Acessando o box.
+        content_area = self.get_content_area()
+        # configurando.
+        content_area.set_halign(align=Gtk.Align.CENTER)
+        content_area.set_border_width(border_width=12)
+        content_area.set_spacing(spacing=6)
+
+        label = Gtk.Label()
+
+        label.set_markup(
+            '<b>Salvar as alterações no documento "' + title + '" antes de fechar?\n\n</b>'
+            '<small>Suas alterações serão perdidas se não salvá-las.</small>'
+        )
+
+        content_area.add(widget=label)
+
+        self.show_all()
+
 class Date:
 
     def __init__(self):
@@ -236,6 +278,7 @@ class AppConfig:
         # DEFAULT
         self.set_ini_value('DEFAULT', 'width', self.DefaultWidth)
         self.set_ini_value('DEFAULT', 'height', self.DefaultHeight)
+        self.set_ini_value('DEFAULT', 'last file open', self.lastFileOpen)
 
         # DIRECTORY
         self.set_ini_value('DIRECTORY', 'mycapivaras', self.capivaraDirectory)

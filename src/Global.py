@@ -18,13 +18,15 @@ class Global:
     "version" : "",
     "title": "",
     "capivara_file_open": "",
+    "last_file_open" : "",
     "darkMode": "",
     "update_automatically": "",
     "releases": "",
     "untestedReleases": "",
-    "my_capivara": ""
+    "my_capivara": "",
+    "flag_edit": ""
   }
-  __setters = ["version", "title","capivara_file_open", "darkMode", "update_automatically", "releases", "untestedReleases", "my_capivara"]
+  __setters = ["version", "title", "last_file_open", "capivara_file_open", "darkMode", "update_automatically", "releases", "untestedReleases", "my_capivara", "flag_edit"]
 
   @staticmethod
   def config(name):

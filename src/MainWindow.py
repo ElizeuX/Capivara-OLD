@@ -10,11 +10,11 @@ from gi.repository import Gio, Gtk, GdkPixbuf, GLib
 import Global
 from Global import Global
 from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, \
-    DialogSaveRelationshipImage, Date
+    DialogSaveRelationshipImage, Date, CustomDialog
 import PluginsManager
 import webbrowser
 from CapivaraSmartGroup import CapivaraSmartGroup
-from DataAccess import DataUtils, ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink
+from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink
 import Utils
 from src.logger import Logs
 from TreeviewCtrl import Treeview
@@ -22,13 +22,8 @@ from collections import namedtuple
 import LoadCapivaraFile
 import SaveCapivaraFile
 from datetime import datetime
-from Utils import JsonTools
-import json
 import os
 from pathlib import Path
-from Constants import Capivara
-
-import LoadCharacterMap
 import GraphTools
 
 # importar Telas
@@ -41,12 +36,12 @@ from CapivaraPrint import PrintOperation
 logs = Logs(filename="capivara.log")
 
 
+
 @Gtk.Template(filename='MainWindow.ui')
 class MainWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'MainWindow'
 
     settings = Gtk.Settings.get_default()
-    flagDateEdit = False
 
     btn_search = Gtk.Template.Child(name='btn_search')
     search_bar = Gtk.Template.Child(name='search_bar')
@@ -58,7 +53,7 @@ class MainWindow(Gtk.ApplicationWindow):
     info_bar = Gtk.Template.Child(name='info_bar')
     list_store = Gtk.Template.Child(name='list_store')
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
-    imgCharacter = Gtk.Template.Child(name='imgCharacter')
+    #imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
     # campos da tela
     lblId = Gtk.Template.Child(name='lblId')
@@ -95,10 +90,12 @@ class MainWindow(Gtk.ApplicationWindow):
     appConfig = AppConfig()
     capivaraPathFile = appConfig.getCapivaraDirectory()
     version = appConfig.getCapivaraVersion()
+    lastFileOpen = appConfig.getLastFileOpen()
 
     # Configurando globais
     Global.set("my_capivara", capivaraPathFile)
     Global.set("version", version)
+    Global.set("last_file_open", lastFileOpen)
 
     if appConfig.getDarkmode() == 'yes':
         settings.set_property('gtk-application-prefer-dark-theme', True)
@@ -177,7 +174,11 @@ class MainWindow(Gtk.ApplicationWindow):
         for s in sex:
             self.cboSex.append(s[0], s[1])
 
-        LoadCapivaraFile.loadCapivaraFile()
+        if self.lastFileOpen == '':
+            LoadCapivaraFile.loadCapivaraFile()
+        else:
+            LoadCapivaraFile.loadCapivaraFile(self.lastFileOpen)
+
         self.putHeaderBar()
 
         # Passa os campos da tela para treeview
@@ -243,6 +244,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 self.LoadRelationships()
                 Global.set("capivara_file_open", capivaraFile)
+                Global.set("last_file_open", capivaraFile)
 
                 # Passa os campos da tela para treeview
                 vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex,
@@ -332,6 +334,10 @@ class MainWindow(Gtk.ApplicationWindow):
             c = c.get(value)
             model.set_value(tree_iter, 0, c.name)
 
+        # Nome alterado alterar flag
+        Global.set("flag_edit", True)
+        self.header_bar.set_title( "* " + Global.config("title"))
+
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
         c = Character()
@@ -340,6 +346,9 @@ class MainWindow(Gtk.ApplicationWindow):
         if text is not None:
             c.set_archtype(intId, text)
 
+        # Alterado alterar flag
+        FLAG_EDIT = True
+
     @Gtk.Template.Callback()
     def on_cboSex_changed(self, combo):
         c = Character()
@@ -347,6 +356,9 @@ class MainWindow(Gtk.ApplicationWindow):
         text = combo.get_active_text()
         if text is not None:
             c.set_sex(intId, text)
+
+        # Alterado alterar flag
+        FLAG_EDIT = True
 
 
     @Gtk.Template.Callback()
@@ -364,6 +376,9 @@ class MainWindow(Gtk.ApplicationWindow):
                 date = c.date_of_birth
                 self.txtDate.set_text(date.strftime('%m/%d/%Y'))
                 self.messagebox("error", "ERRO", "Data inválida!")
+
+        # Alterado alterar flag
+        FLAG_EDIT = True
 
     @Gtk.Template.Callback()
     def on_gtkEntryDate_focus_in_event(self, widget, event):
@@ -557,6 +572,10 @@ class MainWindow(Gtk.ApplicationWindow):
             c = c.get()
             if c.title:
                 SaveCapivaraFile.saveCapivaraFile(self.capivaraPathFile + '/' + c.title + '.capivara')
+                Global.set("flag_edit", False)
+                # # Coloca nome do projeto e autor na header bar
+                self.putHeaderBar()
+
             else:
                 dialog = DialogSaveFile()
                 dialog.set_transient_for(parent=self)
@@ -581,13 +600,10 @@ class MainWindow(Gtk.ApplicationWindow):
                         Global.set("capivara_file_open", capivaraFile)
 
                         self.LoadRelationships()
+                        Global.set("flag_edit", False)
 
-                        # # Coloca nome do projeto e autor na header bar
+                        # Coloca nome do projeto e autor na header bar
                         self.putHeaderBar()
-                        # projectProperties = ProjectProperties.get()
-                        # self.header_bar.set_title(projectProperties.title)
-                        # self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
-
 
                     except:
                         logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
@@ -939,6 +955,42 @@ class MainWindow(Gtk.ApplicationWindow):
         about.run()
         about.destroy()
 
+    @Gtk.Template.Callback()
+    def on_MainWindow_delete_event(self, object, data=None):
+
+        if Global.config("flag_edit"):
+            # Pegar o nome do projeto
+            c = ProjectProperties()
+            c = c.get()
+            dialog = CustomDialog(c.title)
+            dialog.set_transient_for(parent=self)
+
+
+            response = dialog.run()
+            print(f'Resposta do diálogo = {response}.')
+
+            # Verificando qual botão foi pressionado.
+            if response == Gtk.ResponseType.YES:
+                if c.title:
+                    SaveCapivaraFile.saveCapivaraFile(self.capivaraPathFile + '/' + c.title + '.capivara')
+                    logs.record("Arquivo salvo com sucesso.", type="info")
+
+                dialog.destroy()
+                return False
+
+            elif response == Gtk.ResponseType.NO:
+                logs.record("Saindo sem salvar.", type="info")
+                dialog.destroy()
+                return False
+            elif response == Gtk.ResponseType.DELETE_EVENT:
+                dialog.destroy()
+                return True
+            else:
+                print('Botão Cancelar pressionado')
+                dialog.destroy()
+                return True
+
+
     # CALL BACK SEARCH
     def _show_hidden_search_bar(self):
         if self.search_bar.get_search_mode():
@@ -1032,6 +1084,12 @@ class MainWindow(Gtk.ApplicationWindow):
             self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
             Global.set("title", projectProperties.title)
 
+
+
+
+
+
+
 class Application(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
@@ -1061,7 +1119,7 @@ class Application(Gtk.Application):
         if not win:
             win = MainWindow(application=self)
 
-        win.set_title("Capivara")
+        #win.set_title("Capivara")
         win.set_default_size(cfgWidth, cfgHeight)
         win.set_position(Gtk.WindowPosition.CENTER)
         win.present()
@@ -1079,5 +1137,9 @@ class Application(Gtk.Application):
         return 0
 
     def do_shutdown(self):
+        appConfig = AppConfig()
+        appConfig.setLastFileOpen(Global.config("last_file_open"))
+        # Salvando todos os configs
+        appConfig.serialize()
         Gtk.Application.do_shutdown(self)
 
