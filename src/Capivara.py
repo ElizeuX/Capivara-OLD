@@ -27,4 +27,5 @@ sleep(1)
 splash.destroy()
 
 app = Application()
+print(sys.argv)
 app.run(sys.argv)

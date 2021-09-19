@@ -306,6 +306,53 @@ class AppConfig:
             value = str(value)
         self.config.set(section, key, value)
 
+class DialogExportToPdf(Gtk.FileChooserDialog):
+    # Definindo o diretório padrão.
+    # home = Path.home()
+    # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
+    home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
+
+    def __init__(self, name):
+        super().__init__()
+
+        fileName = name.capitalize()
+        # dirname, basename = os.path.split(self.textbox.get_text())
+        # self.chooser.set_current_name(basename)
+        # self.chosser.set_current_folder(dirname)
+
+        self.set_title(title='Salvar como')
+        self.set_modal(modal=True)
+        # Tipo de ação que o dialogo irá executar.
+        self.set_action(action=Gtk.FileChooserAction.SAVE)
+        # Nome inicial do arquivo.
+        self.set_current_name(name=fileName)
+        # Pasta onde o diálogo será aberto.
+        self.set_current_folder(filename=str(self.home))
+        # Adicionando confirmação de sobrescrita.
+        self.set_do_overwrite_confirmation(do_overwrite_confirmation=True)
+
+        # Botões que serão exibidos.
+        self.add_buttons(
+            '_Cancelar', Gtk.ResponseType.CANCEL,
+            '_Salvar', Gtk.ResponseType.OK
+        )
+
+        pdfFilter = Gtk.FileFilter()
+        pdfFilter.set_name("pdf")
+        pdfFilter.add_mime_type("application/pdf")
+        pdfFilter.add_pattern("*.pdf")
+        self.add_filter(filter=pdfFilter)
+
+        # É obrigatório utilizar ``show_all()``.
+        self.show_all()
+
+    def save_file(self):
+        fileName = self.get_filename()
+        fileName += "." + self.get_filter().get_name()
+        # print(f'Caminho até o arquivo: {self.get_filename()}')
+        # print(f'URI até o arquivo: {self.get_uri()}')
+        return fileName
+
 
 class DialogSaveRelationshipImage(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.

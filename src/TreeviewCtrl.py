@@ -9,6 +9,7 @@ from gi.repository.GdkPixbuf import Pixbuf
 from DataAccess import Character, Core, SmartGroup, CoreCharacterLink
 from CharacterCtrl import CharacterControl
 from NewGroupDialog import NewGroupDialog
+from PrintOperation import PrintOperation
 
 
 
@@ -230,7 +231,7 @@ class Treeview():
             self.treeview_menu.popdown()
 
         elif( i == self.__PRINT_CAPIVARA):
-            print("Imprimindo capivara")
+            self.printCapivara()
             self.treeview_menu.popdown()
 
         elif(i == self.__REMOVE_CHARACTER_CORE):
@@ -352,6 +353,18 @@ class Treeview():
 
     def get_Core_Iter(self):
         pass
+
+    def printCapivara(self):
+        tree_selection = self.treeview.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            p = PrintOperation(value)
+            # p.connect("destroy", Gtk.main_quit)
+            p.show_all()
 
     def removeCharacterOfCore(self):
         tree_selection = self.treeview.get_selection()

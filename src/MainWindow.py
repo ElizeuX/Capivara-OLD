@@ -25,13 +25,13 @@ from datetime import datetime
 import os
 from pathlib import Path
 import GraphTools
+from PrintOperation import PrintOperation
 
 # importar Telas
 from Preferences import Preferences
 from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
-from CapivaraPrint import PrintOperation
 
 logs = Logs(filename="capivara.log")
 
@@ -502,37 +502,6 @@ class MainWindow(Gtk.ApplicationWindow):
                               self.list_store)
         Treeview(self.treeView, self, vo)
 
-        # projectProperties = ProjectProperties()
-        # projectProperties.title = ""
-        # projectProperties.authorsFullName = ""
-        # projectProperties.surname = ""
-        # projectProperties.forename = ""
-        # projectProperties.pseudonym = ""
-        #
-        # dialog = ProjectPropertiesDialog(projectProperties)
-        # dialog.set_transient_for(parent=self)
-        # response = dialog.run()
-        #
-        # # Verificando qual botão foi pressionado.
-        # if response == Gtk.ResponseType.YES:
-        #     # projectProject = dialog.properties()
-        #     # dataUtils = DataUtils()
-        #     # dataUtils.LoadCapivaraFileEmpty(projectProject)
-        #     # capivara = {'version model': '0.1.0', 'creator': 'Capivara 0.1.0', 'device': 'ELIZEU-PC',
-        #     #             'modified': '2021-08-19 14:08:59.496007',
-        #     #             'project properties': {'title': 'Deixa-me enterrar meu pai',
-        #     #                                    'abbreviated title': 'Deixa-me enterrar meu pai',
-        #     #                                    'authors full name': 'Elizeu Xavier', 'surname': 'Xavier',
-        #     #                                    'forename': 'Elizeu', 'pseudonym': ''},
-        #     #             'character': [{"name": "unnamed"}], 'core': [], 'smart group': [], 'tag': []}
-        #     # Treeview(self.treeView, capivara)
-        #
-        #
-        #
-        # elif response == Gtk.ResponseType.NO:
-        #     pass
-        #
-        # dialog.destroy()
 
     @Gtk.Template.Callback()
     def on_btn_preferences_clicked(self, widget):
@@ -674,97 +643,12 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_mnuCapivaraPrint_clicked(self, button):
-        self.builder = Gtk.Builder.new_from_file('CapivaraPrint.ui')
-        self.builder.connect_signals(self)
-        window = self.builder.get_object('CapivaraPrint')
-        # window = Gtk.Window.new(type=Gtk.WindowType.TOPLEVEL)
-        window.set_transient_for(parent=self)
-        window.set_modal(modal=True)
-        window.set_title(title='Gtk.Window')
-        window.set_default_size(width=800, height=600)
-        # window.set_default_icon_from_file(filename='../../../assets/icons/person.png')
-        window.show_all()
-        self.text_buffer_print = Gtk.Template.Child(name='text_buffer_print')
-        self.text_view_print = Gtk.Template.Child(name='text_view_print')
+        intId = int(self.lblId.get_text().replace('#', '0'))
+        p = PrintOperation(intId)
+        #p.connect("destroy", Gtk.main_quit)
+        p.show_all()
 
-        textbuffer = self.text_view_print
-        textbuffer.set_text("This is some text ")
 
-        # start_iter = self.text_buffer_print.get_start_iter()
-        #
-        # self.text_buffer_print.insert(start_iter, "This is some text ")
-        # self.text_buffer_print.insert_markup(self.text_buffer_print.get_end_iter(), "<b>and some bold text</b>", -1)
-
-        text = """<span size="xx-large">Lorem</span>
-        Lorem <b>ipsum</b> <span foreground="red">dolor</span> <big>sit</big> amet,
-        <i>consectetur</i> adipiscing <s>elit</s>, sed <sub>do</sub> 
-        <span background="green">eiusmod</span> <sup>tempor</sup> incididunt 
-        <small>ut</small> <tt>labore</tt> et <u>dolore</u> magna aliqua.
-        <span size="xx-large">Lorem</span>
-        Lorem <b>ipsum</b> <span foreground="red">dolor</span> <big>sit</big> amet,
-        <i>consectetur</i> adipiscing <s>elit</s>, sed <sub>do</sub> 
-        <span background="green">eiusmod</span> <sup>tempor</sup> incididunt 
-        <small>ut</small> <tt>labore</tt> et <u>dolore</u> magna aliqua.\n
-        """
-        # self.text_buffer_print.insert_markup(self.textbuffer.get_end_iter(), text, -1)
-        # # Adicionando texto renderizado ao Gtk.TextView.
-        # text_buffer_iter = self.text_buffer_print.get_end_iter()
-        # self.text_buffer_print.insert_markup(
-        #     iter=text_buffer_iter,
-        #     markup=text,
-        #     len=-1,
-        # )
-
-    # @Gtk.Template.Callback()
-    # def open_print_dialog(self, widget):
-    #     """Dialogo de impressão do sistema."""
-    #
-    #     # Variável auxilizar com as configurações do papel.
-    #     page_setup = PrintOperation.page_setup(self)
-    #
-    #     print_operation = PrintOperation(text_buffer=self.text_buffer_print)
-    #     print_operation.set_default_page_setup(default_page_setup=page_setup)
-    #
-    #     # Resposta da operação de impressão.
-    #     response = print_operation.run(action=Gtk.PrintOperationAction.PRINT_DIALOG, parent=self)
-    #     if response == Gtk.PrintOperationResult.ERROR:
-    #         print('ERROR')
-    #     elif response == Gtk.PrintOperationResult.APPLY:
-    #         print('APPLY')
-    #     elif response == Gtk.PrintOperationResult.CANCEL:
-    #         print('CANCEL')
-    #     elif response == Gtk.PrintOperationResult.IN_PROGRESS:
-    #         print('IN_PROGRESS')
-
-    # @Gtk.Template.Callback()
-    # def open_preview(self, widget):
-    #
-    #     """Pré visualizador do sistema."""
-    #     print_operation = PrintOperation(text_buffer=self.text_buffer_print)
-    #     response = print_operation.run(action=Gtk.PrintOperationAction.PREVIEW, parent=self)
-    #
-    # @Gtk.Template.Callback()
-    # def open_page_setup_dialog(self, widget):
-    #     """Diálogo para configuração da página."""
-    #
-    #     # Verificando o tamanho da página ANTES do diálogo.
-    #     print(self.page_setup.get_page_width(unit=Gtk.Unit.MM))
-    #     self.page_setup = Gtk.print_run_page_setup_dialog(
-    #         parent=self,
-    #         page_setup=self.page_setup,
-    #         settings=self.print_settings,
-    #     )
-    #     # Verificando o tamanho da página DEPOIS do diálogo.
-    #     print(self.page_setup.get_page_width(unit=Gtk.Unit.MM))
-    #
-    # @Gtk.Template.Callback()
-    # def export_to_pdf(self, widget):
-    #     """Exportando para arquivo."""
-    #     print_operation = PrintOperation(text_buffer=self.text_buffer)
-    #     print_operation.set_export_filename('nome-do-arquivo.pdf')
-    #     response = print_operation.run(action=Gtk.PrintOperationAction.EXPORT, parent=self)
-    #     if response == Gtk.PrintOperationResult.APPLY:
-    #         print('Arquivo exportado com sucesso')
 
     @Gtk.Template.Callback()
     def on_btn_new_group_clicked(self, button):
@@ -1084,19 +968,15 @@ class MainWindow(Gtk.ApplicationWindow):
             self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
             Global.set("title", projectProperties.title)
 
-
-
-
-
-
-
 class Application(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(application_id='br.elizeux.Capivara',
+        super().__init__( *args,
+                        application_id='br.elizeux.Capivara',
                          flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
                          **kwargs
                          )
+        print(args)
 
         self.add_main_option(
             "test",
