@@ -206,7 +206,7 @@ class PrintOperation(Gtk.Window):
 
     def open_page_setup_dialog(self, widget):
         """Diálogo para configuração da página."""
-
+        # TODO: Fazer funcionar esta operação
         # Verificando o tamanho da página ANTES do diálogo.
         print(self.page_setup.get_page_width(unit=Gtk.Unit.MM))
 
