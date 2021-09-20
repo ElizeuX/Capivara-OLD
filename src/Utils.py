@@ -20,15 +20,28 @@ import string
 import secrets
 import uuid
 
-
-
 from Global import Global
 
 PluginFolder = "../plugins/"
 MainModule = "__init__"
 
+
+def capitalizeFirstCharacter(name):
+    p = ['da', 'de', 'di', 'do', 'du', 'para']  # preposição
+
+    items = []
+    for item in name.split():
+        if not item in p:
+            item = item.capitalize()
+        items.append(item)
+
+    return ' '.join(items)
+
+
+
 def generate_unique_key(size=15):
     return secrets.token_urlsafe(size)[:size]
+
 
 def generate_uuid():
     return str(uuid.uuid4())
@@ -69,12 +82,13 @@ class CustomDialog(Gtk.Dialog):
 
         label.set_markup(
             '<b>Salvar as alterações no documento "' + title + '" antes de fechar?\n\n</b>'
-            '<small>Suas alterações serão perdidas se não salvá-las.</small>'
+                                                               '<small>Suas alterações serão perdidas se não salvá-las.</small>'
         )
 
         content_area.add(widget=label)
 
         self.show_all()
+
 
 class Date:
 
@@ -85,10 +99,8 @@ class Date:
         return strDate[0:2] + '/' + strDate[2:4] + '/' + strDate[4:]
 
     def dateToString(strDate):
-        day, month, year  = strDate.split('/')
-        return day+month+year
-
-
+        day, month, year = strDate.split('/')
+        return day + month + year
 
     def isValidDate(strDate):
 
@@ -137,7 +149,6 @@ class Date:
         #         print('Esta não é uma data válida.')
         # else:
         #     print('Esta não é uma data válida.')
-
 
 
 class JsonTools():
@@ -306,6 +317,7 @@ class AppConfig:
             value = str(value)
         self.config.set(section, key, value)
 
+
 class DialogExportToPdf(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
     # home = Path.home()
@@ -427,7 +439,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
     # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
 
     # TODO: Usar o caminho do próprio arquivo e o nome do arquivo original
-    #home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
+    # home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
     home = ""
     capivaraFile = ""
 

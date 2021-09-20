@@ -33,7 +33,7 @@ class CharacterControl:
 
         voCharacter.id.set_text("#" + str(character.id).zfill(5))
 
-        voCharacter.name.set_text(character.name)
+        voCharacter.name.set_text(Utils.capitalizeFirstCharacter(character.name))
 
         if character.height == None:
             voCharacter.height.set_text('0.00')
@@ -69,17 +69,17 @@ class CharacterControl:
         if character.eye_color == None:
             voCharacter.eye_color.set_text('')
         else:
-            voCharacter.eye_color.set_text(character.eye_color)
+            voCharacter.eye_color.set_text(character.eye_color.capitalize())
 
         if character.hair_color == None:
             voCharacter.hair_color.set_text('')
         else:
-            voCharacter.hair_color.set_text(character.hair_color)
+            voCharacter.hair_color.set_text(character.hair_color.capitalize())
 
         voCharacter.local.set_text(character.local)
-        voCharacter.body_type.set_text(character.body_type)
-        voCharacter.ethinicity.set_text(character.ethnicity)
-        voCharacter.health.set_text(character.health)
+        voCharacter.body_type.set_text(character.body_type.capitalize())
+        voCharacter.ethinicity.set_text(character.ethnicity.capitalize())
+        voCharacter.health.set_text(character.health.capitalize())
 
         if  voCharacter.background == None:
             print("sem background")

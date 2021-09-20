@@ -42,8 +42,8 @@ def loadCapivaraFile(fileOpen=None):
                 {
                     "id": 1,
                     "name": "unnamed",
-                    "archtype" : "",
-                    "date of birth" : "",
+                    "archtype": "",
+                    "date of birth": "",
                     "sex": "",
                     "age": "",
                     "local": "",
@@ -223,6 +223,7 @@ def __InsertFileInformationOnBase(s, capivara):
     s.add(c)
     s.commit()
 
+
 def __CreateRelationshipMap(s, capivara):
     for relationship in capivara['Relationship map']:
         c = Character()
@@ -234,13 +235,3 @@ def __CreateRelationshipMap(s, capivara):
         mp.character_two = c.id
         s.add(mp)
         s.commit()
-
-
-
-
-
-
-
-        
-
-

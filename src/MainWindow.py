@@ -12,7 +12,6 @@ from Global import Global
 from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, \
     DialogSaveRelationshipImage, Date, CustomDialog
 import PluginsManager
-import webbrowser
 from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink
 import Utils
@@ -36,7 +35,6 @@ from PluginsManager import PluginsManager
 logs = Logs(filename="capivara.log")
 
 
-
 @Gtk.Template(filename='MainWindow.ui')
 class MainWindow(Gtk.ApplicationWindow):
     __gtype_name__ = 'MainWindow'
@@ -53,7 +51,6 @@ class MainWindow(Gtk.ApplicationWindow):
     info_bar = Gtk.Template.Child(name='info_bar')
     list_store = Gtk.Template.Child(name='list_store')
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
-    #imgCharacter = Gtk.Template.Child(name='imgCharacter')
 
     # campos da tela
     lblId = Gtk.Template.Child(name='lblId')
@@ -72,9 +69,8 @@ class MainWindow(Gtk.ApplicationWindow):
     txtTag = Gtk.Template.Child(name='gtkEntryTag')
     txtBackground = Gtk.Template.Child(name='txtBackground')
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
-    chkCharacter =Gtk.Template.Child(name='chkCharacter')
+    chkCharacter = Gtk.Template.Child(name='chkCharacter')
     chkCore = Gtk.Template.Child(name='chkCore')
-
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
@@ -240,7 +236,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 # TODO: Colocar um spinner indicando  que o arquivo está sendo carregado
 
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
-                #self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
+                # self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
 
                 self.LoadRelationships()
                 Global.set("capivara_file_open", capivaraFile)
@@ -319,24 +315,26 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_gtkEntryName_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_name(intId, self.txtName.get_text())
-        self.LoadRelationships()
+        # intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.name != self.txtName.get_text():
+            c.set_name(intId, self.txtName.get_text())
+            self.LoadRelationships()
 
-        tree_selection = self.treeView.get_selection()
-        (model, pathlist) = tree_selection.get_selected_rows()
-        value = ""
-        for path in pathlist:
-            tree_iter = model.get_iter(path)
-            value = model.get_value(tree_iter, 2)
-        if value:
-            c = Character()
-            c = c.get(value)
-            model.set_value(tree_iter, 0, c.name)
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
-        # Nome alterado alterar flag
-        Global.set("flag_edit", True)
-        self.header_bar.set_title( "* " + Global.config("title"))
+            # Alterar o nome na row
+            tree_selection = self.treeView.get_selection()
+            (model, pathlist) = tree_selection.get_selected_rows()
+            for path in pathlist:
+                tree_iter = model.get_iter(path)
+
+            model.set_value(tree_iter, 0, self.txtName.get_text())
+
+
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
@@ -346,8 +344,9 @@ class MainWindow(Gtk.ApplicationWindow):
         if text is not None:
             c.set_archtype(intId, text)
 
-        # Alterado alterar flag
-        FLAG_EDIT = True
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_cboSex_changed(self, combo):
@@ -357,9 +356,9 @@ class MainWindow(Gtk.ApplicationWindow):
         if text is not None:
             c.set_sex(intId, text)
 
-        # Alterado alterar flag
-        FLAG_EDIT = True
-
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryDate_focus_out_event(self, widget, event):
@@ -371,14 +370,15 @@ class MainWindow(Gtk.ApplicationWindow):
             if Date.isValidDate(date):
                 self.txtDate.set_text(date)
                 c.set_dateOfBirth(intId, datetime.strptime(date, "%d/%m/%Y"))
+
+                # Nome alterado alterar flag
+                Global.set("flag_edit", True)
+                self.header_bar.set_title("* " + Global.config("title"))
             else:
                 c = c.get(intId)
                 date = c.date_of_birth
                 self.txtDate.set_text(date.strftime('%m/%d/%Y'))
                 self.messagebox("error", "ERRO", "Data inválida!")
-
-        # Alterado alterar flag
-        FLAG_EDIT = True
 
     @Gtk.Template.Callback()
     def on_gtkEntryDate_focus_in_event(self, widget, event):
@@ -390,53 +390,101 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_gtkEntryHeigth_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_height(intId, self.txtHeigth.get_text())
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.height != float(self.txtHeigth.get_text()):
+            c.set_height(intId, self.txtHeigth.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryWeigth_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_weight(intId, self.txtWeigth.get_text())
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.weight != float(self.txtWeigth.get_text()):
+            c.set_weight(intId, self.txtWeigth.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryBodyType_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_bodyType(intId, self.txtBodyType.get_text())
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.body_type != self.txtBodyType.get_text():
+            c.set_bodyType(intId, self.txtBodyType.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryEyeColor_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_eyeColor(intId, self.txtEyeColor.get_text())
+        intId = self.getIdRow()
+        c.get(intId)
+        if c.eye_color != self.txtEyeColor.get_text():
+            c.set_eyeColor(intId, self.txtEyeColor.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryHairColor_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_hairColor(intId, self.txtHairColor.get_text())
+        intId = self.getIdRow()
+        c.get(intId)
+        if c.hair_color != self.txtHairColor.get_text():
+            c.set_hairColor(intId, self.txtHairColor.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryEthinicity_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_ethinicity(intId, self.txtEthinicity.get_text())
+        intId = self.getIdRow()
+        c.get(intId)
+        if c.ethnicity != self.txtEthinicity.get_text():
+            c.set_ethinicity(intId, self.txtEthinicity.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryHealth_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_health(intId, self.txtHealth.get_text())
+        intId = self.getIdRow()
+        c.get(intId)
+        if c.health != self.txtHealth.get_text():
+            c.set_health(intId, self.txtHealth.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_txtBackground_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
+        c.get(intId)
         textbuffer = self.txtBackground.get_buffer()
-        first_iter = textbuffer.get_start_iter()
-        end_iter = textbuffer.get_end_iter()
-        c.set_background(intId, textbuffer.get_text(first_iter, end_iter, False))
+        if c.background != textbuffer:
+            first_iter = textbuffer.get_start_iter()
+            end_iter = textbuffer.get_end_iter()
+            c.set_background(intId, textbuffer.get_text(first_iter, end_iter, False))
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_gtkEntryTag_focus_out_event(self, widget, event):
@@ -462,22 +510,17 @@ class MainWindow(Gtk.ApplicationWindow):
                 d.tag_id = t.getTag(tag).id
                 d.insertTagCharacterLink(d)
 
-
-
-
-
-
-
-
-
-
-
-
     @Gtk.Template.Callback()
     def on_gtkEntryLocal_focus_out_event(self, widget, event):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
-        c.set_local(intId, self.txtLocal.get_text())
+        intId = self.getIdRow()
+        c.get(intId)
+        if c.local != self.txtLocal.get_text():
+            c.set_local(intId, self.txtLocal.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):
@@ -488,7 +531,6 @@ class MainWindow(Gtk.ApplicationWindow):
         projectProperties.surname = ""
         projectProperties.forename = ""
         projectProperties.pseudonym = ""
-
 
         LoadCapivaraFile.loadCapivaraFile()
 
@@ -501,7 +543,6 @@ class MainWindow(Gtk.ApplicationWindow):
                               self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
                               self.list_store)
         Treeview(self.treeView, self, vo)
-
 
     @Gtk.Template.Callback()
     def on_btn_preferences_clicked(self, widget):
@@ -645,10 +686,8 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_mnuCapivaraPrint_clicked(self, button):
         intId = int(self.lblId.get_text().replace('#', '0'))
         p = PrintOperation(intId)
-        #p.connect("destroy", Gtk.main_quit)
+        # p.connect("destroy", Gtk.main_quit)
         p.show_all()
-
-
 
     @Gtk.Template.Callback()
     def on_btn_new_group_clicked(self, button):
@@ -689,6 +728,21 @@ class MainWindow(Gtk.ApplicationWindow):
         c.notes = ""
         c.insertCharacter(c)
 
+        tree_selection = self.treeView.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        tree_iter = model.get_iter_from_string("0")
+
+        itemIcon = Gtk.IconTheme.get_default().load_icon("document-open-symbolic", 22, 0)
+        myiter = model.insert_after(tree_iter, None)
+        model.set_value(myiter, 0, c.name)
+        model.set_value(myiter, 1, itemIcon)
+        model.set_value(myiter, 2, str(c.id))
+
+        self.treeView.get_selection().select_iter(myiter)
+
+        #self.order = Gtk.SortType.ASCENDING
+        #model.set_sort_column_id(2, self.order)
+
         characterOne = c.id
         characterTwos = c.list()
         for characterTwo in characterTwos:
@@ -705,7 +759,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 cm.insertCharacterMap(cm)
 
         self.LoadRelationships()
-        Treeview(self.treeView, self)
+        #Treeview(self.treeView, self)
 
     def LoadRelationships(self):
         self.lstStoreMap.clear()
@@ -802,7 +856,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_mnu_capivara_help_clicked(self, widget):
-        webbrowser.open('file:/Program Files (x86)/MarinerSoftware/Persona/Help/Persona Help.html', new=2)
+        # webbrowser.open('file:/Program Files (x86)/MarinerSoftware/Persona/Help/Persona Help.html', new=2)
+        os.startfile("C:/Program Files (x86)/Arena/Readme/English.chm")
 
     @Gtk.Template.Callback()
     def on_mnu_PluginsManager_clicked(self, widget):
@@ -842,13 +897,15 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_MainWindow_delete_event(self, object, data=None):
 
+        # Verificar se os campos do registro é igual ao json file
+
+
         if Global.config("flag_edit"):
             # Pegar o nome do projeto
             c = ProjectProperties()
             c = c.get()
             dialog = CustomDialog(c.title)
             dialog.set_transient_for(parent=self)
-
 
             response = dialog.run()
             print(f'Resposta do diálogo = {response}.')
@@ -873,7 +930,6 @@ class MainWindow(Gtk.ApplicationWindow):
                 print('Botão Cancelar pressionado')
                 dialog.destroy()
                 return True
-
 
     # CALL BACK SEARCH
     def _show_hidden_search_bar(self):
@@ -921,7 +977,6 @@ class MainWindow(Gtk.ApplicationWindow):
         #     message_id=self.message_id,
         # )
         self.statusbar.remove_all(context_id=self.context_id)
-
     # status bar
 
     @Gtk.Template.Callback()
@@ -960,19 +1015,29 @@ class MainWindow(Gtk.ApplicationWindow):
         # Coloca nome do projeto e autor na header bar
         projectProperties = ProjectProperties.get()
         if not projectProperties.title:
-            self.header_bar.set_title("Capivara")
-            self.header_bar.set_subtitle("version %s" % Global.config("version"))
+            self.header_bar.set_title("Untitled")
+            self.header_bar.set_subtitle(" - ")
             Global.set("title", projectProperties.title)
         else:
             self.header_bar.set_title(projectProperties.title)
             self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
             Global.set("title", projectProperties.title)
 
+    def getIdRow(self):
+        tree_selection = self.treeView.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            return value
+
 class Application(Gtk.Application):
 
     def __init__(self, *args, **kwargs):
-        super().__init__( *args,
-                        application_id='br.elizeux.Capivara',
+        super().__init__(*args,
+                         application_id='br.elizeux.Capivara',
                          flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
                          **kwargs
                          )
@@ -999,7 +1064,7 @@ class Application(Gtk.Application):
         if not win:
             win = MainWindow(application=self)
 
-        #win.set_title("Capivara")
+        # win.set_title("Capivara")
         win.set_default_size(cfgWidth, cfgHeight)
         win.set_position(Gtk.WindowPosition.CENTER)
         win.present()
@@ -1022,4 +1087,3 @@ class Application(Gtk.Application):
         # Salvando todos os configs
         appConfig.serialize()
         Gtk.Application.do_shutdown(self)
-

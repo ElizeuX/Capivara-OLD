@@ -29,11 +29,11 @@ class ProjectPropertiesDialog(Gtk.Dialog):
         self.txtPseudonym.set_text(propriedades.pseudonym)
 
     def properties(self):
-        self.propertiesProject['title'] = str(self.txtTitle.get_text())
-        self.propertiesProject['authors full name'] = str(self.txtAuthor.get_text())
-        self.propertiesProject['surname'] = str(self.txtSurname.get_text())
-        self.propertiesProject['forename'] = str(self.txtForename.get_text())
-        self.propertiesProject['pseudonym'] = str(self.txtPseudonym.get_text())
+        self.propertiesProject['title'] = str(self.txtTitle.get_text().strip())
+        self.propertiesProject['authors full name'] = str(self.txtAuthor.get_text().strip())
+        self.propertiesProject['surname'] = str(self.txtSurname.get_text().strip())
+        self.propertiesProject['forename'] = str(self.txtForename.get_text().strip())
+        self.propertiesProject['pseudonym'] = str(self.txtPseudonym.get_text().strip())
         return self.propertiesProject
 
 

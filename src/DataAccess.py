@@ -12,11 +12,12 @@ import os
 from datetime import datetime
 
 engine = create_engine('sqlite:///capivara.db', echo=False)
-#engine = create_engine('sqlite://', echo=False)
+# engine = create_engine('sqlite://', echo=False)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 connection = engine.connect()
 metadata = MetaData(bind=engine, reflect=True)
+
 
 class CharacterMap(Base):
     __tablename__ = 'characterMap'
@@ -49,7 +50,6 @@ class CharacterMap(Base):
         s = Session()
         return s.query(CharacterMap).all()
 
-
     @classmethod
     def toDict(cls):
         s = Session()
@@ -64,18 +64,20 @@ class CharacterMap(Base):
         strRelationship = ",".join(strRelationship)
         return JsonTools.putArray(strRelationship)
 
+
 class FileInformation(Base):
-    __tablename__ ='file_information'
-    id  =  Column(Integer(), primary_key=True)
+    __tablename__ = 'file_information'
+    id = Column(Integer(), primary_key=True)
     versionModel = Column(Unicode(5))
     creator = Column(Unicode(20))
-    device =Column(Unicode(100))
-    modified =Column(Unicode(30))
+    device = Column(Unicode(100))
+    modified = Column(Unicode(30))
 
     @classmethod
     def get(cls):
         s = Session()
         return s.query(FileInformation).get(1)
+
 
 class ProjectProperties(Base):
     __tablename__ = 'project_properties'
@@ -104,6 +106,7 @@ class ProjectProperties(Base):
     def get(cls):
         s = Session()
         return s.query(ProjectProperties).get(1)
+
 
 class CoreCharacterLink(Base):
     __tablename__ = 'core_character'
@@ -140,6 +143,7 @@ class TagCharacterLink(Base):
         s.add(tagcharacterlink)
         s.commit()
 
+
 class Biography(Base):
     __tablename__ = 'biography'
     id = Column(Integer(), primary_key=True)
@@ -155,6 +159,7 @@ class Biography(Base):
         d.year = int(biography['year'])
         d.description = biography['description']
         return d
+
 
 class Tag(Base):
     __tablename__ = 'tag'
@@ -205,6 +210,7 @@ class Tag(Base):
 
         return JsonTools.putArray(', '.join(retorno))
 
+
 class SmartGroup(Base):
     __tablename__ = 'smart_group'
     id = Column(Integer(), primary_key=True)
@@ -238,10 +244,10 @@ class SmartGroup(Base):
 
     @classmethod
     def listCharacter(cls, rule):
-        #rule = ( sex ==[cd] \"Male\" )
+        # rule = ( sex ==[cd] \"Male\" )
         s = Session()
-        print("a regra é %s" %rule)
-        #lista = rule.split()
+        print("a regra é %s" % rule)
+        # lista = rule.split()
         # filtro = []
         # for elemento in lista:
         #     if elemento != '(' and elemento != ')':
@@ -257,7 +263,7 @@ class SmartGroup(Base):
         return rs
 
         # for row in rs:
-            #     print(row)
+        #     print(row)
 
     @classmethod
     def toDict(cls):
@@ -266,12 +272,13 @@ class SmartGroup(Base):
         retorno = []
         for smartGroup in smartGroups:
             smartGroupStr = JsonTools.putMap('"id"', str(smartGroup.id)) + ','
-            #smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description  + '"') + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule  + '"')
+            # smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"') + ','
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule + '"')
             retorno.append(JsonTools.putObject(smartGroupStr))
 
         return JsonTools.putArray(', '.join(retorno))
+
 
 class Core(Base):
     __tablename__ = 'core'
@@ -303,7 +310,7 @@ class Core(Base):
     def delete(cls, id):
         s = Session()
         # deletar link character-core
-        s.query(CoreCharacterLink).filter(CoreCharacterLink.core_id==id).delete()
+        s.query(CoreCharacterLink).filter(CoreCharacterLink.core_id == id).delete()
         s.query(Core).filter(Core.id == id).delete()
         s.commit()
 
@@ -322,7 +329,6 @@ class Core(Base):
         s = Session()
         return s.query(CoreCharacterLink).filter_by(core_id=id)
 
-
     @classmethod
     def toDict(cls):
         s = Session()
@@ -334,6 +340,7 @@ class Core(Base):
             retorno.append(JsonTools.putObject(coresStr))
 
         return JsonTools.putArray(', '.join(retorno))
+
 
 class Character(Base):
     __tablename__ = 'character'
@@ -365,7 +372,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'name': strName})
+        s.query(Character).filter(Character.id == d.id).update({'name': strName.strip().upper()})
         s.commit()
 
     @classmethod
@@ -421,7 +428,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'body_type': strBodyType})
+        s.query(Character).filter(Character.id == d.id).update({'body_type': strBodyType.strip().upper()})
         s.commit()
 
     @classmethod
@@ -429,7 +436,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'eye_color': strEyeColor})
+        s.query(Character).filter(Character.id == d.id).update({'eye_color': strEyeColor.strip().upper()})
         s.commit()
 
     @classmethod
@@ -437,7 +444,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'hair_color': strHairColor})
+        s.query(Character).filter(Character.id == d.id).update({'hair_color': strHairColor.strip().upper()})
         s.commit()
 
     @classmethod
@@ -445,7 +452,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'ethnicity': strEthinicity})
+        s.query(Character).filter(Character.id == d.id).update({'ethnicity': strEthinicity.strip().upper()})
         s.commit()
 
     @classmethod
@@ -453,7 +460,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'health': strHealth})
+        s.query(Character).filter(Character.id == d.id).update({'health': strHealth.strip().upper()})
         s.commit()
 
     @classmethod
@@ -469,7 +476,7 @@ class Character(Base):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'local': strLocal})
+        s.query(Character).filter(Character.id == d.id).update({'local': strLocal.strip().upper()})
         s.commit()
 
     @classmethod
@@ -477,24 +484,24 @@ class Character(Base):
         d = cls()
         dateformat = "%Y-%m-%d"
         d.id = character['id']
-        d.name = character['name']
+        d.name = character['name'].strip().upper()
         d.archtype = character['archtype']
         if character['date of birth'] and character['date of birth'] != "":
             d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
         d.sex = character['sex']
         d.age = character['age']
-        d.local = character['local']
-        d.occupation = character['occupation']
+        d.local = character['local'].strip().upper()
+        d.occupation = character['occupation'].strip().upper()
         d.position_social = character['position social']
         d.height = character['height']
         d.weight = character['weight']
-        d.body_type = character['body type']
-        d.appearance = character['appearance']
-        d.eye_color = character['eye color']
-        d.hair_color = character['hair color']
-        d.ethnicity = character['ethnicity']
-        d.health = character['health']
-        d.standing_features = character['standing features']
+        d.body_type = character['body type'].strip().upper()
+        d.appearance = character['appearance'].strip().upper()
+        d.eye_color = character['eye color'].strip().upper()
+        d.hair_color = character['hair color'].strip().upper()
+        d.ethnicity = character['ethnicity'].strip().upper()
+        d.health = character['health'].strip().upper()
+        d.standing_features = character['standing features'].strip().upper()
         d.background = character['background']
         d.hobbies = character['hobbies']
         d.picture = character['picture']
@@ -561,18 +568,20 @@ class Character(Base):
         retorno = []
         for character in characters:
             characterStr = JsonTools.putMap('"id"', str(character.id)) + ','
-            #characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
+            # characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
             if character.date_of_birth != None:
-                characterStr = characterStr + JsonTools.putMap('"date of birth"', '"' + str(character.date_of_birth)  + '"') + ','
+                characterStr = characterStr + JsonTools.putMap('"date of birth"',
+                                                               '"' + str(character.date_of_birth) + '"') + ','
             else:
-                characterStr = characterStr + JsonTools.putMap('"date of birth"','""' ) + ','
+                characterStr = characterStr + JsonTools.putMap('"date of birth"', '""') + ','
             characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"position social"', '"' + str(character.position_social)  + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"position social"',
+                                                           '"' + str(character.position_social) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"height"', str("{:.2f}".format(character.height))) + ','
             characterStr = characterStr + JsonTools.putMap('"weight"', str("{:.2f}".format(character.weight))) + ','
             characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
@@ -581,7 +590,8 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"standing features"', '"' + str(character.standing_features) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"standing features"',
+                                                           '"' + str(character.standing_features) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
@@ -620,7 +630,7 @@ class Character(Base):
                 strIdCore = ""
 
             if strIdCore:
-                strDestinationCore = JsonTools.putMap('"destination"', '"core"')  + ", "
+                strDestinationCore = JsonTools.putMap('"destination"', '"core"') + ", "
                 strDestinationCore = strDestinationCore + JsonTools.putMap('"idrefs"', strIdCore)
                 strDestinationCore = JsonTools.putObject(strDestinationCore)
 
@@ -633,7 +643,7 @@ class Character(Base):
                 strIdTag = ",".join(strIdTag)
                 strIdTag = JsonTools.putArray(strIdTag.replace("'", ""))
             else:
-                strIdTag  = ""
+                strIdTag = ""
 
             if strIdTag:
                 strDestinationTag = JsonTools.putMap('"destination"', '"tag"') + ", "
@@ -643,16 +653,14 @@ class Character(Base):
             if strDestinationCore:
                 strRelationship = strDestinationCore
                 if strDestinationTag:
-                    strRelationship +=  ", " + strDestinationTag
+                    strRelationship += ", " + strDestinationTag
             else:
                 if strDestinationTag:
-                    strRelationship +=  strDestinationTag
-
+                    strRelationship += strDestinationTag
 
             strRelationship = JsonTools.putMap('"relationship"', JsonTools.putArray(strRelationship))
 
             characterStr = characterStr + ", " + strRelationship
-
 
             retorno.append(JsonTools.putObject(characterStr))
 
