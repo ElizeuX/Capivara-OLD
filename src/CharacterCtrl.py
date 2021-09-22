@@ -5,7 +5,7 @@ import gi
 gi.require_version(namespace='Gtk', version='3.0')
 
 from gi.repository import Gtk
-from DataAccess import Character, Biography, Tag
+from DataAccess import Character, Biography, Tag, CharacterMap
 from collections import namedtuple
 import Utils
 import re
@@ -15,10 +15,10 @@ from Utils import Date
 class CharacterControl:
     characterId = ""
     voCharacter = namedtuple('voCharacter',
-                             ['id', 'name', 'archtype', 'date_of_birth','sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
+                             [ 'name', 'archtype', 'date_of_birth','age', 'sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
                               'health', 'tag', 'local',
                               'background',
-                              'picture', 'biography'])
+                              'picture', 'biography', 'relationships'])
 
     def __init__(self, characterId, voCharacter):
         self.strCharacterId = characterId
@@ -31,7 +31,7 @@ class CharacterControl:
         # teste = m
 
 
-        voCharacter.id.set_text("#" + str(character.id).zfill(5))
+        #voCharacter.id.set_text("#" + str(character.id).zfill(5))
 
         voCharacter.name.set_text(Utils.capitalizeFirstCharacter(character.name))
 
@@ -54,6 +54,10 @@ class CharacterControl:
         else:
             voCharacter.date_of_birth.set_text("")
 
+        if character.age == None:
+            voCharacter.age.set_text('')
+        else:
+            voCharacter.age.set_text(character.age)
 
         if not character.sex:
             voCharacter.sex.set_active(-1)
@@ -114,21 +118,17 @@ class CharacterControl:
 
         voCharacter.tag.set_text(strTag)
 
+        voCharacter.relationships.clear()
+        cmaps = CharacterMap()
+        cmaps = cmaps.listCharacterMap(character.id)
+        c = Character()
+        lstCharacterMap = []
+        for cm in cmaps:
+            characterOneId = cm.character_one
+            characterTwoId = cm.character_two
+            tplCharacterMap = (
+            cm.id, c.get(characterOneId).name, cm.character_relationship, c.get(characterTwoId).name)
+            lstCharacterMap.append(tplCharacterMap)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        for relationship in lstCharacterMap:
+            voCharacter.relationships.append(row=relationship)

@@ -25,12 +25,14 @@ import os
 from pathlib import Path
 import GraphTools
 from PrintOperation import PrintOperation
+from ImageView import ImageViewDialog
 
 # importar Telas
 from Preferences import Preferences
 from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
+from SmartGroup2 import SmartGroupDialog
 
 logs = Logs(filename="capivara.log")
 
@@ -53,10 +55,11 @@ class MainWindow(Gtk.ApplicationWindow):
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
 
     # campos da tela
-    lblId = Gtk.Template.Child(name='lblId')
+    #lblId = Gtk.Template.Child(name='lblId')
     txtName = Gtk.Template.Child(name='gtkEntryName')
     cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
+    txtAge = Gtk.Template.Child(name='gtkEntryAge')
     cboSex = Gtk.Template.Child(name='cboSex')
     txtHeigth = Gtk.Template.Child(name='gtkEntryHeigth')
     txtWeigth = Gtk.Template.Child(name='gtkEntryWeigth')
@@ -74,11 +77,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
-                             ['id', 'name', 'archtype', 'date_of_birth', 'sex', 'height', 'weight', 'body_type',
+                             ['name', 'archtype', 'date_of_birth', 'age','sex', 'height', 'weight', 'body_type',
                               'eye_color',
                               'hair_color', 'ethinicity', 'health', 'tag', 'local',
                               'background',
-                              'picture', 'biography'])
+                              'picture', 'biography', 'relationships'])
 
     capivaraFile = ""
 
@@ -103,6 +106,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        # Checkbox do relationships
         self.chkCharacter.set_active(True)
         self.chkCharacter.set_sensitive(False)
         self.chkCore.set_active(False)
@@ -178,10 +182,10 @@ class MainWindow(Gtk.ApplicationWindow):
         self.putHeaderBar()
 
         # Passa os campos da tela para treeview
-        vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex, self.txtHeigth,
+        vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtEthinicity,
                               self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
-                              self.list_store)
+                              self.list_store, self.lstStoreMap)
 
         Treeview(self.treeView, self, vo)
 
@@ -238,25 +242,21 @@ class MainWindow(Gtk.ApplicationWindow):
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                 # self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
 
-                self.LoadRelationships()
+                #self.LoadRelationships()
+
                 Global.set("capivara_file_open", capivaraFile)
                 Global.set("last_file_open", capivaraFile)
 
                 # Passa os campos da tela para treeview
-                vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex,
+                vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex,
                                       self.txtHeigth,
                                       self.txtWeigth, self.txtBodyType,
                                       self.txtEyeColor, self.txtHairColor, self.txtEthinicity, self.txtHealth,
                                       self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
-                                      self.list_store)
+                                      self.list_store, self.lstStoreMap)
 
                 Treeview(self.treeView, self, vo)
 
-                # Coloca nome do projeto e autor na header bar
-                # projectProperties = ProjectProperties.get()
-                # self.header_bar.set_title(projectProperties.title)
-                # self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
-                # Global.set("title", projectProperties.title)
                 self.putHeaderBar()
 
             except:
@@ -274,6 +274,19 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_btnViewGraph_clicked(self, widget):
+        # dialog = ImageViewDialog(self)
+        # dialog.set_transient_for(parent=self)
+        # response = dialog.run()
+        #
+        # # Verificando qual botão foi pressionado.
+        # if response == Gtk.ResponseType.YES:
+        #     pass
+        #
+        # elif response == Gtk.ResponseType.NO:
+        #     pass
+        #
+        # dialog.destroy()
+
         GraphTools.GraphMake(self.chkCharacter.get_active(), self.chkCore.get_active())
 
     @Gtk.Template.Callback()
@@ -320,7 +333,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = c.get(intId)
         if c.name != self.txtName.get_text():
             c.set_name(intId, self.txtName.get_text())
-            self.LoadRelationships()
+            #self.LoadRelationships()
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -339,7 +352,7 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
         text = combo.get_active_text()
         if text is not None:
             c.set_archtype(intId, text)
@@ -349,9 +362,21 @@ class MainWindow(Gtk.ApplicationWindow):
             self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
+    def on_gtkEntryAge_focus_out_event(self, widget, event):
+        c = Character()
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.age != self.txtAge.get_text().strip():
+            c.set_age(intId, self.txtAge.get_text())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
+
+    @Gtk.Template.Callback()
     def on_cboSex_changed(self, combo):
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
         text = combo.get_active_text()
         if text is not None:
             c.set_sex(intId, text)
@@ -364,7 +389,7 @@ class MainWindow(Gtk.ApplicationWindow):
     def on_gtkEntryDate_focus_out_event(self, widget, event):
         date = self.txtDate.get_text()
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
         if date:
             date = Date.stringToDate(date)
             if Date.isValidDate(date):
@@ -488,9 +513,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_gtkEntryTag_focus_out_event(self, widget, event):
-        print(self.txtTag.get_text())
         c = Character()
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
         c = c.get(intId)
 
         tags = self.txtTag.get_text()
@@ -537,11 +561,11 @@ class MainWindow(Gtk.ApplicationWindow):
         self.putHeaderBar()
 
         # Passa os campos da tela para treeview
-        vo = self.voCharacter(self.lblId, self.txtName, self.cboArchtype, self.txtDate, self.cboSex, self.txtHeigth,
+        vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor,
                               self.txtEthinicity,
                               self.txtHealth, self.txtTag, self.txtLocal, self.txtBackground, self.imgCharacter,
-                              self.list_store)
+                              self.list_store, self.lstStoreMap)
         Treeview(self.treeView, self, vo)
 
     @Gtk.Template.Callback()
@@ -709,6 +733,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         c.name = "unnamed"
         c.archtype = ""
+        c.age = ""
         c.sex = ""
         c.local = ""
         c.occupation = ""
@@ -758,41 +783,45 @@ class MainWindow(Gtk.ApplicationWindow):
                 cm.character_two = characterOne
                 cm.insertCharacterMap(cm)
 
-        self.LoadRelationships()
+        #self.LoadRelationships()
         #Treeview(self.treeView, self)
 
-    def LoadRelationships(self):
-        self.lstStoreMap.clear()
-        cmaps = CharacterMap()
-        cmaps = cmaps.list()
-        c = Character()
-        lstCharacterMap = []
-        for cm in cmaps:
-            characterOneId = cm.character_one
-            characterTwoId = cm.character_two
-            tplCharacterMap = (cm.id, c.get(characterOneId).name, cm.character_relationship, c.get(characterTwoId).name)
-            lstCharacterMap.append(tplCharacterMap)
-
-        for relationship in lstCharacterMap:
-            self.lstStoreMap.append(row=relationship)
+    # def LoadRelationships(self):
+    #     intId = self.getIdRow()
+    #     self.lstStoreMap.clear()
+    #     cmaps = CharacterMap()
+    #     cmaps = cmaps.listCharacterMap(intId)
+    #     c = Character()
+    #     lstCharacterMap = []
+    #     for cm in cmaps:
+    #         characterOneId = cm.character_one
+    #         characterTwoId = cm.character_two
+    #         tplCharacterMap = (cm.id, c.get(characterOneId).name, cm.character_relationship, c.get(characterTwoId).name)
+    #         lstCharacterMap.append(tplCharacterMap)
+    #
+    #     for relationship in lstCharacterMap:
+    #         self.lstStoreMap.append(row=relationship)
 
     @Gtk.Template.Callback()
     def on_btn_group_category_clicked(self, widget):
-        dialog = CapivaraSmartGroup()
-        dialog.set_transient_for(parent=self)
+        dialog = SmartGroupDialog(self)
         response = dialog.run()
 
         # Verificando qual botão foi pressionado.
-        if response == Gtk.ResponseType.YES:
-            print('Botão SIM pressionado')
-            smartGroup = SmartGroup()
-            smartGroup.description = dialog.newSmartGroup()
-            smartGroup.rule = "a = a"
-            smartGroup.insertSmartGroup(smartGroup)
+        if response == Gtk.ResponseType.OK:
+           resposta = dialog.getRule()
+           print(resposta)
 
-            Treeview(self.treeView, self)
+           c = SmartGroup()
+           c.description = resposta[0]
+           c.rule = resposta[1]
+           c.insertSmartGroup(c)
 
-        elif response == Gtk.ResponseType.NO:
+           Treeview(self.treeView, self)
+
+
+
+        elif response == Gtk.ResponseType.CANCEL:
             print('Botão NÃO pressionado')
 
         elif response == Gtk.ResponseType.DELETE_EVENT:

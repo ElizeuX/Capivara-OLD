@@ -51,6 +51,11 @@ class CharacterMap(Base):
         return s.query(CharacterMap).all()
 
     @classmethod
+    def listCharacterMap(cls, id):
+        s = Session()
+        return s.query(CharacterMap).filter_by(character_one=id)
+
+    @classmethod
     def toDict(cls):
         s = Session()
         charactersMap = s.query(CharacterMap).all()
@@ -257,8 +262,48 @@ class SmartGroup(Base):
         # var2 = filtro[2]
 
         # rs = s.execute('SELECT * FROM character WHERE ' + var1 + '=' + var2 +';')
+        # name CONTAINS "teste" OR  eye_color == "verde" OR  hair_color != "pretos";
+        # name LIKE "%TESTE%" OR eye_color == "VERDE" OR hair_color != pretos
         strRule = rule.replace("(", "").replace(")", "").replace('[cd]', "")
-        rs = s.execute('SELECT * FROM character WHERE ' + strRule + ';')
+        # name, CONTAINS, "teste", OR,  eye_color, ==, "verde", OR,  hair_color, !=,"pretos";
+        lstRule = strRule.split()
+        moreRule = ""
+        isContains = False
+        isBeginsWith = False
+        isEndWith = False
+        for i in lstRule:
+            if isContains:
+                moreRule = moreRule + ' "%' + i.replace('"','') + '%"'
+                isContains = False
+                continue
+
+            if isBeginsWith:
+                moreRule = moreRule + '"' + i.replace('"', '') + '%"'
+                isBeginsWith = False
+                continue
+
+            if isEndWith:
+                moreRule = moreRule + ' "%' + i.replace('"','') + '"'
+                isEndWith = False
+                continue
+
+            elif i == "CONTAINS":
+                moreRule = moreRule + ' ' + "LIKE"
+                isContains = True
+
+            elif i == "BEGINSWITH":
+                moreRule = moreRule + ' ' + "LIKE"
+                isBeginsWith = True
+
+            elif i == "ENDWITH":
+                moreRule = moreRule + ' ' + "LIKE"
+                isEndWith = True
+
+            else:
+                moreRule = moreRule +  ' ' + i
+
+
+        rs = s.execute('SELECT * FROM character WHERE ' + moreRule + ';')
 
         return rs
 
@@ -328,6 +373,7 @@ class Core(Base):
     def listCharacters(cls, id):
         s = Session()
         return s.query(CoreCharacterLink).filter_by(core_id=id)
+        s.commit()
 
     @classmethod
     def toDict(cls):
@@ -381,6 +427,14 @@ class Character(Base):
         d = cls()
         d = d.get(intId)
         s.query(Character).filter(Character.id == d.id).update({'archtype': strArchtype})
+        s.commit()
+
+    @classmethod
+    def set_age(cls, intId, strAge):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'age': strAge})
         s.commit()
 
     @classmethod
@@ -489,7 +543,7 @@ class Character(Base):
         if character['date of birth'] and character['date of birth'] != "":
             d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
         d.sex = character['sex']
-        d.age = character['age']
+        d.age = character['age'].strip()
         d.local = character['local'].strip().upper()
         d.occupation = character['occupation'].strip().upper()
         d.position_social = character['position social']

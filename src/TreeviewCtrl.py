@@ -6,7 +6,7 @@ gi.require_version(namespace='Gtk', version='3.0')
 from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 
-from DataAccess import Character, Core, SmartGroup, CoreCharacterLink
+from DataAccess import Character, Core, SmartGroup, CoreCharacterLink, CharacterMap
 from CharacterCtrl import CharacterControl
 from NewGroupDialog import NewGroupDialog
 from PrintOperation import PrintOperation
@@ -214,18 +214,6 @@ class Treeview():
 
         return myiter
 
-    # def menu(self):
-    #     """
-    #     popover menu shown on right clicking a treeview item.
-    #     """
-    #
-    #
-    #
-    #
-    #     # for item in range(0, 5):
-    #     #     menu_item = Gtk.MenuItem("Menu " + str(item))
-    #     #     self.treeview_menu.append(menu_item)
-
     def item_activated(self, wdg, i):
         if (i == self.__DELETE_CAPIVARA):
             self.deleteCharacter()
@@ -351,6 +339,9 @@ class Treeview():
                 c = CharacterControl(value, self.data)
             except:
                 pass
+
+
+
 
     def get_Core_Iter(self):
         pass
@@ -492,56 +483,3 @@ def on_drag_data_received(treeview, context, x, y, selection, info, timestamp):
             c.insertcoreCharacterLink(c)
 
     Treeview(treeview, Treeview.widget)
-
-        # Get dragged iter as a TaskTreeModel iter
-        # If there is no selected task (empty selection.data),
-        # explictly skip handling it (set to empty list)
-        # if selection.data == '':
-        #     iters = []
-        # else:
-        # iters = characterId.split(',')
-        #
-        # dragged_iters = []
-        # for iter in iters:
-        #     print("Info", info)
-        #     if info == 0:
-        #         try:
-        #             dragged_iters.append(model.get_iter_from_string(iter))
-        #         except ValueError:
-        #             # I hate to silently fail but we have no choice.
-        #             # It means that the iter is not good.
-        #             # Thanks shitty Gtk API for not allowing us to test the string
-        #             print("Shitty iter", iter)
-        #             dragged_iter = None
-        #
-        #     elif info in dnd_external_targets and destination_tid:
-        #         f = dnd_external_targets[info][1]
-        #
-        #         src_model = context.get_source_widget().get_model()
-        #         dragged_iters.append(src_model.get_iter_from_string(iter))
-        #
-        # for dragged_iter in dragged_iters:
-        #     if info == 0:
-        #         if dragged_iter and model.iter_is_valid(dragged_iter):
-        #             dragged_tid = model.get_value(dragged_iter, 0)
-        #             try:
-        #                 row = []
-        #                 for i in range(model.get_n_columns()):
-        #                     row.append(model.get_value(dragged_iter, i))
-        #                 # tree.move_node(dragged_tid, new_parent_id=destination_tid)
-        #                 print("move_after(%s, %s) ~ (%s, %s)" % (
-        #                 dragged_iter, destination_iter, dragged_tid, destination_tid))
-        #                 # model.move_after(dragged_iter, destination_iter)
-        #                 model.insert(destination_iter, -1, row)
-        #                 model.remove(dragged_iter)
-        #             except Exception:
-        #                 print('Problem with dragging: ')
-        #
-        #     elif info in dnd_external_targets and destination_tid:
-        #         source = src_model.get_value(dragged_iter, 0)
-        #         # Handle external Drag'n'Drop
-        #         f(source, destination_tid)
-        #
-        #
-        #
-        #
