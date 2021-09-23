@@ -42,7 +42,9 @@
     <columns>
       <!-- column-name id -->
       <column type="gint"/>
-      <!-- column-name state -->
+      <!-- column-name ano -->
+      <column type="gchararray"/>
+      <!-- column-name evento -->
       <column type="gchararray"/>
     </columns>
   </object>
@@ -190,6 +192,7 @@
                       <object class="GtkTreeView" id="treeview">
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
+                        <property name="margin-bottom">10</property>
                         <property name="hexpand">True</property>
                         <property name="vexpand">True</property>
                         <signal name="cursor-changed" handler="on" swapped="no"/>
@@ -878,7 +881,7 @@
                         </child>
                         <child>
                           <object class="GtkFrame">
-                            <property name="height-request">150</property>
+                            <property name="height-request">128</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="margin-start">15</property>
@@ -936,7 +939,7 @@
                         </child>
                         <child>
                           <object class="GtkFrame">
-                            <property name="height-request">150</property>
+                            <property name="height-request">161</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="margin-start">15</property>
@@ -947,7 +950,7 @@
                             <property name="shadow-type">out</property>
                             <child>
                               <object class="GtkAlignment">
-                                <property name="height-request">100</property>
+                                <property name="height-request">125</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="margin-start">5</property>
@@ -978,9 +981,10 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry">
+                                          <object class="GtkEntry" id="gtkEntryBioYear">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
+                                            <signal name="grab-focus" handler="on_gtkEntryBioYear_grab_focus" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1003,9 +1007,10 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry">
+                                          <object class="GtkEntry" id="gtkEntryBioEvent">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
+                                            <signal name="grab-focus" handler="on_gtkEntryBioEvent_grab_focus" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1014,12 +1019,13 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkButton">
+                                          <object class="GtkButton" id="btnBioAdd">
                                             <property name="label" translatable="yes">+</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
                                             <property name="margin-start">10</property>
+                                            <signal name="clicked" handler="on_btnBioAdd_clicked" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1028,13 +1034,14 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkButton">
+                                          <object class="GtkButton" id="btnBioDel">
                                             <property name="label" translatable="yes">-</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
                                             <property name="margin-start">5</property>
                                             <property name="margin-end">5</property>
+                                            <signal name="clicked" handler="on_btnBioDel_clicked" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -1051,48 +1058,67 @@
                                     </child>
                                     <child>
                                       <object class="GtkScrolledWindow">
-                                        <property name="height-request">50</property>
+                                        <property name="height-request">80</property>
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-top">10</property>
                                         <property name="shadow-type">in</property>
                                         <child>
                                           <object class="GtkTreeView" id="treeviewBiography">
+                                            <property name="height-request">60</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="margin-start">4</property>
                                             <property name="margin-end">5</property>
+                                            <property name="vexpand">True</property>
                                             <property name="model">list_store</property>
                                             <property name="search-column">0</property>
                                             <child internal-child="selection">
-                                              <object class="GtkTreeSelection"/>
+                                              <object class="GtkTreeSelection" id="bioSelection">
+                                                <signal name="changed" handler="on_bioSelection_changed" swapped="no"/>
+                                              </object>
                                             </child>
                                             <child>
                                               <object class="GtkTreeViewColumn" id="col-id">
-                                                <property name="title" translatable="yes">ANO</property>
-                                                <property name="clickable">True</property>
-                                                <property name="reorderable">True</property>
-                                                <property name="sort-indicator">True</property>
-                                                <property name="sort-column-id">0</property>
+                                                <property name="visible">False</property>
+                                                <property name="title" translatable="yes">ID</property>
+                                                <property name="sort-column-id">1</property>
                                                 <child>
                                                   <object class="GtkCellRendererText" id="cellrender-id"/>
                                                   <attributes>
+                                                    <attribute name="stretch">8</attribute>
                                                     <attribute name="text">0</attribute>
                                                   </attributes>
                                                 </child>
                                               </object>
                                             </child>
                                             <child>
-                                              <object class="GtkTreeViewColumn" id="col-state">
+                                              <object class="GtkTreeViewColumn" id="col-year">
+                                                <property name="title" translatable="yes">ANO</property>
+                                                <property name="clickable">True</property>
+                                                <property name="reorderable">True</property>
+                                                <property name="sort-indicator">True</property>
+                                                <property name="sort-order">descending</property>
+                                                <property name="sort-column-id">1</property>
+                                                <child>
+                                                  <object class="GtkCellRendererText" id="cellrender-year"/>
+                                                  <attributes>
+                                                    <attribute name="text">1</attribute>
+                                                  </attributes>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child>
+                                              <object class="GtkTreeViewColumn" id="col-event">
                                                 <property name="title" translatable="yes">EVENTO</property>
                                                 <property name="clickable">True</property>
                                                 <property name="reorderable">True</property>
                                                 <property name="sort-indicator">True</property>
-                                                <property name="sort-column-id">1</property>
+                                                <property name="sort-column-id">2</property>
                                                 <child>
-                                                  <object class="GtkCellRendererText" id="cellrender-state"/>
+                                                  <object class="GtkCellRendererText" id="cellrender-event"/>
                                                   <attributes>
-                                                    <attribute name="text">1</attribute>
+                                                    <attribute name="text">2</attribute>
                                                   </attributes>
                                                 </child>
                                               </object>
@@ -1123,12 +1149,6 @@
                             <property name="fill">False</property>
                             <property name="position">3</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                       </object>
                       <packing>

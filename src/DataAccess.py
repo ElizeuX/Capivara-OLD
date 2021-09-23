@@ -165,6 +165,20 @@ class Biography(Base):
         d.description = biography['description']
         return d
 
+    @classmethod
+    def insertBiography(cls, biography):
+        s = Session()
+        s.add(biography)
+        s.commit()
+        return biography.id
+
+    @classmethod
+    def delete(cls, id):
+        s = Session()
+        s.query(Biography).filter(Biography.id == id).delete()
+        s.commit()
+
+
 
 class Tag(Base):
     __tablename__ = 'tag'
@@ -319,7 +333,7 @@ class SmartGroup(Base):
             smartGroupStr = JsonTools.putMap('"id"', str(smartGroup.id)) + ','
             # smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
             smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"') + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule + '"')
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule.replace('"', '\\"')  + '"')
             retorno.append(JsonTools.putObject(smartGroupStr))
 
         return JsonTools.putArray(', '.join(retorno))
@@ -538,7 +552,7 @@ class Character(Base):
         d = cls()
         dateformat = "%Y-%m-%d"
         d.id = character['id']
-        d.name = character['name'].strip().upper()
+        d.name = character['name'].strip().upper().replace('\"', '"')
         d.archtype = character['archtype']
         if character['date of birth'] and character['date of birth'] != "":
             d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
@@ -623,7 +637,7 @@ class Character(Base):
         for character in characters:
             characterStr = JsonTools.putMap('"id"', str(character.id)) + ','
             # characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name).replace('"', '\\"') + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
             if character.date_of_birth != None:

@@ -13,7 +13,7 @@ from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, Dialog
     DialogSaveRelationshipImage, Date, CustomDialog
 import PluginsManager
 from CapivaraSmartGroup import CapivaraSmartGroup
-from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink
+from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink, Biography
 import Utils
 from src.logger import Logs
 from TreeviewCtrl import Treeview
@@ -55,7 +55,7 @@ class MainWindow(Gtk.ApplicationWindow):
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
 
     # campos da tela
-    #lblId = Gtk.Template.Child(name='lblId')
+    # lblId = Gtk.Template.Child(name='lblId')
     txtName = Gtk.Template.Child(name='gtkEntryName')
     cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
@@ -74,10 +74,13 @@ class MainWindow(Gtk.ApplicationWindow):
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
     chkCharacter = Gtk.Template.Child(name='chkCharacter')
     chkCore = Gtk.Template.Child(name='chkCore')
+    treeBio = Gtk.Template.Child(name='treeviewBiography')
+    txtBioYear = Gtk.Template.Child(name='gtkEntryBioYear')
+    txtBioEvent = Gtk.Template.Child(name='gtkEntryBioEvent')
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
-                             ['name', 'archtype', 'date_of_birth', 'age','sex', 'height', 'weight', 'body_type',
+                             ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
                               'eye_color',
                               'hair_color', 'ethinicity', 'health', 'tag', 'local',
                               'background',
@@ -166,8 +169,8 @@ class MainWindow(Gtk.ApplicationWindow):
         for archetype in archetypes:
             self.cboArchtype.append(archetype[0], archetype[1])
 
-        sex = [("Male", "Male"),
-               ("Female", "Female"),
+        sex = [("MALE", "Male"),
+               ("FEMALE", "Female"),
                ]
         self.cboSex.set_entry_text_column(0)
         self.cboSex.connect("changed", self.on_cboSex_changed)
@@ -242,7 +245,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                 # self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
 
-                #self.LoadRelationships()
+                # self.LoadRelationships()
 
                 Global.set("capivara_file_open", capivaraFile)
                 Global.set("last_file_open", capivaraFile)
@@ -332,8 +335,8 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c = c.get(intId)
         if c.name != self.txtName.get_text():
-            c.set_name(intId, self.txtName.get_text())
-            #self.LoadRelationships()
+            c.set_name(intId, self.txtName.get_text().upper())
+            # self.LoadRelationships()
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -346,8 +349,6 @@ class MainWindow(Gtk.ApplicationWindow):
                 tree_iter = model.get_iter(path)
 
             model.set_value(tree_iter, 0, self.txtName.get_text())
-
-
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
@@ -379,7 +380,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         text = combo.get_active_text()
         if text is not None:
-            c.set_sex(intId, text)
+            c.set_sex(intId, text.upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -442,7 +443,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c = c.get(intId)
         if c.body_type != self.txtBodyType.get_text():
-            c.set_bodyType(intId, self.txtBodyType.get_text())
+            c.set_bodyType(intId, self.txtBodyType.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -454,7 +455,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c.get(intId)
         if c.eye_color != self.txtEyeColor.get_text():
-            c.set_eyeColor(intId, self.txtEyeColor.get_text())
+            c.set_eyeColor(intId, self.txtEyeColor.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -466,7 +467,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c.get(intId)
         if c.hair_color != self.txtHairColor.get_text():
-            c.set_hairColor(intId, self.txtHairColor.get_text())
+            c.set_hairColor(intId, self.txtHairColor.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -478,7 +479,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c.get(intId)
         if c.ethnicity != self.txtEthinicity.get_text():
-            c.set_ethinicity(intId, self.txtEthinicity.get_text())
+            c.set_ethinicity(intId, self.txtEthinicity.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -490,7 +491,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c.get(intId)
         if c.health != self.txtHealth.get_text():
-            c.set_health(intId, self.txtHealth.get_text())
+            c.set_health(intId, self.txtHealth.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -540,7 +541,7 @@ class MainWindow(Gtk.ApplicationWindow):
         intId = self.getIdRow()
         c.get(intId)
         if c.local != self.txtLocal.get_text():
-            c.set_local(intId, self.txtLocal.get_text())
+            c.set_local(intId, self.txtLocal.get_text().upper())
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -708,7 +709,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_mnuCapivaraPrint_clicked(self, button):
-        intId = int(self.lblId.get_text().replace('#', '0'))
+        intId = self.getIdRow()
         p = PrintOperation(intId)
         # p.connect("destroy", Gtk.main_quit)
         p.show_all()
@@ -759,14 +760,14 @@ class MainWindow(Gtk.ApplicationWindow):
 
         itemIcon = Gtk.IconTheme.get_default().load_icon("document-open-symbolic", 22, 0)
         myiter = model.insert_after(tree_iter, None)
-        model.set_value(myiter, 0, c.name)
+        model.set_value(myiter, 0, c.name.capitalize())
         model.set_value(myiter, 1, itemIcon)
         model.set_value(myiter, 2, str(c.id))
 
         self.treeView.get_selection().select_iter(myiter)
 
-        #self.order = Gtk.SortType.ASCENDING
-        #model.set_sort_column_id(2, self.order)
+        # self.order = Gtk.SortType.ASCENDING
+        # model.set_sort_column_id(2, self.order)
 
         characterOne = c.id
         characterTwos = c.list()
@@ -783,8 +784,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 cm.character_two = characterOne
                 cm.insertCharacterMap(cm)
 
-        #self.LoadRelationships()
-        #Treeview(self.treeView, self)
+        # self.LoadRelationships()
+        # Treeview(self.treeView, self)
 
     # def LoadRelationships(self):
     #     intId = self.getIdRow()
@@ -809,25 +810,84 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Verificando qual botão foi pressionado.
         if response == Gtk.ResponseType.OK:
-           resposta = dialog.getRule()
-           print(resposta)
+            resposta = dialog.getRule()
 
-           c = SmartGroup()
-           c.description = resposta[0]
-           c.rule = resposta[1]
-           c.insertSmartGroup(c)
+            if resposta[0]:
+                c = SmartGroup()
+                c.description = resposta[0]
+                c.rule = resposta[1]
+                c.insertSmartGroup(c)
 
-           Treeview(self.treeView, self)
-
-
+                dialog.destroy()
+                Treeview(self.treeView, self)
 
         elif response == Gtk.ResponseType.CANCEL:
-            print('Botão NÃO pressionado')
+            dialog.destroy()
 
         elif response == Gtk.ResponseType.DELETE_EVENT:
-            print('Botão de fechar a janela pressionado')
+            dialog.destroy()
 
-        dialog.destroy()
+    @Gtk.Template.Callback()
+    def on_btnBioAdd_clicked(self, button):
+        print("Botão add bio clicado")
+
+        ano = self.txtBioYear.get_text()
+        evento = self.txtBioEvent.get_text()
+        if ano and evento:
+            c = Biography()
+            c.id_character = self.getIdRow()
+            c.year = ano
+            c.description = evento
+            idBio = c.insertBiography(c)
+
+
+            bioTupla = (idBio, ano, evento)
+            self.list_store.append(row=bioTupla)
+
+            self.treeBio.get_column(1).set_sort_column_id(1)
+            self.treeBio.get_column(1).set_sort_indicator(True)
+            self.treeBio.get_column(1).set_sort_order(Gtk.SortType.DESCENDING)
+
+            self.txtBioYear.set_text("")
+            self.txtBioEvent.set_text("")
+
+
+    @Gtk.Template.Callback()
+    def on_btnBioDel_clicked(self, button):
+        print("Botão Del bio clicado")
+        c = Biography()
+        idBio = self.getIdRowBio()
+        c.delete(self.getIdRowBio())
+
+        tree_selection = self.treeBio.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+
+        model.remove(tree_iter)
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryBioYear_grab_focus(self, widget):
+        self.txtBioYear.set_text("")
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryBioEvent_grab_focus(self, widget):
+        self.txtBioEvent.set_text("")
+
+    @Gtk.Template.Callback()
+    def on_bioSelection_changed(self, widget):
+        tree_selection = self.treeBio.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value1 = ""
+        value2 = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value1 = model.get_value(tree_iter, 1)
+            value2 = model.get_value(tree_iter, 2)
+
+        self.txtBioYear.set_text(str(value1))
+        self.txtBioEvent.set_text(value2)
+
 
     @Gtk.Template.Callback()
     def on_mnu_properties_project_clicked(self, widget):
@@ -928,7 +988,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
         # Verificar se os campos do registro é igual ao json file
 
-
         if Global.config("flag_edit"):
             # Pegar o nome do projeto
             c = ProjectProperties()
@@ -1006,6 +1065,7 @@ class MainWindow(Gtk.ApplicationWindow):
         #     message_id=self.message_id,
         # )
         self.statusbar.remove_all(context_id=self.context_id)
+
     # status bar
 
     @Gtk.Template.Callback()
@@ -1026,7 +1086,6 @@ class MainWindow(Gtk.ApplicationWindow):
             buttonsType = Gtk.ButtonsType.CANCEL
         elif parMessage_type == "warn":
             messageType = Gtk.MessageType.WARNING
-            buttonsType = Gtk.ButtonsType.OK_CANCEL
 
         dialog = Gtk.MessageDialog(
             transient_for=self,
@@ -1059,6 +1118,16 @@ class MainWindow(Gtk.ApplicationWindow):
         for path in pathlist:
             tree_iter = model.get_iter(path)
             value = model.get_value(tree_iter, 2)
+        if value:
+            return value
+
+    def getIdRowBio(self):
+        tree_selection = self.treeBio.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 0)
         if value:
             return value
 

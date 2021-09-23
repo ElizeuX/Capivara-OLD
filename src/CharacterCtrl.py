@@ -105,7 +105,7 @@ class CharacterControl:
         voCharacter.biography.clear()
         bioTupla = ()
         for bio in biography:
-            bioTupla = (bio.year, bio.description)
+            bioTupla = (bio.id, str(bio.year), bio.description)
             voCharacter.biography.append(row=bioTupla)
 
         #Carregando as tags

@@ -6,7 +6,6 @@ from gi.repository import Gtk
 
 
 class SmartGroupDialog(Gtk.Dialog):
-
     SmartGroupRule = []
 
     def __init__(self, parent):
@@ -21,10 +20,7 @@ class SmartGroupDialog(Gtk.Dialog):
 
         scrolledwindow = Gtk.ScrolledWindow()
 
-
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
-
-
 
         # hbox = Gtk.Box(spacing=10)
         # button = Gtk.Button.new_with_label("Listaar")
@@ -63,10 +59,6 @@ class SmartGroupDialog(Gtk.Dialog):
         hbox.pack_start(vbox_left, True, True, 0)
         hbox.pack_start(vbox_right, True, True, 0)
 
-        # self.rulemaster_store = Gtk.ListStore(str, str)
-        # self.rulemaster_store.append(["any", "any"])
-        # self.rulemaster_store.append(["all", "all"])
-
         masterRules = [
             "any",
             "all",
@@ -74,15 +66,10 @@ class SmartGroupDialog(Gtk.Dialog):
 
         self.rulemaster_combo = Gtk.ComboBoxText()
         self.rulemaster_combo.set_entry_text_column(0)
-        # rulemaster_combo.connect("changed", self.on_name_combo_changed())
         for masterRule in masterRules:
             self.rulemaster_combo.append_text(masterRule)
 
         self.rulemaster_combo.set_active(0)
-
-        # rulemaster_combo = Gtk.ComboBox.new_with_model_and_entry(self.rulemaster_store)
-        # rulemaster_combo.connect("changed", self.on_name_combo_changed)
-        # rulemaster_combo.set_entry_text_column(1)
 
         vbox_left.pack_start(self.rulemaster_combo, True, True, 0)
 
@@ -92,12 +79,18 @@ class SmartGroupDialog(Gtk.Dialog):
         vbox.add(hbox)
 
         self.name_store = Gtk.ListStore(str, str)
-        self.name_store.append(["name", "name"])
-        self.name_store.append(["style", "style"])
+        self.name_store.append(["name", "nome"])
+        self.name_store.append(["sex", "sexo"])
+        self.name_store.append(["age", "idade"])
+        self.name_store.append(["local", "local"])
+        self.name_store.append(["occupation", "ocupação"])
+        self.name_store.append(["bod_type", "tipo de corpo"])
+        self.name_store.append(["appearance", "aparencia"])
+        self.name_store.append(["eye_color", "cor dos olhos"])
+        self.name_store.append(["hair_color", "cor dos cabelos"])
+        self.name_store.append(["health", "saúde"])
         self.name_store.append(["ethnicity", "ethnicity"])
         self.name_store.append(["hobbies", "hobbies"])
-        self.name_store.append(["eye_color", "eye color"])
-        self.name_store.append(["hair_color", "hair color"])
 
         self.operator_store = Gtk.ListStore(str, str)
         self.operator_store.append(["CONTAINS[cd]", "contains"])
@@ -113,12 +106,12 @@ class SmartGroupDialog(Gtk.Dialog):
         vbox.add(hbox)
 
         name_combo = Gtk.ComboBox.new_with_model_and_entry(self.name_store)
-        #name_combo.connect("changed", self.on_name_combo_changed)
+        # name_combo.connect("changed", self.on_name_combo_changed)
         name_combo.set_entry_text_column(1)
         hbox.pack_start(name_combo, False, False, 0)
 
         operator_combo = Gtk.ComboBox.new_with_model_and_entry(self.operator_store)
-        #operator_combo.connect("changed", self.on_operator_combo_changed)
+        # operator_combo.connect("changed", self.on_operator_combo_changed)
         operator_combo.set_entry_text_column(1)
         hbox.pack_start(operator_combo, False, False, 0)
 
@@ -141,29 +134,26 @@ class SmartGroupDialog(Gtk.Dialog):
         self.box.add(vbox)
         scrolledwindow.add(vbox)
         self.box.add(scrolledwindow)
-        #self.add(scrolledwindow)
+        # self.add(scrolledwindow)
         self.data = vbox
 
         self.box.show_all()
-
-
-
 
     def on_click_me_clicked(self, button, data):
         scrolledwindow = data[0]
         vbox = data[1]
 
-        #vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        # vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
         hbox = Gtk.Box(spacing=6)
         vbox.add(hbox)
 
         name_combo = Gtk.ComboBox.new_with_model_and_entry(self.name_store)
-        #name_combo.connect("changed", self.on_name_combo_changed)
+        # name_combo.connect("changed", self.on_name_combo_changed)
         name_combo.set_entry_text_column(1)
         hbox.pack_start(name_combo, False, False, 0)
 
         operator_combo = Gtk.ComboBox.new_with_model_and_entry(self.operator_store)
-        #operator_combo.connect("changed", self.on_operator_combo_changed)
+        # operator_combo.connect("changed", self.on_operator_combo_changed)
         operator_combo.set_entry_text_column(1)
         hbox.pack_start(operator_combo, False, False, 0)
 
@@ -173,13 +163,12 @@ class SmartGroupDialog(Gtk.Dialog):
         hbox.pack_start(entry, False, False, 0)
 
         button = Gtk.Button.new_with_label("-")
-        button.connect("clicked", self.on_click_me_clicked, (scrolledwindow, vbox) )
+        button.connect("clicked", self.on_click_me_clicked, (scrolledwindow, vbox))
         hbox.pack_start(button, False, False, 0)
 
         button2 = Gtk.Button.new_with_label("+")
         button2.connect("clicked", self.on_click_me_clicked, (scrolledwindow, vbox))
         hbox.pack_start(button2, False, False, 0)
-
 
         self.box.show_all()
 
@@ -219,5 +208,7 @@ class SmartGroupDialog(Gtk.Dialog):
         elif masterRule == 'all':
             final_str = ' AND '.join(self.SmartGroupRule)
 
+        #final_str = final_str.replace('"', '\\"')
+
         '''Retorna lista com o nome do grupo, a regra master e as regras'''
-        return [smartGroupName, '('+ final_str + ')']
+        return [smartGroupName, '(' + final_str + ')']

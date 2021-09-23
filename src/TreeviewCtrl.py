@@ -172,7 +172,7 @@ class Treeview():
         character = Character()
         iter_level_1 = self.append_tree("SmartGroups")
         for smartGroup in smartGroups:
-            iter_level_2 = self.append_tree(capitalizeFirstCharacter(smartGroup.description), smartGroup.id, iter_level_1)
+            iter_level_2 = self.append_tree(smartGroup.description, smartGroup.id, iter_level_1)
             c = smartGroup.listCharacter(smartGroup.rule)
             for i in c:
                 iter_level_3 = self.append_tree(character.get(i.id).name, i.id, iter_level_2)
@@ -184,7 +184,7 @@ class Treeview():
         cores = c.list()
         iter_level_1 = self.append_tree("Cores")
         for core in cores:
-            iter_level_2 = self.append_tree( capitalizeFirstCharacter(core.description), core.id, iter_level_1)
+            iter_level_2 = self.append_tree( core.description, core.id, iter_level_1)
             characters = c.listCharacters(core.id)
             for i in characters:
                 iter_level_3 = self.append_tree(d.get(i.character_id).name, i.character_id, iter_level_2)
@@ -194,7 +194,7 @@ class Treeview():
         characters = c.list()
         iter_level_1 = self.append_tree("Character")
         for character in characters:
-            iter_level_2 = self.append_tree( capitalizeFirstCharacter(character.name), character.id, iter_level_1)
+            iter_level_2 = self.append_tree( character.name, character.id, iter_level_1)
 
 
     def append_tree(self, name=None, id=None, parent=None):
@@ -206,7 +206,7 @@ class Treeview():
         itemIcon = Gtk.IconTheme.get_default().load_icon(
             "system-file-manager-symbolic" if itemIsHeader else "document-open-symbolic", 22, 0)
         myiter = self.treemodel.insert_after(parent, None)
-        self.treemodel.set_value(myiter, 0, name)
+        self.treemodel.set_value(myiter, 0, capitalizeFirstCharacter(name))
         self.treemodel.set_value(myiter, 1, itemIcon)
         self.treemodel.set_value(myiter, 2, str(id))
         #self.order = Gtk.SortType.ASCENDING
