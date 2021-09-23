@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 engine = create_engine('sqlite:///capivara.db', echo=False)
-# engine = create_engine('sqlite://', echo=False)
+#engine = create_engine('sqlite://', echo=True)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 connection = engine.connect()
@@ -96,6 +96,7 @@ class ProjectProperties(Base):
     def add(self, projectProperties):
         s = Session
         s.add(projectProperties)
+        s.commit()
 
     def update(cls, projectProperties):
         s = Session()
@@ -265,21 +266,7 @@ class SmartGroup(Base):
     def listCharacter(cls, rule):
         # rule = ( sex ==[cd] \"Male\" )
         s = Session()
-        print("a regra é %s" % rule)
-        # lista = rule.split()
-        # filtro = []
-        # for elemento in lista:
-        #     if elemento != '(' and elemento != ')':
-        #         filtro.append(elemento)
-        #
-        # var1 = filtro[0]
-        # var2 = filtro[2]
-
-        # rs = s.execute('SELECT * FROM character WHERE ' + var1 + '=' + var2 +';')
-        # name CONTAINS "teste" OR  eye_color == "verde" OR  hair_color != "pretos";
-        # name LIKE "%TESTE%" OR eye_color == "VERDE" OR hair_color != pretos
         strRule = rule.replace("(", "").replace(")", "").replace('[cd]', "")
-        # name, CONTAINS, "teste", OR,  eye_color, ==, "verde", OR,  hair_color, !=,"pretos";
         lstRule = strRule.split()
         moreRule = ""
         isContains = False
@@ -321,8 +308,6 @@ class SmartGroup(Base):
 
         return rs
 
-        # for row in rs:
-        #     print(row)
 
     @classmethod
     def toDict(cls):

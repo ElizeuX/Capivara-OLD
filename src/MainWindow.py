@@ -209,7 +209,7 @@ class MainWindow(Gtk.ApplicationWindow):
             pixbuf = pixbuf.scale_simple(170, 200, 2)
             self.imgCharacter.set_from_pixbuf(pixbuf)
             c = Character()
-            intId = int(self.lblId.get_text().replace('#', '0'))
+            intId = self.getIdRow()
             c.set_image(intId, stringBase64)
 
         elif response == Gtk.ResponseType.NO:
@@ -331,7 +331,6 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_gtkEntryName_focus_out_event(self, widget, event):
         c = Character()
-        # intId = int(self.lblId.get_text().replace('#', '0'))
         intId = self.getIdRow()
         c = c.get(intId)
         if c.name != self.txtName.get_text():
@@ -732,7 +731,7 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_btn_new_person_clicked(self, button):
         c = Character()
-        c.name = "unnamed"
+        c.name = "UNNAMED"
         c.archtype = ""
         c.age = ""
         c.sex = ""
@@ -840,7 +839,6 @@ class MainWindow(Gtk.ApplicationWindow):
             c.description = evento
             idBio = c.insertBiography(c)
 
-
             bioTupla = (idBio, ano, evento)
             self.list_store.append(row=bioTupla)
 
@@ -850,7 +848,6 @@ class MainWindow(Gtk.ApplicationWindow):
 
             self.txtBioYear.set_text("")
             self.txtBioEvent.set_text("")
-
 
     @Gtk.Template.Callback()
     def on_btnBioDel_clicked(self, button):
@@ -888,6 +885,9 @@ class MainWindow(Gtk.ApplicationWindow):
         self.txtBioYear.set_text(str(value1))
         self.txtBioEvent.set_text(value2)
 
+    @Gtk.Template.Callback()
+    def on_mnuSync_clicked(self, widget):
+        print("Sincronizando com o Scrivener")
 
     @Gtk.Template.Callback()
     def on_mnu_properties_project_clicked(self, widget):
@@ -1130,6 +1130,7 @@ class MainWindow(Gtk.ApplicationWindow):
             value = model.get_value(tree_iter, 0)
         if value:
             return value
+
 
 class Application(Gtk.Application):
 

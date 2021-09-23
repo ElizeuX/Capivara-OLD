@@ -8,7 +8,7 @@ from logger import Logs
 import os
 from datetime import datetime
 
-from Utils import JsonTools
+from Utils import JsonTools, generate_uuid
 from DataAccess import DataUtils, FileInformation, ProjectProperties, Character, Core, SmartGroup, Tag, Biography, \
     CoreCharacterLink, TagCharacterLink, CharacterMap
 
@@ -25,6 +25,7 @@ def loadCapivaraFile(fileOpen=None):
     logs = Logs(filename="capivara.log")
 
     if fileOpen == None:
+        id = generate_uuid()
         capivara = {
             "version model": "0.1.0",
             "creator": "Capivara 0.1.0",
