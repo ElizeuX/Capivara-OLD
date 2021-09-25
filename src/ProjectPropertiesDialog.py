@@ -30,6 +30,7 @@ class ProjectPropertiesDialog(Gtk.Dialog):
         self.txtSurname.set_text(propriedades.surname)
         self.txtForename.set_text(propriedades.forename)
         self.txtPseudonym.set_text(propriedades.pseudonym)
+        self.txtScrivenerProject.set_text(propriedades.scrivener_project)
 
         self.btnOpenScrivenerProject.connect("clicked", self.on_search_scrivener)
 
@@ -39,6 +40,7 @@ class ProjectPropertiesDialog(Gtk.Dialog):
         self.propertiesProject['surname'] = str(self.txtSurname.get_text().strip())
         self.propertiesProject['forename'] = str(self.txtForename.get_text().strip())
         self.propertiesProject['pseudonym'] = str(self.txtPseudonym.get_text().strip())
+        self.propertiesProject['scrivener project'] = str(self.txtScrivenerProject.get_text().strip())
         return self.propertiesProject
 
     def on_search_scrivener(self, button):

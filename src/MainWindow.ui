@@ -63,11 +63,10 @@
   <object class="GtkTextBuffer" id="textbufferBackground"/>
   <template class="MainWindow" parent="GtkApplicationWindow">
     <property name="can-focus">False</property>
-    <property name="halign">center</property>
-    <property name="valign">center</property>
-    <property name="hexpand">False</property>
-    <property name="vexpand">False</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
     <property name="icon">assets\icons\icon.png</property>
+    <property name="show-menubar">False</property>
     <signal name="delete-event" handler="on_MainWindow_delete_event" swapped="no"/>
     <signal name="destroy" handler="on_MainWindow_destroy" swapped="no"/>
     <signal name="key-press-event" handler="key_press_event" swapped="no"/>
@@ -182,6 +181,8 @@
                 <property name="margin-end">5</property>
                 <property name="margin-top">5</property>
                 <property name="margin-bottom">5</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="scrollView">
@@ -274,6 +275,8 @@
               <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkStackSwitcher">
@@ -528,7 +531,6 @@
                                               <object class="GtkEntry" id="gtkEntryBodyType">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
-                                                <property name="halign">end</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
                                                 <property name="hexpand">True</property>
@@ -594,7 +596,6 @@
                                               <object class="GtkEntry" id="gtkEntryHairColor">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
-                                                <property name="halign">end</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="margin-bottom">5</property>
                                                 <property name="hexpand">True</property>
@@ -658,7 +659,6 @@
                                               <object class="GtkEntry" id="gtkEntryHealth">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
-                                                <property name="halign">end</property>
                                                 <property name="hexpand">True</property>
                                                 <signal name="focus-out-event" handler="on_gtkEntryHealth_focus_out_event" swapped="no"/>
                                               </object>

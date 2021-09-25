@@ -88,7 +88,6 @@ def capitalizeFirstCharacter(name):
     return ' '.join(items)
 
 
-
 def generate_unique_key(size=15):
     return secrets.token_urlsafe(size)[:size]
 
@@ -97,14 +96,11 @@ def generate_uuid():
     return str(uuid.uuid4())
 
 
-class CustomDialog(Gtk.Dialog):
+class OutSaveFile(Gtk.Dialog):
 
-    def __init__(self, title):
-        super().__init__()
-        self.message(title)
-
-    def message(self, title):
-        self.set_title(title='Salvar documento?')
+    def __init__(self, parent, title):
+        super().__init__(title="Salvar capivara?", transient_for=parent, flags=0)
+        self.set_modal(modal=True)
 
         # Adicionando 1 botão.
         self.add_button(button_text='Cancelar', response_id=5000)
@@ -164,41 +160,6 @@ class Date:
 
         finally:
             return isValidDate
-
-        # intYear = int(datDate[0:4])
-        # intMonth = int(datDate[5:7])
-        # intDay = int(datDate[9:10])
-        # if len(datDate) == 10:
-        #     if 0 < intYear < 10000:
-        #         if 0 < intMonth <= 12:
-        #             if intMonth == 2 and (intYear % 4) == 0:
-        #                 if 0 < intDay <= 29:
-        #                     print('Esta é uma data válida.')
-        #                 else:
-        #                     print('Esta não é uma data válida.')
-        #             elif intMonth == 2 and (intYear % 4) != 0:
-        #                 if 0 < intDay <= 28:
-        #                     print('Esta é uma data válida.')
-        #                 else:
-        #                     print('Esta não é uma data válida.')
-        #             elif intMonth == 4 or intMonth == 6 or intMonth == 9 or intMonth == 11:
-        #                 if 0 < intDay <= 30:
-        #                     print('Esta é uma data válida.')
-        #                 else:
-        #                     print('Esta não é uma data válida.')
-        #             elif intMonth == 1 or intMonth == 3 or intMonth == 5 or intMonth == 7 or intMonth == 8 or intMonth == 10 or intMonth == 12:
-        #                 if 0 < intDay <= 31:
-        #                     print('Esta é uma data válida.')
-        #                 else:
-        #                     print('Esta não é uma data válida.')
-        #             else:
-        #                 print('Esta não é uma data válida.')
-        #         else:
-        #             print('Esta não é uma data válida.')
-        #     else:
-        #         print('Esta não é uma data válida.')
-        # else:
-        #     print('Esta não é uma data válida.')
 
 
 class JsonTools():

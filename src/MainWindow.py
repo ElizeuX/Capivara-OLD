@@ -10,7 +10,7 @@ from gi.repository import Gio, Gtk, GdkPixbuf, GLib
 import Global
 from Global import Global
 from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, \
-    DialogSaveRelationshipImage, Date, CustomDialog
+    DialogSaveRelationshipImage, Date, OutSaveFile
 import PluginsManager
 from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink, Biography
@@ -33,6 +33,8 @@ from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
 from SmartGroup2 import SmartGroupDialog
+
+from ScrivenerSync import SyncScrivener
 
 logs = Logs(filename="capivara.log")
 
@@ -684,14 +686,10 @@ class MainWindow(Gtk.ApplicationWindow):
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                 Global.set("capivara_file_open", capivaraFile)
 
-                self.LoadRelationships()
+                #self.LoadRelationships()
 
                 # # Coloca nome do projeto e autor na header bar
                 self.putHeaderBar()
-                # projectProperties = ProjectProperties.get()
-                # self.header_bar.set_title(projectProperties.title)
-                # self.header_bar.set_subtitle(projectProperties.surname + ', ' + projectProperties.forename)
-
 
             except:
                 logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
@@ -730,7 +728,11 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_btn_new_person_clicked(self, button):
+
         c = Character()
+        c.uuid = Utils.generate_uuid().upper()
+        c.created = datetime.now().strftime('%Y-%m-%d %H:%M:%m')
+        c.modified = datetime.now().strftime('%Y-%m-%d %H:%M:%m')
         c.name = "UNNAMED"
         c.archtype = ""
         c.age = ""
@@ -888,6 +890,11 @@ class MainWindow(Gtk.ApplicationWindow):
     @Gtk.Template.Callback()
     def on_mnuSync_clicked(self, widget):
         print("Sincronizando com o Scrivener")
+        projectProperties = ProjectProperties()
+        propriedades = projectProperties.get()
+
+        SyncScrivener(propriedades.scrivener_project)
+
 
     @Gtk.Template.Callback()
     def on_mnu_properties_project_clicked(self, widget):
@@ -905,6 +912,7 @@ class MainWindow(Gtk.ApplicationWindow):
             propriedades.surname = _projectProperties['surname']
             propriedades.forename = _projectProperties['forename']
             propriedades.pseudonym = _projectProperties['pseudonym']
+            propriedades.scrivener_project = _projectProperties['scrivener project']
             propriedades.update(propriedades)
 
             # Atualiza a barra de título
@@ -992,8 +1000,7 @@ class MainWindow(Gtk.ApplicationWindow):
             # Pegar o nome do projeto
             c = ProjectProperties()
             c = c.get()
-            dialog = CustomDialog(c.title)
-            dialog.set_transient_for(parent=self)
+            dialog = OutSaveFile(self, c.title )
 
             response = dialog.run()
             print(f'Resposta do diálogo = {response}.')
@@ -1131,6 +1138,9 @@ class MainWindow(Gtk.ApplicationWindow):
         if value:
             return value
 
+    def on_MainWindow_destroy(self):
+        self.quit()
+
 
 class Application(Gtk.Application):
 
@@ -1186,3 +1196,5 @@ class Application(Gtk.Application):
         # Salvando todos os configs
         appConfig.serialize()
         Gtk.Application.do_shutdown(self)
+
+

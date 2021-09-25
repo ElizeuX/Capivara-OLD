@@ -92,6 +92,7 @@ class ProjectProperties(Base):
     surname = Column(Unicode(100))
     forename = Column(Unicode(100))
     pseudonym = Column(Unicode(100))
+    scrivener_project = Column(Unicode(200))
 
     def add(self, projectProperties):
         s = Session
@@ -106,6 +107,7 @@ class ProjectProperties(Base):
         properties.surname = projectProperties.surname
         properties.forename = projectProperties.forename
         properties.pseudonym = projectProperties.pseudonym
+        properties.scrivener_project = projectProperties.scrivener_project
         s.commit()
 
     @classmethod
@@ -390,6 +392,9 @@ class Core(Base):
 class Character(Base):
     __tablename__ = 'character'
     id = Column(Integer(), primary_key=True)
+    uuid = Column(Unicode(40))
+    created = Column(Unicode(30))
+    modified = Column(Unicode(30))
     name = Column(Unicode(200))
     archtype = Column(Unicode(30))
     date_of_birth = Column(Date())
@@ -537,6 +542,9 @@ class Character(Base):
         d = cls()
         dateformat = "%Y-%m-%d"
         d.id = character['id']
+        d.uuid = character['uuid']
+        d.created = character['created']
+        d.modified = character['modified']
         d.name = character['name'].strip().upper().replace('\"', '"')
         d.archtype = character['archtype']
         if character['date of birth'] and character['date of birth'] != "":
@@ -621,7 +629,9 @@ class Character(Base):
         retorno = []
         for character in characters:
             characterStr = JsonTools.putMap('"id"', str(character.id)) + ','
-            # characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"uuid"', '"' + character.uuid + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"created"', '"' + character.created + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"modified"', '"' + character.modified + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name).replace('"', '\\"') + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','

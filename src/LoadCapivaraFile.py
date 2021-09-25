@@ -25,7 +25,10 @@ def loadCapivaraFile(fileOpen=None):
     logs = Logs(filename="capivara.log")
 
     if fileOpen == None:
-        id = generate_uuid()
+        __uuid = generate_uuid().upper()
+        __created = datetime.now().strftime('%Y-%m-%d %H:%M:%m')
+        __modified = datetime.now().strftime('%Y-%m-%d %H:%M:%m')
+
         capivara = {
             "version model": "0.1.0",
             "creator": "Capivara 0.1.0",
@@ -37,11 +40,15 @@ def loadCapivaraFile(fileOpen=None):
                 "authors full name": "",
                 "surname": "",
                 "forename": "",
-                "pseudonym": ""
+                "pseudonym": "",
+                "scrivener project": ""
             },
             "character": [
                 {
                     "id": 1,
+                    "uuid": __uuid,
+                    "created": __created,
+                    "modified": __modified,
                     "name": "unnamed",
                     "archtype": "",
                     "date of birth": "",
@@ -207,6 +214,7 @@ def __InsertProjectPropertiesOnBase(s, capivara):
     c.surname = capivara['project properties']['surname']
     c.forename = capivara['project properties']['forename']
     c.pseudonym = capivara['project properties']['pseudonym']
+    c.scrivener_project =capivara['project properties']['scrivener project'].replace("/","\\")
     s.add(c)
     s.commit()
 

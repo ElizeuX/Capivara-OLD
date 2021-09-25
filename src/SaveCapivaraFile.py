@@ -110,22 +110,21 @@ def __InsertCharaterOnFile():
 def __InsertProjectPropertiesOnFile():
     # PEGAR PROPRIEDADES DO PROJETO
     projectProperties = ProjectProperties.get()
-    # abbreviatedTitle = "TSCF"
     title = projectProperties.title
     authorsFullName = projectProperties.authorsFullName
     surname = projectProperties.surname
     forename = projectProperties.forename
     pseudonym = projectProperties.pseudonym
+    scrivener_project = projectProperties.scrivener_project
 
     # PROPRIEDADE DO PROJETO
     propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
-    # propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"abbreviated title"',
-    #                                                                  '"' + abbreviatedTitle + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"authors full name"',
                                                                      '"' + authorsFullName + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"forename"', '"' + forename + '"') + ','
-    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"')
+    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"') + ','
+    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"scrivener project"', '"' + scrivener_project.replace("\\","/") + '"')
     propriedadesDoProjeto = '"project properties" : ' + JsonTools.putObject(propriedadesDoProjeto)
     return propriedadesDoProjeto
 
