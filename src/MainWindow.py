@@ -34,7 +34,9 @@ from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
 from SmartGroup2 import SmartGroupDialog
 
+# IMPORTAR SINCRONIZADORES
 from ScrivenerSync import SyncScrivener
+from AeonTLSync import SyncAeonTimeLine
 
 logs = Logs(filename="capivara.log")
 
@@ -889,11 +891,16 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_mnuSync_clicked(self, widget):
-        print("Sincronizando com o Scrivener")
+        print("Sincronizando com o Scrivener e AeonTimeLine")
         projectProperties = ProjectProperties()
         propriedades = projectProperties.get()
 
-        SyncScrivener(propriedades.scrivener_project)
+        if propriedades.scrivener_project:
+            SyncScrivener(propriedades.scrivener_project)
+        if propriedades.aeon_project:
+            SyncAeonTimeLine(propriedades.aeon_project)
+
+        Treeview(self.treeView, self)
 
 
     @Gtk.Template.Callback()
@@ -913,6 +920,7 @@ class MainWindow(Gtk.ApplicationWindow):
             propriedades.forename = _projectProperties['forename']
             propriedades.pseudonym = _projectProperties['pseudonym']
             propriedades.scrivener_project = _projectProperties['scrivener project']
+            propriedades.aeon_project = _projectProperties['aeon project']
             propriedades.update(propriedades)
 
             # Atualiza a barra de título

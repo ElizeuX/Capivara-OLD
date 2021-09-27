@@ -2195,7 +2195,7 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="text" translatable="yes">Sync Scrivener</property>
+            <property name="text" translatable="yes">Sincronizar Scrivener e AeonTimeLine</property>
             <signal name="clicked" handler="on_mnuSync_clicked" swapped="no"/>
           </object>
           <packing>

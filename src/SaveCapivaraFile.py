@@ -116,6 +116,7 @@ def __InsertProjectPropertiesOnFile():
     forename = projectProperties.forename
     pseudonym = projectProperties.pseudonym
     scrivener_project = projectProperties.scrivener_project
+    aeon_project = projectProperties.aeon_project
 
     # PROPRIEDADE DO PROJETO
     propriedadesDoProjeto = JsonTools.putMap('"title"', '"' + title + '"') + ','
@@ -124,7 +125,8 @@ def __InsertProjectPropertiesOnFile():
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"surname"', '"' + surname + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"forename"', '"' + forename + '"') + ','
     propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"pseudonym"', '"' + pseudonym + '"') + ','
-    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"scrivener project"', '"' + scrivener_project.replace("\\","/") + '"')
+    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"scrivener project"', '"' + scrivener_project.replace("\\","/") + '"') + ','
+    propriedadesDoProjeto = propriedadesDoProjeto + JsonTools.putMap('"aeon project"','"' + aeon_project.replace("\\", "/") + '"')
     propriedadesDoProjeto = '"project properties" : ' + JsonTools.putObject(propriedadesDoProjeto)
     return propriedadesDoProjeto
 

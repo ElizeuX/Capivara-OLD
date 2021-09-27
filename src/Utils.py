@@ -25,6 +25,54 @@ from Global import Global
 PluginFolder = "../plugins/"
 MainModule = "__init__"
 
+class DialogSelectAeon(Gtk.FileChooserDialog):
+    # Definindo o diretório padrão.
+    home = Path.home()
+
+    def __init__(self):
+        super().__init__()
+        self.select_multiple = False
+
+        self.set_title(title='Abrir')
+        self.set_modal(modal=True)
+
+        #
+        # Tipo de ação que o dialogo irá executar.
+        self.set_action(action=Gtk.FileChooserAction.OPEN)
+
+        # Defininido se a seleção será multipla ou não
+        self.set_select_multiple(select_multiple=self.select_multiple)
+        # Pasta onde o diálogo será aberto.
+        self.set_current_folder(filename=str(self.home))
+
+        # Botões que serão exibidos.
+        self.add_buttons(
+            '_Cancelar', Gtk.ResponseType.CANCEL,
+            '_OK', Gtk.ResponseType.OK
+        )
+
+        # Adicionando class action nos botões.
+        # btn_cancel = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.CANCEL,
+        # )
+        # btn_cancel.get_style_context().add_class(class_name='destructive-action')
+        #
+        # btn_save = self.get_widget_for_response(
+        #     response_id=Gtk.ResponseType.OK,
+        # )
+        # btn_save.get_style_context().add_class(class_name='suggested-action')
+
+        # Criando e adicionando filtros.
+        aeon_filter = Gtk.FileFilter()
+        aeon_filter.set_name("Aeon Timeline 2 (*.aeonzip)")
+        aeon_filter.add_pattern("*.aeonzip")
+        self.add_filter(filter=aeon_filter)
+
+        # É obrigatório utilizar ``show_all()``.
+        self.show_all()
+
+    def show_file_info(self):
+        return self.get_filename()
 
 class DialogSelectScrivener(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.

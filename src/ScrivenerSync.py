@@ -1,6 +1,4 @@
-import gi
-
-gi.require_version(namespace='Gtk', version='3.0')
+# -*- coding: utf-8 -*-
 
 from DataAccess import Character
 from Utils import generate_uuid, capitalizeFirstCharacter

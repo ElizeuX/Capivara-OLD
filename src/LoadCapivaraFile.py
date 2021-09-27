@@ -41,7 +41,8 @@ def loadCapivaraFile(fileOpen=None):
                 "surname": "",
                 "forename": "",
                 "pseudonym": "",
-                "scrivener project": ""
+                "scrivener project": "",
+                "aeon project": ""
             },
             "character": [
                 {
@@ -215,6 +216,7 @@ def __InsertProjectPropertiesOnBase(s, capivara):
     c.forename = capivara['project properties']['forename']
     c.pseudonym = capivara['project properties']['pseudonym']
     c.scrivener_project =capivara['project properties']['scrivener project'].replace("/","\\")
+    c.aeon_project = capivara['project properties']['aeon project'].replace("/", "\\")
     s.add(c)
     s.commit()
 

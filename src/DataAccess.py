@@ -93,6 +93,7 @@ class ProjectProperties(Base):
     forename = Column(Unicode(100))
     pseudonym = Column(Unicode(100))
     scrivener_project = Column(Unicode(200))
+    aeon_project = Column(Unicode(200))
 
     def add(self, projectProperties):
         s = Session
@@ -108,6 +109,7 @@ class ProjectProperties(Base):
         properties.forename = projectProperties.forename
         properties.pseudonym = projectProperties.pseudonym
         properties.scrivener_project = projectProperties.scrivener_project
+        properties.aeon_project = projectProperties.aeon_project
         s.commit()
 
     @classmethod
@@ -620,6 +622,12 @@ class Character(Base):
     def getTags(cls, id):
         s = Session()
         return s.query(TagCharacterLink).filter_by(character_id=id)
+
+    @classmethod
+    def getGuid(cls, uuid):
+        s = Session()
+        return s.query(Character).filter_by(uuid=uuid)
+
 
     @classmethod
     def toDict(cls):
