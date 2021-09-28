@@ -12,7 +12,6 @@ from Global import Global
 from Utils import AppConfig, DialogUpdateAutomatically, DialogSelectFile, DialogSaveFile, DialogSelectImage, \
     DialogSaveRelationshipImage, Date, OutSaveFile
 import PluginsManager
-from CapivaraSmartGroup import CapivaraSmartGroup
 from DataAccess import ProjectProperties, Character, Core, SmartGroup, CharacterMap, Tag, TagCharacterLink, Biography
 import Utils
 from src.logger import Logs
@@ -32,11 +31,11 @@ from Preferences import Preferences
 from ProjectPropertiesDialog import ProjectPropertiesDialog
 from NewGroupDialog import NewGroupDialog
 from PluginsManager import PluginsManager
-from SmartGroup2 import SmartGroupDialog
+from SmartGroup import SmartGroupDialog
 
 # IMPORTAR SINCRONIZADORES
-from ScrivenerSync import SyncScrivener
-from AeonTLSync import SyncAeonTimeLine
+from SyncScrivener import SyncScrivener
+from SyncAeonTL import SyncAeonTimeLine
 
 logs = Logs(filename="capivara.log")
 
@@ -59,7 +58,6 @@ class MainWindow(Gtk.ApplicationWindow):
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
 
     # campos da tela
-    # lblId = Gtk.Template.Child(name='lblId')
     txtName = Gtk.Template.Child(name='gtkEntryName')
     cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
@@ -185,6 +183,7 @@ class MainWindow(Gtk.ApplicationWindow):
             LoadCapivaraFile.loadCapivaraFile()
         else:
             LoadCapivaraFile.loadCapivaraFile(self.lastFileOpen)
+            self.capivaraPathFile = os.path.dirname(os.path.realpath(self.lastFileOpen))
 
         self.putHeaderBar()
 
@@ -247,7 +246,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 # TODO: Colocar um spinner indicando  que o arquivo está sendo carregado
 
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
-                # self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
+                self.capivaraPathFile = os.path.dirname(os.path.realpath(capivaraFile))
 
                 # self.LoadRelationships()
 
@@ -637,7 +636,7 @@ class MainWindow(Gtk.ApplicationWindow):
                         LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                         Global.set("capivara_file_open", capivaraFile)
 
-                        self.LoadRelationships()
+                        #self.LoadRelationships()
                         Global.set("flag_edit", False)
 
                         # Coloca nome do projeto e autor na header bar
@@ -895,10 +894,11 @@ class MainWindow(Gtk.ApplicationWindow):
         projectProperties = ProjectProperties()
         propriedades = projectProperties.get()
 
-        if propriedades.scrivener_project:
-            SyncScrivener(propriedades.scrivener_project)
         if propriedades.aeon_project:
             SyncAeonTimeLine(propriedades.aeon_project)
+
+        if propriedades.scrivener_project:
+            SyncScrivener(propriedades.scrivener_project)
 
         Treeview(self.treeView, self)
 

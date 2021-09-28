@@ -18,11 +18,7 @@ def findGuidTemplateCharacter(mydata):
             break
     return guidCharacter
 
-def loadCharactersOfAeonFile(AeonProjectFile):
-    # dirAEONProject = "C:/Py_DEV/msys64/home/Elizeu/Persona/"
-    # #dirAEONProject = "C:/Users/Elizeu/OneDrive - PRODESP/Documents/My Persona/"
-    # AeonFile = dirAEONProject + "timeline.json"
-
+def SyncAeonTimeLine(AeonProjectFile):
     mydata = None
     data = None
     with ZipFile(AeonProjectFile, "r") as z:
@@ -60,6 +56,16 @@ def loadCharactersOfAeonFile(AeonProjectFile):
                     c.modified = datetime.now().strftime('%Y-%m-%d %H:%M:%m')
                     c.height = 0.00
                     c.weight = 0.00
+                    c.age = 0
+                    c.sex = "--"
+                    c.local = ""
+                    c.date_of_birth = ""
+                    c.background = ""
+                    c.ethnicity = ""
+                    c.hair_color = ""
+                    c.eye_color = ""
+                    c.body_type = ""
+                    c.archtype = ""
                     c.insertCharacter(c)
                 else:
                     for c in query:
@@ -73,20 +79,6 @@ def loadCharactersOfAeonFile(AeonProjectFile):
     elif len(characters) != 0:
         # Se houver personagens na base gravar no json
         strEntities = []
-        dictPerson = {
-              "createRangePosition": {
-                "precision": "day",
-                "rangePropertyGuid": "B327CAD3-1CE1-475E-8F7A-C709D294EF2E",
-                "timestamp": 61921152000
-              },
-              "entityType": "6C857017-8B69-43D5-BD6A-B4A9B0A4A2EF",
-              "guid": "",
-              "icon": "person",
-              "name": "",
-              "notes": "",
-              "sortOrder": 1,
-              "swatchColor": "red"
-            }
 
         for c in characters:
             dictPerson = {
@@ -114,7 +106,3 @@ def loadCharactersOfAeonFile(AeonProjectFile):
     zf = zipfile.ZipFile(AeonProjectFile, mode="w", compression=zipfile.ZIP_DEFLATED)
     zf.writestr("timeline.json", json.dumps(mydata))
     zf.close()
-
-
-def SyncAeonTimeLine(AeonProjectFile):
-    loadCharactersOfAeonFile(AeonProjectFile)

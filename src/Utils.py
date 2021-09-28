@@ -29,11 +29,12 @@ class DialogSelectAeon(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
     home = Path.home()
 
+
     def __init__(self):
         super().__init__()
         self.select_multiple = False
 
-        self.set_title(title='Abrir')
+        self.set_title(title='Abrir Projeto AeonTimeLine')
         self.set_modal(modal=True)
 
         #
@@ -82,7 +83,7 @@ class DialogSelectScrivener(Gtk.FileChooserDialog):
         super().__init__()
         self.select_multiple = False
 
-        self.set_title(title='Abrir')
+        self.set_title(title='Abrir Projeto Scrivener')
         self.set_modal(modal=True)
 
         #
@@ -627,16 +628,20 @@ class DialogSelectImage(Gtk.FileChooserDialog):
 
 
 class DialogSelectFile(Gtk.FileChooserDialog):
+
     # Definindo o diretório padrão.
     appConfig = AppConfig()
 
-    home = appConfig.getCapivaraDirectory()
+    home = os.path.dirname(os.path.realpath(appConfig.getLastFileOpen()))
+
+    if not home:
+        home = appConfig.getCapivaraDirectory()
 
     def __init__(self, select_multiple):
         super().__init__()
         self.select_multiple = select_multiple
 
-        self.set_title(title='Abrir')
+        self.set_title(title='Abrir Capivara')
         self.set_modal(modal=True)
 
         #

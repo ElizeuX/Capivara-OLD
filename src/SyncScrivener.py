@@ -11,6 +11,39 @@ import os
 def fileRtfName(id):
     return str(id)+ ".rtf"
 
+def rtfTitle(name):
+    rtfFile = "{\\rtf1\\ansi\\ansicpg1252\\uc1\deff0" + "\n"
+    rtfFile += "{\\fonttbl{\\f0\\fnil\\fcharset0\\fprq2 CourierNewPSMT;}{\\f1\\fnil\\fcharset0\\fprq2 Arial-ItalicMT;}{\\f2\\fnil\\fcharset0\\fprq2 ArialMT;}{\\f3\\fnil\\fcharset0\\fprq2 Arial-BoldMT;}}" + "\n"
+    rtfFile += "{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;\\red255\\green0\\blue0;\\red30\\green79\\blue159;}" + "\n"
+    rtfFile += "\\paperw12240\\paperh15840\\margl1800\\margr1800\\margt1440\\margb1440\\fet2\\ftnbj\\aenddoc" + "\n"
+    rtfFile += "\\pgnrestart\\pgnstarts0" + "\n"
+    rtfFile += "\\pard\\plain \\tx0\\tqr\\tx2700\\tx3110\\tx3740\\sb160\\sl288\\slmult1\\qc\\ltrch\\loch {\\f1\\fs20\\b0\\i1\\cf3 [READ ONLY - MANAGER BY CAPIVARA]}" + "\n"
+    rtfFile += "\\par\\plain {\\f2\\fs40\\b0\\i0\\cf4 " + capitalizeFirstCharacter(name) + "}" + "\n"
+    return rtfFile
+
+def rtfLine(field, value):
+    rtfFile = "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0"
+    rtfFile += field
+    rtfFile += ":"
+    if value != 'None' and value != 'NONE' and value != None:
+        rtfFile += value
+    else:
+        rtfFile += " "
+
+    rtfFile += "}\n"
+    return rtfFile
+
+def rtfLineEmpty():
+    return "\\par\\plain \\f2\\fs40\\b0\\i0\\cf4" + "\n"
+
+def __createRtfFile(rtfFileName, rtfFile):
+    try:
+        with open(rtfFileName, "w") as arquivo:
+            arquivo.write(rtfFile)
+
+    except:
+        pass
+
 def createRtfFile(rtfFileName, character):
     dirDocs = "C:/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/scrivener_teste/teste4.scriv/Files/Docs" + "\n"
     rtfFile = "{\\rtf1\\ansi\\ansicpg1252\\uc1\deff0" + "\n"
@@ -21,18 +54,24 @@ def createRtfFile(rtfFileName, character):
     rtfFile +=  "\\pard\\plain \\tx0\\tqr\\tx2700\\tx3110\\tx3740\\sb160\\sl288\\slmult1\\qc\\ltrch\\loch {\\f1\\fs20\\b0\\i1\\cf3 [READ ONLY - MANAGER BY CAPIVARA]}"+ "\n"
     rtfFile += "\\par\\plain {\\f2\\fs40\\b0\\i0\\cf4 " + capitalizeFirstCharacter(character.name) + "}" + "\n"
     rtfFile += "\\par\\pard\\plain \\fi360\\sl360\\slmult1\\qj\\ltrch\\loch \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-    rtfFile += "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Arqu\\loch\\af3\\hich\\af3\\dbch\\af3\\uc1\\u233\\'E9tipo: }" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Arqu\\loch\\af3\\hich\\af3\\dbch\\af3\\uc1\\u233\\'E9tipo: }" + "\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Data de nasc.:}" + "\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Idade: " + character.age + "}\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Sexo: "  + character.sex + "}\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Sexo: "  + "--" if character.sex == None else character.sex
+    rtfFile +=  "}\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Altura: " + '{0:.2f}'.format(character.height) + "m}\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Peso: " + '{0:.2f}'.format(character.weight) + "kg}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Tipo de corpo: " + capitalizeFirstCharacter(character.body_type) + "}{\\f2\\fs26\\b0\\i0 \\tab }" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos olhos: " + capitalizeFirstCharacter(character.eye_color) + "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos cabelos: " + capitalizeFirstCharacter(character.hair_color) + "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Etnicidade: " + capitalizeFirstCharacter(character.ethnicity) + "}" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Tipo de corpo: " + "" if character.body_type == None else capitalizeFirstCharacter(character.body_type)
+    rtfFile +=  "}{\\f2\\fs26\\b0\\i0 \\tab }" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos olhos: " + "" if character.eye_color == None else capitalizeFirstCharacter(character.eye_color)
+    rtfFile +=  "}" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos cabelos: " + "" if character.hair_color == None else capitalizeFirstCharacter(character.hair_color)
+    rtfFile +=  "}" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Etnicidade: " + "" if character.ethnicity == None else capitalizeFirstCharacter(character.ethnicity)
+    rtfFile +=  "}" + "\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Sa\\loch\\af3\\hich\\af3\\dbch\\af3\\uc1\\u250\\'FAde:}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Local: " + character.local + "}" + "\n"
+    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Local: " + "" if character.local == None else character.local
+    rtfFile +=  "}" + "\n"
     rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Background:}" + "\n"
     rtfFile +=  "\\par\\plain {\\f3\\fs26\\b1\\i0 Biografia}" + "\n"
     rtfFile +=  "\\par\\plain {\\f3\\fs26\\b1\\i0 Ano                             Evento}" + "\n"
@@ -112,6 +151,20 @@ def SyncScrivener(scrivenerProjectFile):
                 putCharacter(__ID, character, elementCharacter)
                 elementCharacter = ""
                 createRtfFile(docDir + fileRtfName(__ID), character)
+                # rtfFile = rtfTitle(character.name)
+                # rtfFile += rtfLineEmpty()
+                # rtfFile += rtfLine("Arquétipo", character.archtype)
+                # rtfFile += rtfLine("Data de nasc.", character.date_of_birth)
+                # rtfFile += rtfLine("Idade", character.age)
+                # rtfFile += rtfLine("Sexo", character.sex)
+                # rtfFile += rtfLine("Altura", '{0:.2f}'.format(character.height))
+                # rtfFile += rtfLine("Peso", '{0:.2f}'.format(character.weight))
+                # rtfFile += rtfLine("Tipo do corpo", character.body_type)
+                # rtfFile += rtfLine("Cor dos olhos", character.eye_color)
+                # rtfFile += rtfLine("Cor dos cabelos", character.hair_color)
+                # rtfFile += rtfLine("Etnicidade", character.ethnicity)
+                # rtfFile += rtfLine("Local", character.local)
+                # __createRtfFile(docDir + fileRtfName(__ID), rtfFile)
 
     tree.write(scrivenerProjectFile)
 
