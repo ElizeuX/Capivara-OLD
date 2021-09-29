@@ -54,6 +54,7 @@ class MainWindow(Gtk.ApplicationWindow):
     scrollView = Gtk.Template.Child(name='scrollView')
     # spinner = Gtk.Template.Child(name='spinner')
     info_bar = Gtk.Template.Child(name='info_bar')
+    lblInfoBar = Gtk.Template.Child(name='lblInfoBar')
     list_store = Gtk.Template.Child(name='list_store')
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
 
@@ -132,6 +133,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # TODO: Verificar se existe nova versão e apresentar no Info
         newVersion = False
         if not self.info_bar.get_revealed() and newVersion:
+            self.lblInfoBar.set_text("Um nova versão do Capivara está disponível!")
             self.info_bar.set_revealed(revealed=True)
             GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
 
@@ -171,8 +173,8 @@ class MainWindow(Gtk.ApplicationWindow):
         for archetype in archetypes:
             self.cboArchtype.append(archetype[0], archetype[1])
 
-        sex = [("MALE", "Male"),
-               ("FEMALE", "Female"),
+        sex = [("MASC", "Masc"),
+               ("FEM", "Fem"),
                ]
         self.cboSex.set_entry_text_column(0)
         self.cboSex.connect("changed", self.on_cboSex_changed)
@@ -185,6 +187,7 @@ class MainWindow(Gtk.ApplicationWindow):
             LoadCapivaraFile.loadCapivaraFile(self.lastFileOpen)
             self.capivaraPathFile = os.path.dirname(os.path.realpath(self.lastFileOpen))
 
+        Global.set("capivara_file_open", self.lastFileOpen)
         self.putHeaderBar()
 
         # Passa os campos da tela para treeview
@@ -194,6 +197,12 @@ class MainWindow(Gtk.ApplicationWindow):
                               self.list_store, self.lstStoreMap)
 
         Treeview(self.treeView, self, vo)
+
+        capivaraFile = os.path.basename(self.lastFileOpen)
+        if capivaraFile:
+            self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFile)[0], Gtk.MessageType.INFO)
+        else:
+            self.inforBarMessage('Um novo projeto foi aberto!', Gtk.MessageType.INFO)
 
     @Gtk.Template.Callback()
     def on_btnEditPhoto_clicked(self, widget):
@@ -262,8 +271,9 @@ class MainWindow(Gtk.ApplicationWindow):
                                       self.list_store, self.lstStoreMap)
 
                 Treeview(self.treeView, self, vo)
-
                 self.putHeaderBar()
+                capivaraFileShortName = os.path.basename(self.lastFileOpen)
+                self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFileShortName)[0], Gtk.MessageType.INFO)
 
             except:
                 logs.record("Não foi possível abrir o arquivo %s" % capivaraFile)
@@ -338,7 +348,6 @@ class MainWindow(Gtk.ApplicationWindow):
         c = c.get(intId)
         if c.name != self.txtName.get_text():
             c.set_name(intId, self.txtName.get_text().upper())
-            # self.LoadRelationships()
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -602,6 +611,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     @Gtk.Template.Callback()
     def on_btn_save_clicked(self, widget):
+        # TODO: Resolver a questão de quando o projeto não foi salvo ainda mas já tem título. Pedir um diretório
 
         try:
             # Pegar o nome do projeto
@@ -612,6 +622,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 Global.set("flag_edit", False)
                 # # Coloca nome do projeto e autor na header bar
                 self.putHeaderBar()
+                self.inforBarMessage('Arquivo "%s" salvo com sucesso!' % c.title, Gtk.MessageType.INFO)
 
             else:
                 dialog = DialogSaveFile()
@@ -630,8 +641,8 @@ class MainWindow(Gtk.ApplicationWindow):
                         SaveCapivaraFile.saveCapivaraFile(capivaraFile)
 
                         logs.record("Arquivo salvo com sucesso!", type="info")
-                        self.messagebox(Gtk.MessageType.INFO, "INFORMATION",
-                                        "O arquivo %s foi salvo com sucesso." % os.path.basename(capivaraFile))
+                        # self.messagebox(Gtk.MessageType.INFO, "INFORMATION",
+                        #                 "O arquivo %s foi salvo com sucesso." % os.path.basename(capivaraFile))
 
                         LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                         Global.set("capivara_file_open", capivaraFile)
@@ -642,6 +653,11 @@ class MainWindow(Gtk.ApplicationWindow):
                         # Coloca nome do projeto e autor na header bar
                         self.putHeaderBar()
 
+                        capivaraFileShortName = os.path.basename(capivaraFile)
+                        self.inforBarMessage(
+                            'Arquivo "%s" salvo com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
+                            Gtk.MessageType.INFO)
+
                     except:
                         logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
                         self.messagebox("error", "ERRO",
@@ -649,7 +665,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 else:
                     dialog.destroy()
-                    logs.record("Salvar como cancelado.", type="info", colorize=True)
+                    logs.record('"Salvar como" cancelado.', type="info", colorize=True)
 
 
         except:
@@ -681,8 +697,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 SaveCapivaraFile.saveCapivaraFile(capivaraFile)
 
                 logs.record("Arquivo salvo com sucesso!", type="info")
-                self.messagebox(Gtk.MessageType.INFO, "INFORMATION",
-                                "O arquivo %s foi salvo com sucesso." % os.path.basename(capivaraFile))
+                # self.messagebox(Gtk.MessageType.INFO, "INFORMATION",
+                #                 "O arquivo %s foi salvo com sucesso." % os.path.basename(capivaraFile))
 
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                 Global.set("capivara_file_open", capivaraFile)
@@ -691,6 +707,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 # # Coloca nome do projeto e autor na header bar
                 self.putHeaderBar()
+                capivaraFileShortName = os.path.basename(capivaraFile)
+                self.inforBarMessage('Arquivo "%s" salvo com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
+                                     Gtk.MessageType.INFO)
 
             except:
                 logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
@@ -901,6 +920,7 @@ class MainWindow(Gtk.ApplicationWindow):
             SyncScrivener(propriedades.scrivener_project)
 
         Treeview(self.treeView, self)
+        self.inforBarMessage('Scrivener e AeonTimeLine  foram sincronizados!', Gtk.MessageType.INFO)
 
 
     @Gtk.Template.Callback()
@@ -1082,6 +1102,20 @@ class MainWindow(Gtk.ApplicationWindow):
         self.statusbar.remove_all(context_id=self.context_id)
 
     # status bar
+
+    def inforBarMessage(self, message, type):
+
+        if not self.info_bar.get_revealed():
+            self.lblInfoBar.set_text(message)
+            self.info_bar.set_revealed(revealed=True)
+            self.info_bar.set_message_type(type)
+
+            GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
+        else:
+
+            self.lblInfoBar.set_text(self.lblInfoBar.get_text() + '\n' + message)
+            self.info_bar.set_revealed(revealed=True)
+            GLib.timeout_add_seconds(priority=0, interval=5, function=self.info_bar_timeout)
 
     @Gtk.Template.Callback()
     def on_info_bar_button_clicked(self, widget, response):

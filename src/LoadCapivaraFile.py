@@ -22,6 +22,7 @@ metadata = MetaData(bind=engine, reflect=True)
 
 def loadCapivaraFile(fileOpen=None):
     # TODO: Colocar o loadcapivarafile em uma transaction
+    # TODO: Verificar se o arquivo existe
     logs = Logs(filename="capivara.log")
 
     if fileOpen == None:

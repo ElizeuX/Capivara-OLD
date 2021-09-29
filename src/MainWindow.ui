@@ -112,7 +112,7 @@
                 <property name="can-focus">False</property>
                 <property name="spacing">16</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lblInfoBar">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="halign">center</property>
@@ -1457,7 +1457,7 @@
                       </object>
                       <packing>
                         <property name="name">page_1</property>
-                        <property name="title" translatable="yes">PSICOLÓGICO</property>
+                        <property name="title" translatable="yes">DETALHES</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -1853,7 +1853,7 @@
                       </object>
                       <packing>
                         <property name="name">page_2</property>
-                        <property name="title" translatable="yes">SOCIAL</property>
+                        <property name="title" translatable="yes">APROFUNDAMENTO</property>
                         <property name="position">2</property>
                       </packing>
                     </child>

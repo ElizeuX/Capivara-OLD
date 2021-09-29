@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import base64
 
+
 import gi
 
 from logger import Logs
@@ -19,11 +20,14 @@ import random
 import string
 import secrets
 import uuid
+from PIL import Image
 
 from Global import Global
 
 PluginFolder = "../plugins/"
 MainModule = "__init__"
+
+
 
 class DialogSelectAeon(Gtk.FileChooserDialog):
     # Definindo o diretório padrão.
@@ -499,9 +503,9 @@ class DialogSaveFile(Gtk.FileChooserDialog):
     # home = Config.get_ini_value("DIRECTORY", "mycapivaras")
 
     # TODO: Usar o caminho do próprio arquivo e o nome do arquivo original
+    # TODO: Corrigir que está salvando com extensão .capivara.capivara
+
     # home = "/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/"
-    home = ""
-    capivaraFile = ""
 
     def __init__(self):
         super().__init__()
@@ -513,7 +517,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
             self.capivaraFile = 'Untitled.capivara'
         else:
             fileOpen = Global.config("capivara_file_open")
-            self.capivaraFile = os.path.basename(fileOpen)
+            self.capivaraFile = os.path.basename(fileOpen)  +  '.capivara'
             self.home = os.path.dirname(os.path.realpath(fileOpen))
 
         self.set_title(title='Salvar como')
@@ -523,7 +527,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         # Nome inicial do arquivo.
         self.set_current_name(name=self.capivaraFile)
         # Pasta onde o diálogo será aberto.
-        self.set_current_folder(filename=str(self.home))
+        self.set_current_folder(filename=self.home)
         # Adicionando confirmação de sobrescrita.
         self.set_do_overwrite_confirmation(do_overwrite_confirmation=True)
 
@@ -560,9 +564,6 @@ class DialogSaveFile(Gtk.FileChooserDialog):
         self.show_all()
 
     def save_file(self):
-        # print('Botão SALVAR pressionado')
-        # print(f'Caminho até o arquivo: {self.get_filename()}')
-        # print(f'URI até o arquivo: {self.get_uri()}')
         return self.get_filename()
 
 

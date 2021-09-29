@@ -4,86 +4,107 @@ from DataAccess import Character
 from Utils import generate_uuid, capitalizeFirstCharacter
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
-
 import os
+import binascii
 
+# TODO: Colocar logs
+
+def base64ToRtfFile(fileRTF_content, strBase64):
+    width = 16378
+    height = 15822
+    hex_content = binascii.a2b_base64(strBase64)
+    hex_content = binascii.hexlify(hex_content)
+    hex_content = (' '.join(["{0:b}".format(x) for x in hex_content]))
+    fileRTF_content = fileRTF_content.replace("<#LEAKS_IMAGE>", '\pard\widctlpar\sb360\sa60\sl240\slmult1\qc{\pict{\*\picprop}\wmetafile8\picw16378\pich15822\picwgoal3795\pichgoal3660 ' + str(hex_content))
+    return  fileRTF_content
+
+def putQuot(field):
+    #field.replace('"', '"\ulnone NOME"\"')
+    pass
+
+def getRtf():
+    rtfFile = '''{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang1046\\deflangfe1046{\\fonttbl{\\f0\\fmodern Fira Code;}{\\f1\\fswiss\\fprq2\\fcharset0 Arial Black;}{\\f2\\fswiss\\fprq2\\fcharset0 Arial;}{\\f3\\fnil\\fcharset2 Symbol;}}
+{\\colortbl ;\\red255\\green0\\blue0;\\red0\\green0\\blue0;\\red122\\green122\\blue122;}
+{\\*\\generator Riched20 10.0.19041}{\\*\\mmathPr\\mdispDef1\\mwrapIndent1440 }\\viewkind4\\uc1 
+\\pard\\box\\brdrdash\\brdrw0 \\sb360\\sa60\\sl240\\slmult1\\qc\\cf1\\f0\\fs24 [READ ONLY - MANAGER BY CAPIVARA]\\cf2\\expndtw-20\\kerning28\\caps\\f1\\fs72\\par
+
+<#LEAKS_IMAGE>}\par
+
+\\pard\\widctlpar\\sb360\\sa60 @name\\par
+
+\\pard\\widctlpar\\sa200\\sl288\\slmult1\\cf0\\expndtw0\\kerning0\\caps0\\f2\\fs22\\par
+
+\\pard\\keep\\keepn\\widctlpar\\sb120\\sl288\\slmult1\\cf3\\caps\\f1\\fs28 F\\'cdSICO\\par
+
+\\pard\\widctlpar\\li720\\sl240\\slmult1\\cf0\\b\\caps0\\f2\\fs22 Arqu\\'e9tipo\\b0  : <arquetipo>\\par
+\\b Data de Nasc.\\b0  : <data de nasc>\\par
+\\b Idade : \\b0 @age\\par
+\\b Sexo : \\b0 @sex\\par
+\\b Altura : \\b0 @height\\par
+\\b Peso : \\b0 @weight\\par
+\\b Tipo de corpo : \\b0 @body_type\\par
+\\b Rosto :\\b0  <rosto>\\par
+\\b Cor dos olhos :\\b0  @eye_color\\par
+\\b Cor dos cabelos : \\b0 @hair_color\\par
+\\b Boca :\\b0  <boca>\\par
+\\b Bra\\'e7os : \\b0 <bra\\'e7os>\\par
+\\b Pernas : \\b0 <pernas>\\par
+\\b Imperfei\\'e7\\'f5es : \\b0 <imperfei\\'e7\\'f5es>\\par
+\\b Local : \\b0 <local>\\par
+\\par
+
+\\pard\\keep\\keepn\\widctlpar\\sb120\\sl288\\slmult1\\cf3\\caps\\f1\\fs28 Detalhes\\line\\caps0\\fs26 Geral\\par
+
+\\pard\\widctlpar\\li720\\sl240\\slmult1\\cf0\\b\\f2\\fs22 Motivo :\\b0  <motivo>\\line\\b H\\'e1bitos : \\b0 <h\\'e1bitos>\\par
+
+\\pard\\widctlpar\\sl240\\slmult1\\par
+\\cf3\\f1\\fs26 Vista o personagem\\par
+
+\\pard\\widctlpar\\li720\\sl240\\slmult1\\cf0\\b\\f2\\fs22 Traje : \\b0 <traje>\\par
+\\b Sapatos : \\b0 <sapatos>\\par
+\\par
+
+\\pard\\widctlpar\\sl240\\slmult1\\cf3\\f1\\fs26 Postura\\par
+
+\\pard\\widctlpar\\li720\\sl240\\slmult1\\cf0\\b\\f2\\fs22 M\\'e3os/Gestos : \\b0 <maos/gestos>\\line\\b P\\'e9s/Pernas : \\b0 <pes/pernas>\\line\\b Tronco/Cabe\\'e7a : \\b0 <tronco/cabeca>\\line\\par
+
+\\pard\\widctlpar\\sl240\\slmult1\\cf3\\f1\\fs26 Bens Materiais\\par
+
+\\pard\\widctlpar\\li720\\sl240\\slmult1\\cf0\\b\\f2\\fs22 Resid\\'eancia : \\b0 <residencia>\\line\\b C\\'f4modo favorito : \\b0 <comodo favorito>\\line\\b Vista da Janela : \\b0 <vista da janela>\\line\\b Ve\\'edculos : \\b0 <veiculos>\\par
+\\par
+\\par
+
+\\pard\\widctlpar\\sl240\\slmult1\\cf3\\caps\\f1\\fs28 aprofundamentos\\par
+
+\\pard\\widctlpar\\sl276\\slmult1\\caps0\\fs26 Lista de Rituais do Personagem\\par
+
+\\pard{\\pntext\\f3\\'B7\\tab}{\\*\\pn\\pnlvlblt\\pnf3\\pnindent0{\\pntxtb\\'B7}}\\fi-360\\li1440\\sl240\\slmult1\\cf0\\f2\\fs22 <rito 1>\\par
+{\\pntext\\f3\\'B7\\tab}<rito 2>\\par
+{\\pntext\\f3\\'B7\\tab}<rito 3>\\cf3\\f1\\fs26\\par
+
+\\pard\\li720\\sl240\\slmult1\\par
+
+\\pard\\sl240\\slmult1 Sonho\\par
+
+\\pard\\li720\\sl240\\slmult1\\cf0\\f2\\fs22 <sonho do personagem>\\par
+
+\\pard\\sl240\\slmult1\\par
+\\cf3\\f1\\fs26 Biografia\\par
+
+\\pard\\li720\\sl240\\slmult1\\cf0\\f2\\fs22 <9999>- <evento 1>\\par
+<9999>- <evento 2>\\par
+<9999>- <evento N>\\par
+
+\\pard\\sl240\\slmult1\\par
+\\cf3\\f1\\fs26 Background\\par
+
+\\pard\\li720\\sl240\\slmult1\\cf0\\f2\\fs22 <background>\\par
+}'''
+
+    return rtfFile
 
 def fileRtfName(id):
     return str(id)+ ".rtf"
-
-def rtfTitle(name):
-    rtfFile = "{\\rtf1\\ansi\\ansicpg1252\\uc1\deff0" + "\n"
-    rtfFile += "{\\fonttbl{\\f0\\fnil\\fcharset0\\fprq2 CourierNewPSMT;}{\\f1\\fnil\\fcharset0\\fprq2 Arial-ItalicMT;}{\\f2\\fnil\\fcharset0\\fprq2 ArialMT;}{\\f3\\fnil\\fcharset0\\fprq2 Arial-BoldMT;}}" + "\n"
-    rtfFile += "{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;\\red255\\green0\\blue0;\\red30\\green79\\blue159;}" + "\n"
-    rtfFile += "\\paperw12240\\paperh15840\\margl1800\\margr1800\\margt1440\\margb1440\\fet2\\ftnbj\\aenddoc" + "\n"
-    rtfFile += "\\pgnrestart\\pgnstarts0" + "\n"
-    rtfFile += "\\pard\\plain \\tx0\\tqr\\tx2700\\tx3110\\tx3740\\sb160\\sl288\\slmult1\\qc\\ltrch\\loch {\\f1\\fs20\\b0\\i1\\cf3 [READ ONLY - MANAGER BY CAPIVARA]}" + "\n"
-    rtfFile += "\\par\\plain {\\f2\\fs40\\b0\\i0\\cf4 " + capitalizeFirstCharacter(name) + "}" + "\n"
-    return rtfFile
-
-def rtfLine(field, value):
-    rtfFile = "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0"
-    rtfFile += field
-    rtfFile += ":"
-    if value != 'None' and value != 'NONE' and value != None:
-        rtfFile += value
-    else:
-        rtfFile += " "
-
-    rtfFile += "}\n"
-    return rtfFile
-
-def rtfLineEmpty():
-    return "\\par\\plain \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-
-def __createRtfFile(rtfFileName, rtfFile):
-    try:
-        with open(rtfFileName, "w") as arquivo:
-            arquivo.write(rtfFile)
-
-    except:
-        pass
-
-def createRtfFile(rtfFileName, character):
-    dirDocs = "C:/Users/Elizeu/OneDrive - PRODESP/Documents/My Capivaras/scrivener_teste/teste4.scriv/Files/Docs" + "\n"
-    rtfFile = "{\\rtf1\\ansi\\ansicpg1252\\uc1\deff0" + "\n"
-    rtfFile += "{\\fonttbl{\\f0\\fnil\\fcharset0\\fprq2 CourierNewPSMT;}{\\f1\\fnil\\fcharset0\\fprq2 Arial-ItalicMT;}{\\f2\\fnil\\fcharset0\\fprq2 ArialMT;}{\\f3\\fnil\\fcharset0\\fprq2 Arial-BoldMT;}}" + "\n"
-    rtfFile +=  "{\\colortbl;\\red0\\green0\\blue0;\\red255\\green255\\blue255;\\red255\\green0\\blue0;\\red30\\green79\\blue159;}" + "\n"
-    rtfFile +=  "\\paperw12240\\paperh15840\\margl1800\\margr1800\\margt1440\\margb1440\\fet2\\ftnbj\\aenddoc" + "\n"
-    rtfFile +=  "\\pgnrestart\\pgnstarts0" + "\n"
-    rtfFile +=  "\\pard\\plain \\tx0\\tqr\\tx2700\\tx3110\\tx3740\\sb160\\sl288\\slmult1\\qc\\ltrch\\loch {\\f1\\fs20\\b0\\i1\\cf3 [READ ONLY - MANAGER BY CAPIVARA]}"+ "\n"
-    rtfFile += "\\par\\plain {\\f2\\fs40\\b0\\i0\\cf4 " + capitalizeFirstCharacter(character.name) + "}" + "\n"
-    rtfFile += "\\par\\pard\\plain \\fi360\\sl360\\slmult1\\qj\\ltrch\\loch \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Arqu\\loch\\af3\\hich\\af3\\dbch\\af3\\uc1\\u233\\'E9tipo: }" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Data de nasc.:}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Idade: " + character.age + "}\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Sexo: "  + "--" if character.sex == None else character.sex
-    rtfFile +=  "}\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Altura: " + '{0:.2f}'.format(character.height) + "m}\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Peso: " + '{0:.2f}'.format(character.weight) + "kg}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Tipo de corpo: " + "" if character.body_type == None else capitalizeFirstCharacter(character.body_type)
-    rtfFile +=  "}{\\f2\\fs26\\b0\\i0 \\tab }" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos olhos: " + "" if character.eye_color == None else capitalizeFirstCharacter(character.eye_color)
-    rtfFile +=  "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Cor dos cabelos: " + "" if character.hair_color == None else capitalizeFirstCharacter(character.hair_color)
-    rtfFile +=  "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Etnicidade: " + "" if character.ethnicity == None else capitalizeFirstCharacter(character.ethnicity)
-    rtfFile +=  "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Sa\\loch\\af3\\hich\\af3\\dbch\\af3\\uc1\\u250\\'FAde:}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Local: " + "" if character.local == None else character.local
-    rtfFile +=  "}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch {\\f3\\fs26\\b1\\i0 Background:}" + "\n"
-    rtfFile +=  "\\par\\plain {\\f3\\fs26\\b1\\i0 Biografia}" + "\n"
-    rtfFile +=  "\\par\\plain {\\f3\\fs26\\b1\\i0 Ano                             Evento}" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\tx360\\tqr\\tx3124\\tx3196\\tx4075\\li3197\\fi-2837\\sb160\\sl288\\slmult1\\ql\\ltrch\\loch \\f3\\fs26\\b1\\i0" + "\n"
-    rtfFile +=  "\\par\\pard\\plain \\fi360\\sl360\\slmult1\\qj\\ltrch\\loch \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-    rtfFile +=  "\\par\\plain \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-    rtfFile +=  "\\par\\plain \\f2\\fs40\\b0\\i0\\cf4" + "\n"
-    rtfFile +=  "\\par\\plain \\f2\\fs40\\b0\\i0\\cf4}" + "\n"
-
-
-    with open(rtfFileName, "w") as arquivo:
-        arquivo.write(rtfFile)
 
 
 def putCharacter(id, character, binderItem):
@@ -146,28 +167,25 @@ def SyncScrivener(scrivenerProjectFile):
             children = ET.SubElement(binderItem, 'Children')
             binderItem = []
             for character in characters:
+                rtfFile = getRtf()
+
                 __ID = __ID + 1
                 elementCharacter = ET.SubElement(children, 'BinderItem')
                 putCharacter(__ID, character, elementCharacter)
-                elementCharacter = ""
-                createRtfFile(docDir + fileRtfName(__ID), character)
-                # rtfFile = rtfTitle(character.name)
-                # rtfFile += rtfLineEmpty()
-                # rtfFile += rtfLine("Arquétipo", character.archtype)
-                # rtfFile += rtfLine("Data de nasc.", character.date_of_birth)
-                # rtfFile += rtfLine("Idade", character.age)
-                # rtfFile += rtfLine("Sexo", character.sex)
-                # rtfFile += rtfLine("Altura", '{0:.2f}'.format(character.height))
-                # rtfFile += rtfLine("Peso", '{0:.2f}'.format(character.weight))
-                # rtfFile += rtfLine("Tipo do corpo", character.body_type)
-                # rtfFile += rtfLine("Cor dos olhos", character.eye_color)
-                # rtfFile += rtfLine("Cor dos cabelos", character.hair_color)
-                # rtfFile += rtfLine("Etnicidade", character.ethnicity)
-                # rtfFile += rtfLine("Local", character.local)
-                # __createRtfFile(docDir + fileRtfName(__ID), rtfFile)
+
+                rtfFile = rtfFile.replace("@name", character.name)
+                rtfFile = rtfFile.replace("@age", character.age)
+                rtfFile = rtfFile.replace("@sex", character.sex)
+                rtfFile = rtfFile.replace("@height", '{0:.2f}'.format(character.height))
+                rtfFile = rtfFile.replace("@weight", '{0:.2f}'.format(character.weight))
+                rtfFile = rtfFile.replace("@eye_color", character.eye_color)
+                rtfFile = rtfFile.replace("@hair_color", character.hair_color)
+                rtfFile = rtfFile.replace("@body_type", character.body_type)
+                rtfFile = base64ToRtfFile(rtfFile, character.picture)
+
+                rtfFileName = docDir + fileRtfName(__ID)
+                with open(rtfFileName, "w") as arquivo:
+                    arquivo.write(rtfFile)
+
 
     tree.write(scrivenerProjectFile)
-
-
-def loadCharacterScrivener():
-    pass

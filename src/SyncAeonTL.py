@@ -19,6 +19,9 @@ def findGuidTemplateCharacter(mydata):
     return guidCharacter
 
 def SyncAeonTimeLine(AeonProjectFile):
+    # TODO: Inserir os relacionamentos dos personagens vindos do AeonTimeLine
+    # TODO: Colocar logs
+
     mydata = None
     data = None
     with ZipFile(AeonProjectFile, "r") as z:
