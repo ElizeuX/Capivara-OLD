@@ -7,6 +7,7 @@ from xml.dom import minidom
 import os
 import binascii
 
+
 # TODO: Colocar logs
 
 def base64ToRtfFile(fileRTF_content, strBase64):
@@ -15,12 +16,16 @@ def base64ToRtfFile(fileRTF_content, strBase64):
     hex_content = binascii.a2b_base64(strBase64)
     hex_content = binascii.hexlify(hex_content)
     hex_content = (' '.join(["{0:b}".format(x) for x in hex_content]))
-    fileRTF_content = fileRTF_content.replace("<#LEAKS_IMAGE>", '\pard\widctlpar\sb360\sa60\sl240\slmult1\qc{\pict{\*\picprop}\wmetafile8\picw16378\pich15822\picwgoal3795\pichgoal3660 ' + str(hex_content))
-    return  fileRTF_content
+    fileRTF_content = fileRTF_content.replace("<#LEAKS_IMAGE>",
+                                              '\pard\widctlpar\sb360\sa60\sl240\slmult1\qc{\pict{\*\picprop}\wmetafile8\picw16378\pich15822\picwgoal3795\pichgoal3660 ' + str(
+                                                  hex_content))
+    return fileRTF_content
+
 
 def putQuot(field):
-    #field.replace('"', '"\ulnone NOME"\"')
+    # field.replace('"', '"\ulnone NOME"\"')
     pass
+
 
 def getRtf():
     rtfFile = '''{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang1046\\deflangfe1046{\\fonttbl{\\f0\\fmodern Fira Code;}{\\f1\\fswiss\\fprq2\\fcharset0 Arial Black;}{\\f2\\fswiss\\fprq2\\fcharset0 Arial;}{\\f3\\fnil\\fcharset2 Symbol;}}
@@ -50,7 +55,7 @@ def getRtf():
 \\b Bra\\'e7os : \\b0 <bra\\'e7os>\\par
 \\b Pernas : \\b0 <pernas>\\par
 \\b Imperfei\\'e7\\'f5es : \\b0 <imperfei\\'e7\\'f5es>\\par
-\\b Local : \\b0 <local>\\par
+\\b Local : \\b0 @local\\par
 \\par
 
 \\pard\\keep\\keepn\\widctlpar\\sb120\\sl288\\slmult1\\cf3\\caps\\f1\\fs28 Detalhes\\line\\caps0\\fs26 Geral\\par
@@ -103,8 +108,9 @@ def getRtf():
 
     return rtfFile
 
+
 def fileRtfName(id):
-    return str(id)+ ".rtf"
+    return str(id) + ".rtf"
 
 
 def putCharacter(id, character, binderItem):
@@ -134,16 +140,15 @@ def putCharacter(id, character, binderItem):
     target.attrib["Type"] = "Words"
     target.text = "0"
 
-def SyncScrivener(scrivenerProjectFile):
 
+def SyncScrivener(scrivenerProjectFile):
     # Listar todos os personagens
     c = Character()
     characters = c.list()
     tree = ET.parse(scrivenerProjectFile)
     root = tree.getroot()
 
-    docDir = os.path.dirname(os.path.abspath(scrivenerProjectFile)) +"/Files/Docs/"
-
+    docDir = os.path.dirname(os.path.abspath(scrivenerProjectFile)) + "/Files/Docs/"
 
     __ID = 54
     __Type = "Text"
@@ -153,7 +158,6 @@ def SyncScrivener(scrivenerProjectFile):
     __IconFileName = "Characters (Character Sheet).tiff"
     __ShowSynopsisImage = "Yes"
     __IndexCardImageFileExtension = "png"
-
 
     for binderItem in root.iter('BinderItem'):
         idCharacters = binderItem.get('ID')
@@ -181,11 +185,11 @@ def SyncScrivener(scrivenerProjectFile):
                 rtfFile = rtfFile.replace("@eye_color", character.eye_color)
                 rtfFile = rtfFile.replace("@hair_color", character.hair_color)
                 rtfFile = rtfFile.replace("@body_type", character.body_type)
+                rtfFile = rtfFile.replace("@local", character.local)
                 rtfFile = base64ToRtfFile(rtfFile, character.picture)
 
                 rtfFileName = docDir + fileRtfName(__ID)
                 with open(rtfFileName, "w") as arquivo:
                     arquivo.write(rtfFile)
-
 
     tree.write(scrivenerProjectFile)

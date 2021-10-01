@@ -170,7 +170,7 @@ class Treeview():
         sg = SmartGroup()
         smartGroups = sg.list()
         character = Character()
-        iter_level_1 = self.append_tree("SmartGroups")
+        iter_level_1 = self.append_tree("Categorias")
         for smartGroup in smartGroups:
             iter_level_2 = self.append_tree(smartGroup.description, smartGroup.id, iter_level_1)
             c = smartGroup.listCharacter(smartGroup.rule)
@@ -182,7 +182,7 @@ class Treeview():
         c = Core()
         d = Character()
         cores = c.list()
-        iter_level_1 = self.append_tree("Cores")
+        iter_level_1 = self.append_tree("Nucleo Dramático")
         for core in cores:
             iter_level_2 = self.append_tree( core.description, core.id, iter_level_1)
             characters = c.listCharacters(core.id)
@@ -192,7 +192,7 @@ class Treeview():
         # Adicionando personagens
         c = Character()
         characters = c.list()
-        iter_level_1 = self.append_tree("Character")
+        iter_level_1 = self.append_tree("Personagem")
         for character in characters:
             iter_level_2 = self.append_tree( character.name, character.id, iter_level_1)
 

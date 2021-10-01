@@ -21,6 +21,8 @@ def findGuidTemplateCharacter(mydata):
 def SyncAeonTimeLine(AeonProjectFile):
     # TODO: Inserir os relacionamentos dos personagens vindos do AeonTimeLine
     # TODO: Colocar logs
+    # TODO: Não está atualizando os personagens na segunda sincronização
+    # TODO: Capiturar erros
 
     mydata = None
     data = None
@@ -30,8 +32,6 @@ def SyncAeonTimeLine(AeonProjectFile):
             with z.open(filename) as f:
                 data = f.read()
                 mydata = json.loads(data.decode("utf-8"))
-
-    print(mydata["entities"])
 
     guidCharacter = findGuidTemplateCharacter(mydata)
 

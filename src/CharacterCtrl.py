@@ -15,8 +15,8 @@ from Utils import Date
 class CharacterControl:
     characterId = ""
     voCharacter = namedtuple('voCharacter',
-                             [ 'name', 'archtype', 'date_of_birth','age', 'sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'ethinicity',
-                              'health', 'tag', 'local',
+                             [ 'name', 'archtype', 'date_of_birth','age', 'sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'arms',
+                              'legs', 'tag', 'local',
                               'background',
                               'picture', 'biography', 'relationships'])
 
@@ -82,8 +82,8 @@ class CharacterControl:
 
         voCharacter.local.set_text(character.local)
         voCharacter.body_type.set_text(character.body_type.capitalize())
-        voCharacter.ethinicity.set_text(character.ethnicity.capitalize())
-        voCharacter.health.set_text(character.health.capitalize())
+        # voCharacter.ethinicity.set_text(character.ethnicity.capitalize())
+        # voCharacter.health.set_text(character.health.capitalize())
 
         if  voCharacter.background == None:
             print("sem background")

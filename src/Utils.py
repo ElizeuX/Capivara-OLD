@@ -7,8 +7,7 @@ import gi
 from logger import Logs
 
 gi.require_version(namespace='Gtk', version='3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
-from gi.repository.GdkPixbuf import Pixbuf
+from gi.repository import Gtk, GdkPixbuf
 
 import configparser
 from pathlib import Path
@@ -16,13 +15,10 @@ import importlib
 import os
 import json
 import datetime
-import random
-import string
 import secrets
 import uuid
-from PIL import Image
-
 from Global import Global
+from CapivaraError import CapivaraDoesNotExistError, CapivaraDecodeFailError
 
 PluginFolder = "../plugins/"
 MainModule = "__init__"
@@ -239,12 +235,18 @@ class JsonTools():
         try:
             with open(file_name, "r") as jsonFileLeitura:
                 jsonFile = json.load(jsonFileLeitura)
-        except:
-            logs.record("Arquivo : " + file_name + "corrompido.")
+
+        except IOError:
+            logs.record("Arquivo : " + file_name + "inexistente.", type="info")
+            raise CapivaraDoesNotExistError(10, "Arquivo %s inexistente" % file_name)
+
+        except  ValueError:
+            logs.record("Falha na decodificação do arquivo %s" % file_name)
+            raise CapivaraDecodeFailError(20, "Falha ao decoficar o arquivo %s" % file_name)
             jsonFile = ""
 
         finally:
-            jsonFileLeitura.close()
+            pass
 
         return jsonFile
 
@@ -271,6 +273,7 @@ class JsonTools():
 
 
 class AppConfig:
+    # TODO: Incluir o tamanho da tela
     home = Path.home()
     config = configparser.ConfigParser(allow_no_value=True)
     # parse existing file
@@ -537,17 +540,6 @@ class DialogSaveFile(Gtk.FileChooserDialog):
             '_Salvar', Gtk.ResponseType.OK
         )
 
-        # Adicionando class action nos botões.
-        # btn_cancel = self.get_widget_for_response(
-        #     response_id=Gtk.ResponseType.CANCEL,
-        # )
-        # btn_cancel.get_style_context().add_class(class_name='destructive-action')
-        #
-        # btn_save = self.get_widget_for_response(
-        #     response_id=Gtk.ResponseType.OK,
-        # )
-        # btn_save.get_style_context().add_class(class_name='suggested-action')
-
         # Criando e adicionando filtros.
         txt_filter = Gtk.FileFilter()
         txt_filter.set_name(name='Capivara Files (*.capivara)')
@@ -781,3 +773,4 @@ def get_pixbuf_from_base64string(base64string):
     except Exception as e:
         pass
     return ""
+

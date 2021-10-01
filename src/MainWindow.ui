@@ -633,7 +633,7 @@
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <child>
-                                              <object class="GtkEntry" id="gtkEntryEthinicity">
+                                              <object class="GtkEntry" id="gtkEntryArms">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
@@ -659,7 +659,7 @@
                                               </packing>
                                             </child>
                                             <child>
-                                              <object class="GtkEntry" id="gtkEntryHealth">
+                                              <object class="GtkEntry" id="gtkEntryLegs">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
@@ -997,7 +997,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryWhy">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-end">5</property>
@@ -1024,7 +1024,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryHabits">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-end">5</property>
@@ -1113,7 +1113,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryCostume">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-end">5</property>
@@ -1127,7 +1127,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryShoes">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-end">5</property>

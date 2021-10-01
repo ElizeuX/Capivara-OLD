@@ -12,6 +12,8 @@ from Utils import JsonTools, generate_uuid
 from DataAccess import DataUtils, FileInformation, ProjectProperties, Character, Core, SmartGroup, Tag, Biography, \
     CoreCharacterLink, TagCharacterLink, CharacterMap
 
+from CapivaraError import CapivaraEmptyError, WritingRecordError
+
 engine = create_engine('sqlite:///capivara.db', echo=False)
 # engine = create_engine('sqlite://', echo=False)
 Base = declarative_base(bind=engine)
@@ -134,18 +136,6 @@ def loadCapivaraFile(fileOpen=None):
     finally:
         s.close()
         engine.dispose()
-
-
-class CapivaraEmptyError(Exception):
-    def __init__(self, error_code, *args, **kwargs):
-        super(CapivaraEmptyError, self).__init__(*args, **kwargs)
-        self.error_code = error_code
-
-
-class WritingRecordError(Exception):
-    def __init__(self, error_code, *args, **kwargs):
-        super(WritingRecordError, self).__init__(*args, **kwargs)
-        self.error_code = error_code
 
 
 def __CreateAllRelationships(s, capivara):
