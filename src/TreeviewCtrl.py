@@ -43,10 +43,17 @@ class Treeview():
     selected = 'workspace'
     widget = ""
 
-    def __init__(self, treeview, widget, vo = None ):
+    def __init__(self, treeview, widget, search, vo = None ):
 
         self.data = vo
         self.widget = widget
+
+        if search != "":
+            self.search = search
+        else:
+            self.search = ""
+
+
 
 
         for column in treeview.get_columns():
@@ -191,7 +198,11 @@ class Treeview():
 
         # Adicionando personagens
         c = Character()
-        characters = c.list()
+        if self.search:
+            characters = c.search(self.search)
+        else:
+            characters = c.list()
+
         iter_level_1 = self.append_tree("Personagem")
         for character in characters:
             iter_level_2 = self.append_tree( character.name, character.id, iter_level_1)

@@ -83,6 +83,8 @@ def loadCapivaraFile(fileOpen=None):
                     "favorite room": "",
                     "view from the window": "",
                     "vehicles": "",
+                    "ritual": "",
+                    "dream": "",
                     "notes": "NOTAS",
                     "biography": [],
                     "relationship": []

@@ -153,9 +153,10 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="txtSearch">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <signal name="activate" handler="on_txtSearch_activate" swapped="no"/>
               </object>
             </child>
           </object>
@@ -1482,44 +1483,110 @@
                         <property name="orientation">vertical</property>
                         <property name="baseline-position">top</property>
                         <child>
-                          <object class="GtkFrame">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="margin-start">15</property>
-                            <property name="margin-end">15</property>
-                            <property name="margin-top">10</property>
-                            <property name="label-xalign">0</property>
-                            <property name="shadow-type">out</property>
+                            <property name="margin-end">10</property>
+                            <property name="vexpand">True</property>
+                            <property name="homogeneous">True</property>
                             <child>
-                              <object class="GtkAlignment">
+                              <object class="GtkFrame">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="left-padding">12</property>
+                                <property name="margin-left">15</property>
+                                <property name="margin-right">15</property>
+                                <property name="margin-start">15</property>
+                                <property name="margin-end">5</property>
+                                <property name="margin-top">10</property>
+                                <property name="label-xalign">0</property>
+                                <property name="shadow-type">out</property>
                                 <child>
-                                  <object class="GtkScrolledWindow">
-                                    <property name="height-request">40</property>
+                                  <object class="GtkAlignment">
                                     <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="margin-end">5</property>
-                                    <property name="margin-bottom">5</property>
-                                    <property name="shadow-type">in</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="left-padding">12</property>
                                     <child>
-                                      <object class="GtkTextView">
-                                        <property name="height-request">41</property>
+                                      <object class="GtkScrolledWindow">
+                                        <property name="height-request">40</property>
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
+                                        <property name="margin-right">5</property>
+                                        <property name="margin-end">5</property>
+                                        <property name="margin-bottom">5</property>
+                                        <property name="shadow-type">in</property>
+                                        <child>
+                                          <object class="GtkTextView" id="txtRitual">
+                                            <property name="height-request">41</property>
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <signal name="focus-out-event" handler="on_txtRitual_focus_out_event" swapped="no"/>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
                                 </child>
+                                <child type="label">
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">LISTA DE RITUAIS DO PERSONAGEM</property>
+                                  </object>
+                                </child>
                               </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
-                            <child type="label">
-                              <object class="GtkLabel">
+                            <child>
+                              <object class="GtkFrame">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
-                                <property name="label" translatable="yes">LISTA DE RITUAIS DO PERSONAGEM</property>
+                                <property name="margin-start">5</property>
+                                <property name="margin-end">5</property>
+                                <property name="margin-top">10</property>
+                                <property name="hexpand">True</property>
+                                <property name="label-xalign">0</property>
+                                <property name="shadow-type">out</property>
+                                <child>
+                                  <object class="GtkAlignment">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="left-padding">12</property>
+                                    <child>
+                                      <object class="GtkScrolledWindow">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="margin-right">5</property>
+                                        <property name="margin-end">5</property>
+                                        <property name="margin-bottom">5</property>
+                                        <property name="shadow-type">in</property>
+                                        <child>
+                                          <object class="GtkTextView" id="txtDream">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <signal name="focus-out-event" handler="on_txtDream_focus_out_event" swapped="no"/>
+                                          </object>
+                                        </child>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                                <child type="label">
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">SONHO</property>
+                                  </object>
+                                </child>
                               </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
                           <packing>
@@ -1530,55 +1597,11 @@
                         </child>
                         <child>
                           <object class="GtkFrame">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="margin-start">15</property>
-                            <property name="margin-end">15</property>
-                            <property name="margin-top">10</property>
-                            <property name="hexpand">True</property>
-                            <property name="label-xalign">0</property>
-                            <property name="shadow-type">out</property>
-                            <child>
-                              <object class="GtkAlignment">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="left-padding">12</property>
-                                <child>
-                                  <object class="GtkScrolledWindow">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="margin-end">5</property>
-                                    <property name="margin-bottom">5</property>
-                                    <property name="shadow-type">in</property>
-                                    <child>
-                                      <object class="GtkTextView">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                      </object>
-                                    </child>
-                                  </object>
-                                </child>
-                              </object>
-                            </child>
-                            <child type="label">
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="label" translatable="yes">SONHO</property>
-                              </object>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame">
                             <property name="height-request">230</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
+                            <property name="margin-left">15</property>
+                            <property name="margin-right">15</property>
                             <property name="margin-start">15</property>
                             <property name="margin-end">15</property>
                             <property name="margin-top">1</property>
@@ -1709,6 +1732,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-top">10</property>
+                                        <property name="vexpand">True</property>
                                         <property name="shadow-type">in</property>
                                         <child>
                                           <object class="GtkTreeView" id="treeviewBiography">
@@ -1723,7 +1747,7 @@
                                             <property name="model">list_store</property>
                                             <property name="search-column">0</property>
                                             <child internal-child="selection">
-                                              <object class="GtkTreeSelection" id="bioSelection">
+                                              <object class="GtkTreeSelection">
                                                 <signal name="changed" handler="on_bioSelection_changed" swapped="no"/>
                                               </object>
                                             </child>
@@ -1797,7 +1821,7 @@
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">False</property>
-                            <property name="position">2</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -1861,7 +1885,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>

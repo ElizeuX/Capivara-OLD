@@ -428,6 +428,8 @@ class Character(Base):
     view_from_the_window = Column(Unicode(100))
     vehicles = Column(Unicode(100))
     notes = Column(Unicode(1000))
+    ritual = Column(Unicode(2000))
+    dream = Column(Unicode(2000))
 
     @classmethod
     def set_name(cls, intId, strName):
@@ -683,6 +685,22 @@ class Character(Base):
         s.commit()
 
     @classmethod
+    def set_ritual(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'ritual': value.strip()})
+        s.commit()
+
+    @classmethod
+    def set_dream(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'dream': value.strip()})
+        s.commit()
+
+    @classmethod
     def add(cls, character):
         d = cls()
         dateformat = "%Y-%m-%d"
@@ -721,6 +739,8 @@ class Character(Base):
         d.favorite_room = character['favorite room']
         d.view_from_the_window = character['view from the window']
         d.vehicles = character['vehicles']
+        d.ritual = character['ritual']
+        d.dream = character['dream']
         d.notes = character['notes']
         return d
 
@@ -760,6 +780,18 @@ class Character(Base):
     def list(cls):
         s = Session()
         return s.query(Character).all()
+
+    @classmethod
+    def search(cls, value):
+        s = Session()
+        moreRule = ""
+        moreRule += "name LIKE '%@value%' OR "
+        moreRule += "body_type LIKE '%@value%' OR "
+        moreRule += "eye_color LIKE '%@value%' OR "
+        moreRule += "hair_color LIKE  '%@value%' OR "
+        moreRule += "hobbies LIKE '%@value%' OR "
+        moreRule += "background LIKE '%@value%' "
+        return s.execute('SELECT * FROM character WHERE ' + moreRule.replace("@value", value) + ';')
 
     @classmethod
     def getBiografia(cls, id):
@@ -826,8 +858,9 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"favorite room"', '"' + str(character.favorite_room) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"view from the window"', '"' + str(character.view_from_the_window) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"vehicles"', '"' + str(character.vehicles) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"ritual"', '"' + character.ritual + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"dream"', '"' + character.dream + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
-
             i = character.id
             strBiografia = ""
             result = s.query(Biography).filter(Biography.id_character == i)

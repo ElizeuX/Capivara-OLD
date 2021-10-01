@@ -30,7 +30,7 @@ class CharacterControl:
                               'imperfections',
                               'background', 'picture', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
                               'feet_legs',
-                              'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'biography',
+                              'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'ritual', 'dream', 'biography',
                               'relationships'])
 
     def __init__(self, characterId, voCharacter):
@@ -183,6 +183,21 @@ class CharacterControl:
             voCharacter.vehicles.set_text("")
         else:
             voCharacter.vehicles.set_text(character.vehicles)
+        #endregion
+
+        #region TERCEIRA ABA
+        if  voCharacter.ritual == None:
+            print("sem ritual")
+        else:
+            textbufferRitual = voCharacter.ritual.get_buffer()
+            textbufferRitual.set_text(character.ritual)
+
+        if  voCharacter.dream == None:
+            print("sem sonho")
+        else:
+            textbufferDream = voCharacter.dream.get_buffer()
+            textbufferDream.set_text(character.dream)
+
         #endregion
 
         voCharacter.relationships.clear()
