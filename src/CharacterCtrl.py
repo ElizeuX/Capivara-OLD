@@ -14,11 +14,15 @@ from Utils import Date
 
 class CharacterControl:
     characterId = ""
+    # voCharacter = namedtuple('voCharacter',
+    #                          [ 'name', 'archtype', 'date_of_birth','age', 'sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'arms',
+    #                           'legs', 'tag', 'local',
+    #                           'background',
+    #                           'picture', 'biography', 'relationships'])
     voCharacter = namedtuple('voCharacter',
-                             [ 'name', 'archtype', 'date_of_birth','age', 'sex', 'height', 'weight', 'body_type', 'eye_color', 'hair_color', 'arms',
-                              'legs', 'tag', 'local',
-                              'background',
-                              'picture', 'biography', 'relationships'])
+                             ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
+                              'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
+                              'imperfections', 'background', 'picture', 'biography', 'relationships'])
 
     def __init__(self, characterId, voCharacter):
         self.strCharacterId = characterId
@@ -26,12 +30,6 @@ class CharacterControl:
 
         c = Character()
         character = c.get(characterId)
-
-        # m = self.voCharacter
-        # teste = m
-
-
-        #voCharacter.id.set_text("#" + str(character.id).zfill(5))
 
         voCharacter.name.set_text(Utils.capitalizeFirstCharacter(character.name))
 
@@ -82,8 +80,10 @@ class CharacterControl:
 
         voCharacter.local.set_text(character.local)
         voCharacter.body_type.set_text(character.body_type.capitalize())
-        # voCharacter.ethinicity.set_text(character.ethnicity.capitalize())
-        # voCharacter.health.set_text(character.health.capitalize())
+        voCharacter.face.set_text(character.face.capitalize())
+        voCharacter.month.set_text(character.month.capitalize())
+        voCharacter.imperfections.set_text(character.imperfections)
+        voCharacter.arms.set_text(character.arms)
 
         if  voCharacter.background == None:
             print("sem background")

@@ -403,17 +403,16 @@ class Character(Base):
     sex = Column(Unicode(5))
     age = Column(Unicode(3))
     local = Column(Unicode(200))
-    occupation = Column(Unicode(200))
-    position_social = Column(Unicode(1))
+    imperfections = Column(Unicode(100))
     height = Column(Float(1, 2))
     weight = Column(Float(1, 2))
     body_type = Column(Unicode(100))
-    appearance = Column(Unicode(100))
+    month = Column(Unicode(50))
     eye_color = Column(Unicode(20))
     hair_color = Column(Unicode(20))
-    ethnicity = Column(Unicode(1))
-    health = Column(Unicode(100))
-    standing_features = Column(Unicode(100))
+    arms = Column(Unicode(50))
+    legs = Column(Unicode(50))
+    face = Column(Unicode(100))
     background = Column(Unicode(1000))
     hobbies = Column(Unicode(500))
     picture = Column(String(200000))
@@ -540,6 +539,46 @@ class Character(Base):
         s.commit()
 
     @classmethod
+    def set_face(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'face': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_month(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'month': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_arms(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'arms': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_legs(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'legs': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_imperfections(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'imperfections': value.strip().upper()})
+        s.commit()
+
+    @classmethod
     def add(cls, character):
         d = cls()
         dateformat = "%Y-%m-%d"
@@ -554,17 +593,16 @@ class Character(Base):
         d.sex = character['sex']
         d.age = character['age'].strip()
         d.local = character['local'].strip().upper()
-        d.occupation = character['occupation'].strip().upper()
-        d.position_social = character['position social']
+        d.face = character['face'].strip().upper()
+        d.month = character['month']
         d.height = character['height']
         d.weight = character['weight']
         d.body_type = character['body type'].strip().upper()
-        d.appearance = character['appearance'].strip().upper()
+        d.imperfections = character['imperfections'].strip().upper()
         d.eye_color = character['eye color'].strip().upper()
         d.hair_color = character['hair color'].strip().upper()
-        d.ethnicity = character['ethnicity'].strip().upper()
-        d.health = character['health'].strip().upper()
-        d.standing_features = character['standing features'].strip().upper()
+        d.arms = character['arms'].strip().upper()
+        d.legs = character['legs'].strip().upper()
         d.background = character['background']
         d.hobbies = character['hobbies']
         d.picture = character['picture']
@@ -644,25 +682,21 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
             if character.date_of_birth != None:
-                characterStr = characterStr + JsonTools.putMap('"date of birth"',
-                                                               '"' + str(character.date_of_birth) + '"') + ','
+                characterStr = characterStr + JsonTools.putMap('"date of birth"','"' + str(character.date_of_birth) + '"') + ','
             else:
                 characterStr = characterStr + JsonTools.putMap('"date of birth"', '""') + ','
             characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"occupation"', '"' + str(character.occupation) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"position social"',
-                                                           '"' + str(character.position_social) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"face"', '"' + str(character.face) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"month"','"' + str(character.month) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"height"', str("{:.2f}".format(character.height))) + ','
             characterStr = characterStr + JsonTools.putMap('"weight"', str("{:.2f}".format(character.weight))) + ','
             characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"appearance"', '"' + str(character.appearance) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"imperfections"', '"' + str(character.imperfections) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"ethnicity"', '"' + str(character.ethnicity) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"health"', '"' + str(character.health) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"standing features"',
-                                                           '"' + str(character.standing_features) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"arms"', '"' + str(character.arms) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"legs"', '"' + str(character.legs) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','

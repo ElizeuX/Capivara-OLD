@@ -637,7 +637,7 @@
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
-                                                <signal name="focus-out-event" handler="on_gtkEntryEthinicity_focus_out_event" swapped="no"/>
+                                                <signal name="focus-out-event" handler="on_gtkEntryArms_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -664,7 +664,7 @@
                                                 <property name="can-focus">True</property>
                                                 <property name="margin-start">5</property>
                                                 <property name="hexpand">True</property>
-                                                <signal name="focus-out-event" handler="on_gtkEntryHealth_focus_out_event" swapped="no"/>
+                                                <signal name="focus-out-event" handler="on_gtkEntryLegs_focus_out_event" swapped="no"/>
                                               </object>
                                               <packing>
                                                 <property name="expand">False</property>
@@ -724,6 +724,7 @@
                                             <property name="margin-start">5</property>
                                             <property name="margin-bottom">5</property>
                                             <property name="hexpand">True</property>
+                                            <signal name="focus-out-event" handler="on_gtkEntryFace_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
@@ -753,6 +754,7 @@
                                             <property name="margin-top">5</property>
                                             <property name="margin-bottom">5</property>
                                             <property name="hexpand">True</property>
+                                            <signal name="focus-out-event" handler="on_gtkEntryMouth_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
@@ -830,6 +832,7 @@
                                             <property name="margin-start">5</property>
                                             <property name="margin-top">5</property>
                                             <property name="hexpand">True</property>
+                                            <signal name="focus-out-event" handler="on_gtkEntryImperfections_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
