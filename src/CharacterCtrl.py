@@ -19,10 +19,19 @@ class CharacterControl:
     #                           'legs', 'tag', 'local',
     #                           'background',
     #                           'picture', 'biography', 'relationships'])
+    # voCharacter = namedtuple('voCharacter',
+    #                          ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
+    #                           'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
+    #                           'imperfections', 'background', 'picture', 'biography', 'relationships'])
+
     voCharacter = namedtuple('voCharacter',
                              ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
                               'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
-                              'imperfections', 'background', 'picture', 'biography', 'relationships'])
+                              'imperfections',
+                              'background', 'picture', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
+                              'feet_legs',
+                              'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'biography',
+                              'relationships'])
 
     def __init__(self, characterId, voCharacter):
         self.strCharacterId = characterId
@@ -117,6 +126,64 @@ class CharacterControl:
             strTag += c.description + ' '
 
         voCharacter.tag.set_text(strTag)
+
+
+        #region SEGUNDA ABA
+        if character.why == None:
+            voCharacter.why.set_text('')
+        else:
+            voCharacter.why.set_text(character.why)
+
+        if character.habits == None:
+            voCharacter.habits.set_text("")
+        else:
+            voCharacter.habits.set_text(character.habits)
+
+        if character.costume == None:
+            voCharacter.costume.set_text("")
+        else:
+            voCharacter.costume.set_text(character.costume)
+
+        if character.shoes == None:
+            voCharacter.shoes.set_text("")
+        else:
+            voCharacter.shoes.set_text(character.shoes)
+
+        if character.hands_gestures == None:
+            voCharacter.hands_gestures.set_text("")
+        else:
+            voCharacter.hands_gestures.set_text(character.hands_gestures)
+
+        if character.feet_legs == None:
+            voCharacter.feet_legs.set_text("")
+        else:
+            voCharacter.feet_legs.set_text(character.feet_legs)
+
+        if character.trunk_head == None:
+            voCharacter.trunk_head.set_text("")
+        else:
+            voCharacter.trunk_head.set_text(character.trunk_head)
+
+        if character.home == None:
+            voCharacter.home.set_text("")
+        else:
+            voCharacter.home.set_text(character.home)
+
+        if character.favorite_room == None:
+            voCharacter.favorite_room.set_text("")
+        else:
+            voCharacter.favorite_room.set_text(character.favorite_room)
+
+        if character.view_from_the_window == None:
+            voCharacter.view_from_the_window.set_text("")
+        else:
+            voCharacter.view_from_the_window.set_text(character.view_from_the_window)
+
+        if character.vehicles == None:
+            voCharacter.vehicles.set_text("")
+        else:
+            voCharacter.vehicles.set_text(character.vehicles)
+        #endregion
 
         voCharacter.relationships.clear()
         cmaps = CharacterMap()

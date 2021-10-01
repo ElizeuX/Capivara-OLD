@@ -1007,6 +1007,7 @@
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
                                         <property name="width-chars">50</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryWhy_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1034,6 +1035,7 @@
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
                                         <property name="width-chars">50</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryHabits_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1123,6 +1125,7 @@
                                         <property name="margin-top">5</property>
                                         <property name="hexpand">True</property>
                                         <property name="width-chars">50</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryCostume_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1138,6 +1141,7 @@
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
                                         <property name="max-length">50</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryShoes_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1194,7 +1198,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry">
+                                  <object class="GtkEntry" id="gtkEntryHandsGestures">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="margin-left">5</property>
@@ -1203,6 +1207,7 @@
                                     <property name="margin-end">5</property>
                                     <property name="margin-bottom">5</property>
                                     <property name="hexpand">True</property>
+                                    <signal name="focus-out-event" handler="on_gtkEntryHandsGestures_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
@@ -1224,7 +1229,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry">
+                                  <object class="GtkEntry" id="gtkEntryFeetLegs">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="margin-left">5</property>
@@ -1232,6 +1237,7 @@
                                     <property name="margin-start">5</property>
                                     <property name="margin-end">5</property>
                                     <property name="margin-bottom">5</property>
+                                    <signal name="focus-out-event" handler="on_gtkEntryFeetLegs_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
@@ -1253,7 +1259,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry">
+                                  <object class="GtkEntry" id="gtkEntryTrunkHead">
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="margin-left">5</property>
@@ -1261,6 +1267,7 @@
                                     <property name="margin-start">5</property>
                                     <property name="margin-end">5</property>
                                     <property name="margin-bottom">5</property>
+                                    <signal name="focus-out-event" handler="on_gtkEntryTrunkHead_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
@@ -1367,7 +1374,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryHome">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-left">5</property>
@@ -1376,6 +1383,7 @@
                                         <property name="margin-end">5</property>
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryHome_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1383,7 +1391,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryFavoriteRoom">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-left">5</property>
@@ -1392,6 +1400,7 @@
                                         <property name="margin-end">5</property>
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryFavoriteRoom_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1399,7 +1408,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryViewFromTheWindow">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-left">5</property>
@@ -1408,6 +1417,7 @@
                                         <property name="margin-end">5</property>
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryViewFromTheWindow_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>
@@ -1415,7 +1425,7 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry">
+                                      <object class="GtkEntry" id="gtkEntryVehicles">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="margin-left">5</property>
@@ -1424,6 +1434,7 @@
                                         <property name="margin-end">5</property>
                                         <property name="margin-bottom">5</property>
                                         <property name="hexpand">True</property>
+                                        <signal name="focus-out-event" handler="on_gtkEntryVehicles_focus_out_event" swapped="no"/>
                                       </object>
                                       <packing>
                                         <property name="left-attach">1</property>

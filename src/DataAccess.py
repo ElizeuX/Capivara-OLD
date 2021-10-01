@@ -416,6 +416,17 @@ class Character(Base):
     background = Column(Unicode(1000))
     hobbies = Column(Unicode(500))
     picture = Column(String(200000))
+    why = Column(Unicode(50))
+    habits = Column(Unicode(500))
+    costume = Column(Unicode(100))
+    shoes = Column(Unicode(50))
+    hands_gestures = Column(Unicode(100))
+    feet_legs = Column(Unicode(100))
+    trunk_head = Column(Unicode(100))
+    home = Column(Unicode(100))
+    favorite_room = Column(Unicode(100))
+    view_from_the_window = Column(Unicode(100))
+    vehicles = Column(Unicode(100))
     notes = Column(Unicode(1000))
 
     @classmethod
@@ -579,6 +590,99 @@ class Character(Base):
         s.commit()
 
     @classmethod
+    def set_why(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'why': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_habits(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'habits': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_costume(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'costume': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_shoes(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'shoes': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_hands_gestures(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'hands_gestures': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_feet_legs(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'feet_legs': value.strip().upper()})
+        s.commit()
+
+
+    @classmethod
+    def set_trunk_head(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'trunk_head': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_home(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'home': value.strip().upper()})
+        s.commit()
+
+
+
+    @classmethod
+    def set_favorite_room(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'favorite_room': value.strip().upper()})
+        s.commit()
+
+
+
+    @classmethod
+    def set_view_from_the_window(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'view_from_the_window': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_vehicles(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'vehicles': value.strip().upper()})
+        s.commit()
+
+    @classmethod
     def add(cls, character):
         d = cls()
         dateformat = "%Y-%m-%d"
@@ -606,6 +710,17 @@ class Character(Base):
         d.background = character['background']
         d.hobbies = character['hobbies']
         d.picture = character['picture']
+        d.why = character['why']
+        d.habits = character['habits']
+        d.costume = character['costume']
+        d.shoes = character['shoes']
+        d.hands_gestures = character['hands gestures']
+        d.feet_legs =  character['feet legs']
+        d.trunk_head = character['trunk head']
+        d.home = character['home']
+        d.favorite_room = character['favorite room']
+        d.view_from_the_window = character['view from the window']
+        d.vehicles = character['vehicles']
         d.notes = character['notes']
         return d
 
@@ -700,6 +815,17 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"background"', '"' + str(character.background) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"hobbies"', '"' + str(character.hobbies) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"picture"', '"' + str(character.picture) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"why"', '"' + str(character.why) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"habits"', '"' + str(character.habits) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"costume"', '"' + str(character.costume) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"shoes"', '"' + str(character.shoes) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"hands gestures"', '"' + str(character.hands_gestures) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"feet legs"', '"' + str(character.feet_legs) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"trunk head"', '"' + str(character.trunk_head) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"home"', '"' + str(character.home) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"favorite room"', '"' + str(character.favorite_room) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"view from the window"', '"' + str(character.view_from_the_window) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"vehicles"', '"' + str(character.vehicles) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"notes"', '"' + str(character.notes) + '"') + ','
 
             i = character.id
