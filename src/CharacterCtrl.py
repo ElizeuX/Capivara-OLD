@@ -28,7 +28,7 @@ class CharacterControl:
                              ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
                               'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
                               'imperfections',
-                              'background', 'picture', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
+                              'background', 'picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
                               'feet_legs',
                               'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'ritual', 'dream', 'biography',
                               'relationships'])
@@ -108,6 +108,12 @@ class CharacterControl:
             pixbuf = pixbuf.scale_simple(170, 200, 2)
 
         voCharacter.picture.set_from_pixbuf(pixbuf)
+
+        if  voCharacter.notes == None:
+            print("sem notas")
+        else:
+            textbufferNotes = voCharacter.notes.get_buffer()
+            textbufferNotes.set_text(character.notes)
 
 
         biography = c.getBiografia(character.id)

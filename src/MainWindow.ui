@@ -872,6 +872,7 @@
                                               <object class="GtkAlignment">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
+                                                <property name="double-buffered">False</property>
                                                 <property name="left-padding">12</property>
                                                 <child>
                                                   <object class="GtkImage" id="imgCharacter">
@@ -915,8 +916,7 @@
                                             <property name="halign">center</property>
                                             <property name="valign">start</property>
                                             <property name="margin-top">5</property>
-                                            <property name="hexpand">False</property>
-                                            <property name="vexpand">True</property>
+                                            <property name="hexpand">True</property>
                                             <property name="use-stock">True</property>
                                             <property name="always-show-image">True</property>
                                             <signal name="clicked" handler="on_btnEditPhoto_clicked" swapped="no"/>
@@ -925,6 +925,53 @@
                                             <property name="expand">False</property>
                                             <property name="fill">True</property>
                                             <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkFrame">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="double-buffered">False</property>
+                                            <property name="margin-start">10</property>
+                                            <property name="margin-end">10</property>
+                                            <property name="margin-top">5</property>
+                                            <property name="margin-bottom">5</property>
+                                            <property name="label-xalign">0</property>
+                                            <property name="shadow-type">out</property>
+                                            <child>
+                                              <object class="GtkAlignment">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="double-buffered">False</property>
+                                                <property name="margin-start">5</property>
+                                                <property name="margin-end">5</property>
+                                                <property name="left-padding">12</property>
+                                                <child>
+                                                  <object class="GtkTextView" id="txtNotes">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">True</property>
+                                                    <property name="double-buffered">False</property>
+                                                    <property name="margin-end">5</property>
+                                                    <property name="wrap-mode">word</property>
+                                                    <property name="justification">fill</property>
+                                                    <signal name="focus-out-event" handler="on_txtNotes_focus_out_event" swapped="no"/>
+                                                  </object>
+                                                </child>
+                                              </object>
+                                            </child>
+                                            <child type="label">
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="double-buffered">False</property>
+                                                <property name="label" translatable="yes">Notas :</property>
+                                              </object>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">2</property>
                                           </packing>
                                         </child>
                                       </object>

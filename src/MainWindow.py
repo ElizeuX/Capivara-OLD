@@ -81,8 +81,10 @@ class MainWindow(Gtk.ApplicationWindow):
     txtArms = Gtk.Template.Child(name='gtkEntryArms')
     txtLegs = Gtk.Template.Child(name='gtkEntryLegs')
     txtTag = Gtk.Template.Child(name='gtkEntryTag')
-
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
+    txtNotes = Gtk.Template.Child(name='txtNotes')
+
+
     chkCharacter = Gtk.Template.Child(name='chkCharacter')
     chkCore = Gtk.Template.Child(name='chkCore')
 
@@ -116,7 +118,7 @@ class MainWindow(Gtk.ApplicationWindow):
     voCharacter = namedtuple('voCharacter',
                              ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
                               'eye_color','hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month', 'imperfections',
-                              'background','picture', 'why', 'habits', 'costume', 'shoes', 'hands_gestures', 'feet_legs',
+                              'background','picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures', 'feet_legs',
                               'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'ritual', 'dream', 'biography', 'relationships'])
 
 
@@ -227,7 +229,7 @@ class MainWindow(Gtk.ApplicationWindow):
         # Passa os campos da tela para treeview
         vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtArms,
-                              self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth, self.txtImperfections, self.txtBackground, self.imgCharacter,
+                              self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth, self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
                               self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes, self.txtHandsGestures, self.txtFeetLegs,
                               self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow, self.txtVehicles, self.txtRitual, self.txtDream, self.list_store, self.lstStoreMap)
 
@@ -305,7 +307,7 @@ class MainWindow(Gtk.ApplicationWindow):
                                       self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor,
                                       self.txtArms,
                                       self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth,
-                                      self.txtImperfections, self.txtBackground, self.imgCharacter,
+                                      self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
                                       self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes,
                                       self.txtHandsGestures, self.txtFeetLegs,
                                       self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow,
@@ -313,7 +315,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
                 Treeview(self.treeView, self, "", vo)
                 self.putHeaderBar()
-                capivaraFileShortName = os.path.basename(self.lastFileOpen)
+                capivaraFileShortName = os.path.basename(capivaraFile)
                 self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFileShortName)[0], Gtk.MessageType.INFO)
                 self.statusbar_show_msg("Pronto.")
 
@@ -389,7 +391,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         intId = self.getIdRow()
         c = c.get(intId)
-        if c.name != self.txtName.get_text():
+        if c.name != self.txtName.get_text().upper():
             c.set_name(intId, self.txtName.get_text().upper())
 
             # Nome alterado alterar flag
@@ -496,7 +498,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         intId = self.getIdRow()
         c = c.get(intId)
-        if c.body_type != self.txtBodyType.get_text():
+        if c.body_type != self.txtBodyType.get_text().upper():
             c.set_bodyType(intId, self.txtBodyType.get_text().upper())
 
             # Nome alterado alterar flag
@@ -508,7 +510,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         intId = self.getIdRow()
         c.get(intId)
-        if c.eye_color != self.txtEyeColor.get_text():
+        if c.eye_color != self.txtEyeColor.get_text().upper():
             c.set_eyeColor(intId, self.txtEyeColor.get_text().upper())
 
             # Nome alterado alterar flag
@@ -520,7 +522,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         intId = self.getIdRow()
         c.get(intId)
-        if c.hair_color != self.txtHairColor.get_text():
+        if c.hair_color != self.txtHairColor.get_text().upper():
             c.set_hairColor(intId, self.txtHairColor.get_text().upper())
 
             # Nome alterado alterar flag
@@ -532,7 +534,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = Character()
         intId = self.getIdRow()
         c.get(intId)
-        if c.legs != self.txtLegs.get_text():
+        if c.legs != self.txtLegs.get_text().upper():
             c.set_legs(intId, self.txtLegs.get_text().upper())
 
             # Nome alterado alterar flag
@@ -633,6 +635,21 @@ class MainWindow(Gtk.ApplicationWindow):
         c = c.get(intId)
         if c.imperfections != self.txtImperfections.get_text():
             c.set_imperfections(intId, self.txtImperfections.get_text().upper())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
+
+    @Gtk.Template.Callback()
+    def on_txtNotes_focus_out_event(self, widget, event):
+        c = Character()
+        intId = self.getIdRow()
+        c.get(intId)
+        textbufferNotes = self.txtNotes.get_buffer()
+        if c.notes != textbufferNotes:
+            first_iter = textbufferNotes.get_start_iter()
+            end_iter = textbufferNotes.get_end_iter()
+            c.set_notes(intId, textbufferNotes.get_text(first_iter, end_iter, True))
 
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
@@ -779,7 +796,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     #endregion
 
-    #region ABA 3
+    #region ATUALIZAÇÃO DOS CAMPOS DA ABA 3
     @Gtk.Template.Callback()
     def on_txtRitual_focus_out_event(self, widget, event):
         c = Character()
@@ -831,7 +848,7 @@ class MainWindow(Gtk.ApplicationWindow):
         vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtArms,
                               self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth,
-                              self.txtImperfections, self.txtBackground, self.imgCharacter,
+                              self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
                               self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes, self.txtHandsGestures,
                               self.txtFeetLegs,
                               self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow,
@@ -1207,6 +1224,7 @@ class MainWindow(Gtk.ApplicationWindow):
             # Atualiza a barra de título
             self.header_bar.set_title(propriedades.title)
             self.header_bar.set_subtitle(propriedades.surname + ', ' + propriedades.forename)
+            Global.set("title", propriedades.title)
 
         elif response == Gtk.ResponseType.NO:
             pass
@@ -1251,7 +1269,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.set_transient_for(parent=self)
         response = dialog.run()
 
-        print(f'Resposta do diálogo = {response}.')
+        #print(f'Resposta do diálogo = {response}.')
 
         # Verificando qual botão foi pressionado.
         if response == Gtk.ResponseType.YES:
@@ -1280,8 +1298,10 @@ class MainWindow(Gtk.ApplicationWindow):
         about.run()
         about.destroy()
 
+
     @Gtk.Template.Callback()
     def on_MainWindow_delete_event(self, object, data=None):
+
         # Verificar se os campos do registro é igual ao json file
         if Global.config("flag_edit"):
             # Pegar o nome do projeto
@@ -1290,7 +1310,7 @@ class MainWindow(Gtk.ApplicationWindow):
             dialog = OutSaveFile(self, c.title )
 
             response = dialog.run()
-            print(f'Resposta do diálogo = {response}.')
+            #print(f'Resposta do diálogo = {response}.')
 
             # Verificando qual botão foi pressionado.
             if response == Gtk.ResponseType.YES:
@@ -1500,6 +1520,7 @@ class Application(Gtk.Application):
     def do_shutdown(self):
         appConfig = AppConfig()
         appConfig.setLastFileOpen(Global.config("last_file_open"))
+
         # Salvando todos os configs
         appConfig.serialize()
         Gtk.Application.do_shutdown(self)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table, Date
+from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table, Date, desc
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -520,19 +520,11 @@ class Character(Base):
         s.commit()
 
     @classmethod
-    def set_ethinicity(cls, intId, strEthinicity):
+    def set_notes(cls, intId, value):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'ethnicity': strEthinicity.strip().upper()})
-        s.commit()
-
-    @classmethod
-    def set_health(cls, intId, strHealth):
-        s = Session()
-        d = cls()
-        d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'health': strHealth.strip().upper()})
+        s.query(Character).filter(Character.id == d.id).update({'notes': value.strip()})
         s.commit()
 
     @classmethod
@@ -779,7 +771,8 @@ class Character(Base):
     @classmethod
     def list(cls):
         s = Session()
-        return s.query(Character).all()
+        return s.query(Character).order_by(desc(Character.id))
+
 
     @classmethod
     def search(cls, value):

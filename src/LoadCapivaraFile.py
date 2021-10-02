@@ -85,7 +85,7 @@ def loadCapivaraFile(fileOpen=None):
                     "vehicles": "",
                     "ritual": "",
                     "dream": "",
-                    "notes": "NOTAS",
+                    "notes": "",
                     "biography": [],
                     "relationship": []
                 }
