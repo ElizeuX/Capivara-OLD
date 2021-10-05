@@ -520,7 +520,7 @@ class DialogSaveFile(Gtk.FileChooserDialog):
             self.capivaraFile = 'Untitled.capivara'
         else:
             fileOpen = Global.config("capivara_file_open")
-            self.capivaraFile = os.path.basename(fileOpen)  +  '.capivara'
+            self.capivaraFile = self.capivaraFile  +  '.capivara'
             self.home = os.path.dirname(os.path.realpath(fileOpen))
 
         self.set_title(title='Salvar como')

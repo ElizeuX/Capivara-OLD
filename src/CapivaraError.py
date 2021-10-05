@@ -21,5 +21,5 @@ class CapivaraDoesNotExistError(Exception):
 
 class CapivaraDecodeFailError(Exception):
     def __init__(self, error_code, *args, **kwargs):
-        super(CapivaraDoesNotExistError, self).__init__(*args, **kwargs)
+        super(CapivaraDecodeFailError, self).__init__(*args, **kwargs)
         self.error_code = error_code

@@ -93,6 +93,7 @@ class CharacterControl:
         voCharacter.month.set_text(character.month.capitalize())
         voCharacter.imperfections.set_text(character.imperfections)
         voCharacter.arms.set_text(character.arms)
+        voCharacter.legs.set_text(character.legs)
 
         if  voCharacter.background == None:
             print("sem background")

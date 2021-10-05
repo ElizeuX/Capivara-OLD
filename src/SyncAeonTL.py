@@ -5,7 +5,17 @@ import zipfile
 from zipfile import ZipFile
 from DataAccess import Character
 from datetime import datetime
+import pandas as pd
 
+def dateToTimestamp(value):
+    my_datetime = datetime(value.year, value.month, value.day)
+    result = 0
+    try:
+        result = datetime.timestamp(my_datetime)
+    except:
+        print (type(my_datetime))
+
+    return result
 
 def findGuidTemplateCharacter(mydata):
     # Localizar o guid do Template Character
@@ -23,6 +33,7 @@ def SyncAeonTimeLine(AeonProjectFile):
     # TODO: Colocar logs
     # TODO: Não está atualizando os personagens na segunda sincronização
     # TODO: Capiturar erros
+    # TODO; Tratar timestamp do personagem
 
     mydata = None
     data = None
@@ -79,7 +90,7 @@ def SyncAeonTimeLine(AeonProjectFile):
                                 mydata["entities"][j]["notes"] = c.background
                                 break
 
-    elif len(characters) != 0:
+    elif characters.count() > 0:
         # Se houver personagens na base gravar no json
         strEntities = []
 
@@ -88,7 +99,7 @@ def SyncAeonTimeLine(AeonProjectFile):
                 "createRangePosition": {
                     "precision": "day",
                     "rangePropertyGuid": "B327CAD3-1CE1-475E-8F7A-C709D294EF2E",
-                    "timestamp": 61921152000
+                    "timestamp": 0
                 },
                 "entityType": "6C857017-8B69-43D5-BD6A-B4A9B0A4A2EF",
                 "guid": "",
@@ -101,6 +112,7 @@ def SyncAeonTimeLine(AeonProjectFile):
             dictPerson["guid"] = c.uuid
             dictPerson["name"] = c.name
             dictPerson["notes"] = c.background
+            dictPerson['createRangePosition']['timestamp'] = int(dateToTimestamp(c.date_of_birth))
             strEntities.append(dictPerson)
 
         mydata["entities"] = strEntities

@@ -6,9 +6,9 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import os
 import binascii
+from logger import Logs
 
-
-# TODO: Colocar logs
+logs = Logs(filename="capivara.log")
 
 def base64ToRtfFile(fileRTF_content, strBase64):
     width = 16378
@@ -142,6 +142,7 @@ def putCharacter(id, character, binderItem):
 
 
 def SyncScrivener(scrivenerProjectFile):
+    logs.record("Iniciando a sincronização com o Scrivener ", type="info", colorize=True)
     # Listar todos os personagens
     c = Character()
     characters = c.list()
@@ -149,6 +150,8 @@ def SyncScrivener(scrivenerProjectFile):
     root = tree.getroot()
 
     docDir = os.path.dirname(os.path.abspath(scrivenerProjectFile)) + "/Files/Docs/"
+
+    # TODO: Obter o max BinderItem e atribuir o novo __ID
 
     __ID = 54
     __Type = "Text"
@@ -158,6 +161,8 @@ def SyncScrivener(scrivenerProjectFile):
     __IconFileName = "Characters (Character Sheet).tiff"
     __ShowSynopsisImage = "Yes"
     __IndexCardImageFileExtension = "png"
+
+    logs.record("Obtendo BinderItem ", type="info", colorize=True)
 
     for binderItem in root.iter('BinderItem'):
         idCharacters = binderItem.get('ID')
@@ -187,9 +192,14 @@ def SyncScrivener(scrivenerProjectFile):
                 rtfFile = rtfFile.replace("@body_type", character.body_type)
                 rtfFile = rtfFile.replace("@local", character.local)
                 rtfFile = base64ToRtfFile(rtfFile, character.picture)
-
                 rtfFileName = docDir + fileRtfName(__ID)
+
+                logs.record("Adicionando o %s no Binder do Scrivener " % rtfFileName, type="info", colorize=True)
+
                 with open(rtfFileName, "w") as arquivo:
                     arquivo.write(rtfFile)
+
+                logs.record("Sincronização com o Scrivener executada com sucesso.", type="info", colorize=True)
+
 
     tree.write(scrivenerProjectFile)

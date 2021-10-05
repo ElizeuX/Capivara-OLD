@@ -48,7 +48,7 @@ class MainWindow(Gtk.ApplicationWindow):
 
     settings = Gtk.Settings.get_default()
 
-    #region MECANISMOS DA TELA
+    # region MECANISMOS DA TELA
     btn_search = Gtk.Template.Child(name='btn_search')
     search_bar = Gtk.Template.Child(name='search_bar')
     txtSearch = Gtk.Template.Child(name='txtSearch')
@@ -61,9 +61,9 @@ class MainWindow(Gtk.ApplicationWindow):
     lblInfoBar = Gtk.Template.Child(name='lblInfoBar')
     list_store = Gtk.Template.Child(name='list_store')
     lstStoreMap = Gtk.Template.Child(name='lstStoreMap')
-    #endregion
+    # endregion
 
-    #region CAMPOS ABA1
+    # region CAMPOS ABA1
     txtName = Gtk.Template.Child(name='gtkEntryName')
     cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
@@ -84,13 +84,12 @@ class MainWindow(Gtk.ApplicationWindow):
     imgCharacter = Gtk.Template.Child(name='imgCharacter')
     txtNotes = Gtk.Template.Child(name='txtNotes')
 
-
     chkCharacter = Gtk.Template.Child(name='chkCharacter')
     chkCore = Gtk.Template.Child(name='chkCore')
 
-    #endregion
+    # endregion
 
-    #region CAMPOS ABA 2
+    # region CAMPOS ABA 2
     txtWhy = Gtk.Template.Child(name='gtkEntryWhy')
     txtHabits = Gtk.Template.Child(name='gtkEntryHabits')
     txtCostume = Gtk.Template.Child(name='gtkEntryCostume')
@@ -102,25 +101,26 @@ class MainWindow(Gtk.ApplicationWindow):
     txtFavoriteRoom = Gtk.Template.Child(name='gtkEntryFavoriteRoom')
     txtViewFromTheWindow = Gtk.Template.Child(name='gtkEntryViewFromTheWindow')
     txtVehicles = Gtk.Template.Child(name='gtkEntryVehicles')
-    #endregion
+    # endregion
 
-    #region Campos Aba 3
+    # region Campos Aba 3
     txtRitual = Gtk.Template.Child(name='txtRitual')
     txtDream = Gtk.Template.Child(name='txtDream')
     txtBackground = Gtk.Template.Child(name='txtBackground')
     treeBio = Gtk.Template.Child(name='treeviewBiography')
     txtBioYear = Gtk.Template.Child(name='gtkEntryBioYear')
     txtBioEvent = Gtk.Template.Child(name='gtkEntryBioEvent')
-    #endregion
-
+    # endregion
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
                              ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
-                              'eye_color','hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month', 'imperfections',
-                              'background','picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures', 'feet_legs',
-                              'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'ritual', 'dream', 'biography', 'relationships'])
-
+                              'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
+                              'imperfections',
+                              'background', 'picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
+                              'feet_legs',
+                              'trunk_head', 'home', 'favorite_room', 'view_from_the_window', 'vehicles', 'ritual',
+                              'dream', 'biography', 'relationships'])
 
     capivaraFile = ""
 
@@ -130,12 +130,11 @@ class MainWindow(Gtk.ApplicationWindow):
     version = appConfig.getCapivaraVersion()
     lastFileOpen = appConfig.getLastFileOpen()
 
-
-
     # Configurando globais
     Global.set("my_capivara", capivaraPathFile)
     Global.set("version", version)
     Global.set("last_file_open", lastFileOpen)
+    Global.set("flag_edit", False)
 
     if appConfig.getDarkmode() == 'yes':
         settings.set_property('gtk-application-prefer-dark-theme', True)
@@ -224,21 +223,27 @@ class MainWindow(Gtk.ApplicationWindow):
             self.capivaraPathFile = os.path.dirname(os.path.realpath(self.lastFileOpen))
 
         Global.set("capivara_file_open", self.lastFileOpen)
-        self.putHeaderBar()
+
 
         # Passa os campos da tela para treeview
         vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtArms,
-                              self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth, self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
-                              self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes, self.txtHandsGestures, self.txtFeetLegs,
-                              self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow, self.txtVehicles, self.txtRitual, self.txtDream, self.list_store, self.lstStoreMap)
+                              self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth,
+                              self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
+                              self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes, self.txtHandsGestures,
+                              self.txtFeetLegs,
+                              self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow,
+                              self.txtVehicles, self.txtRitual, self.txtDream, self.list_store, self.lstStoreMap)
 
         Treeview(self.treeView, self, "", vo)
+        Global.set("flag_edit", False)
+        self.putHeaderBar()
 
         capivaraFile = os.path.basename(self.lastFileOpen)
 
         if capivaraFile:
-            self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFile)[0], Gtk.MessageType.INFO)
+            self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFile)[0],
+                                 Gtk.MessageType.INFO)
         else:
             self.inforBarMessage('Um novo projeto foi aberto!', Gtk.MessageType.INFO)
 
@@ -311,12 +316,14 @@ class MainWindow(Gtk.ApplicationWindow):
                                       self.txtWhy, self.txtHabits, self.txtCostume, self.txtShoes,
                                       self.txtHandsGestures, self.txtFeetLegs,
                                       self.txtTrunkHead, self.txtHome, self.txtFavoriteRoom, self.txtViewFromTheWindow,
-                                      self.txtVehicles, self.txtRitual, self.txtDream, self.list_store, self.lstStoreMap)
+                                      self.txtVehicles, self.txtRitual, self.txtDream, self.list_store,
+                                      self.lstStoreMap)
 
                 Treeview(self.treeView, self, "", vo)
                 self.putHeaderBar()
                 capivaraFileShortName = os.path.basename(capivaraFile)
-                self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFileShortName)[0], Gtk.MessageType.INFO)
+                self.inforBarMessage('Arquivo "%s" carregado com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
+                                     Gtk.MessageType.INFO)
                 self.statusbar_show_msg("Pronto.")
 
             except:
@@ -384,7 +391,7 @@ class MainWindow(Gtk.ApplicationWindow):
         c = CharacterMap()
         c.set_relationship(self.lstStoreMap[row][0], value)
 
-    #region ATUALIZAÇÃO DOS CAMPOS DA ABA 1
+    # region ATUALIZAÇÃO DOS CAMPOS DA ABA 1
 
     @Gtk.Template.Callback()
     def on_gtkEntryName_focus_out_event(self, widget, event):
@@ -405,6 +412,10 @@ class MainWindow(Gtk.ApplicationWindow):
                 tree_iter = model.get_iter(path)
 
             model.set_value(tree_iter, 0, self.txtName.get_text())
+        else:
+            # Nome alterado alterar flag
+            Global.set("flag_edit", False)
+            self.header_bar.set_title(Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
@@ -461,6 +472,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 date = c.date_of_birth
                 self.txtDate.set_text(date.strftime('%m/%d/%Y'))
                 self.messagebox("error", "ERRO", "Data inválida!")
+        else:
+            c.set_dateOfBirth(intId, '')
 
     @Gtk.Template.Callback()
     def on_gtkEntryDate_focus_in_event(self, widget, event):
@@ -604,7 +617,7 @@ class MainWindow(Gtk.ApplicationWindow):
             self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
-    def on_gtkEntryMouth_focus_out_event(self,widget, event):
+    def on_gtkEntryMouth_focus_out_event(self, widget, event):
         c = Character()
         intId = self.getIdRow()
         c = c.get(intId)
@@ -626,7 +639,6 @@ class MainWindow(Gtk.ApplicationWindow):
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
-
 
     @Gtk.Template.Callback()
     def on_gtkEntryImperfections_focus_out_event(self, widget, event):
@@ -655,9 +667,9 @@ class MainWindow(Gtk.ApplicationWindow):
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
 
-    #endregion
+    # endregion
 
-    #region ATUALIZAÇÃO DOS CAMPOS DA ABA 2
+    # region ATUALIZAÇÃO DOS CAMPOS DA ABA 2
     @Gtk.Template.Callback()
     def on_gtkEntryWhy_focus_out_event(self, widget, event):
         c = Character()
@@ -682,7 +694,6 @@ class MainWindow(Gtk.ApplicationWindow):
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
 
-
     @Gtk.Template.Callback()
     def on_gtkEntryCostume_focus_out_event(self, widget, event):
         c = Character()
@@ -695,7 +706,6 @@ class MainWindow(Gtk.ApplicationWindow):
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
 
-
     @Gtk.Template.Callback()
     def on_gtkEntryShoes_focus_out_event(self, widget, event):
         c = Character()
@@ -707,7 +717,6 @@ class MainWindow(Gtk.ApplicationWindow):
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
-
 
     @Gtk.Template.Callback()
     def on_gtkEntryHandsGestures_focus_out_event(self, widget, event):
@@ -732,7 +741,6 @@ class MainWindow(Gtk.ApplicationWindow):
             # Nome alterado alterar flag
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
-
 
     @Gtk.Template.Callback()
     def on_gtkEntryTrunkHead_focus_out_event(self, widget, event):
@@ -794,9 +802,9 @@ class MainWindow(Gtk.ApplicationWindow):
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
 
-    #endregion
+    # endregion
 
-    #region ATUALIZAÇÃO DOS CAMPOS DA ABA 3
+    # region ATUALIZAÇÃO DOS CAMPOS DA ABA 3
     @Gtk.Template.Callback()
     def on_txtRitual_focus_out_event(self, widget, event):
         c = Character()
@@ -827,7 +835,7 @@ class MainWindow(Gtk.ApplicationWindow):
             Global.set("flag_edit", True)
             self.header_bar.set_title("* " + Global.config("title"))
 
-    #endregion
+    # endregion
 
     @Gtk.Template.Callback()
     def on_btn_new_project_clicked(self, widget):
@@ -895,9 +903,14 @@ class MainWindow(Gtk.ApplicationWindow):
         # Tem capivara? salva; não tem? pede um nome
         if capivaraFile:
             saveCapivaraFile(capivaraFile)
+
+            Global.set("flag_edit", False)
+            self.putHeaderBar()
+
             self.inforBarMessage(
                 'Arquivo "%s" salvo com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
                 Gtk.MessageType.INFO)
+
         else:
             dialog = DialogSaveFile()
             dialog.set_transient_for(parent=self)
@@ -927,8 +940,8 @@ class MainWindow(Gtk.ApplicationWindow):
                     self.putHeaderBar()
 
                     self.inforBarMessage(
-                                 'Arquivo "%s" foi salvo com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
-                                  Gtk.MessageType.INFO)
+                        'Arquivo "%s" foi salvo com sucesso!' % os.path.splitext(capivaraFileShortName)[0],
+                        Gtk.MessageType.INFO)
 
                 except:
                     logs.record("Não foi possível salvar o arquivo %s" % capivaraFile)
@@ -937,7 +950,6 @@ class MainWindow(Gtk.ApplicationWindow):
             else:
                 dialog.destroy()
                 logs.record('"Salvamento foi cancelado.', type="info", colorize=True)
-
 
     # SALVAR COMO
     @Gtk.Template.Callback()
@@ -969,7 +981,7 @@ class MainWindow(Gtk.ApplicationWindow):
                 LoadCapivaraFile.loadCapivaraFile(capivaraFile)
                 Global.set("capivara_file_open", capivaraFile)
 
-                #self.LoadRelationships()
+                # self.LoadRelationships()
 
                 # # Coloca nome do projeto e autor na header bar
                 self.putHeaderBar()
@@ -1200,7 +1212,6 @@ class MainWindow(Gtk.ApplicationWindow):
         Treeview(self.treeView, self, "")
         self.inforBarMessage('Scrivener e AeonTimeLine  foram sincronizados!', Gtk.MessageType.INFO)
 
-
     @Gtk.Template.Callback()
     def on_mnu_properties_project_clicked(self, widget):
         projectProperties = ProjectProperties()
@@ -1269,7 +1280,7 @@ class MainWindow(Gtk.ApplicationWindow):
         dialog.set_transient_for(parent=self)
         response = dialog.run()
 
-        #print(f'Resposta do diálogo = {response}.')
+        # print(f'Resposta do diálogo = {response}.')
 
         # Verificando qual botão foi pressionado.
         if response == Gtk.ResponseType.YES:
@@ -1298,7 +1309,6 @@ class MainWindow(Gtk.ApplicationWindow):
         about.run()
         about.destroy()
 
-
     @Gtk.Template.Callback()
     def on_MainWindow_delete_event(self, object, data=None):
 
@@ -1307,10 +1317,10 @@ class MainWindow(Gtk.ApplicationWindow):
             # Pegar o nome do projeto
             c = ProjectProperties()
             c = c.get()
-            dialog = OutSaveFile(self, c.title )
+            dialog = OutSaveFile(self, c.title)
 
             response = dialog.run()
-            #print(f'Resposta do diálogo = {response}.')
+            # print(f'Resposta do diálogo = {response}.')
 
             # Verificando qual botão foi pressionado.
             if response == Gtk.ResponseType.YES:
@@ -1364,7 +1374,6 @@ class MainWindow(Gtk.ApplicationWindow):
         #     self._change_button_state()
         # return True
         pass
-
 
     @Gtk.Template.Callback()
     def on_txtSearch_activate(self, widget):
@@ -1524,5 +1533,3 @@ class Application(Gtk.Application):
         # Salvando todos os configs
         appConfig.serialize()
         Gtk.Application.do_shutdown(self)
-
-

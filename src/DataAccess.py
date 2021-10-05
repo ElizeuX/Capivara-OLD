@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table, Date, desc
+from sqlalchemy import create_engine, Column, Unicode, Integer, Float, String, ForeignKey, MetaData, Table, Date, desc, sql
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -12,7 +12,7 @@ import os
 from datetime import datetime
 
 engine = create_engine('sqlite:///capivara.db', echo=False)
-#engine = create_engine('sqlite://', echo=True)
+# engine = create_engine('sqlite://', echo=True)
 Base = declarative_base(bind=engine)
 Session = sessionmaker(bind=engine)
 connection = engine.connect()
@@ -184,7 +184,6 @@ class Biography(Base):
         s.commit()
 
 
-
 class Tag(Base):
     __tablename__ = 'tag'
     id = Column(Integer(), primary_key=True)
@@ -278,7 +277,7 @@ class SmartGroup(Base):
         isEndWith = False
         for i in lstRule:
             if isContains:
-                moreRule = moreRule + ' "%' + i.replace('"','') + '%"'
+                moreRule = moreRule + ' "%' + i.replace('"', '') + '%"'
                 isContains = False
                 continue
 
@@ -288,7 +287,7 @@ class SmartGroup(Base):
                 continue
 
             if isEndWith:
-                moreRule = moreRule + ' "%' + i.replace('"','') + '"'
+                moreRule = moreRule + ' "%' + i.replace('"', '') + '"'
                 isEndWith = False
                 continue
 
@@ -305,13 +304,11 @@ class SmartGroup(Base):
                 isEndWith = True
 
             else:
-                moreRule = moreRule +  ' ' + i
-
+                moreRule = moreRule + ' ' + i
 
         rs = s.execute('SELECT * FROM character WHERE ' + moreRule + ';')
 
         return rs
-
 
     @classmethod
     def toDict(cls):
@@ -322,7 +319,7 @@ class SmartGroup(Base):
             smartGroupStr = JsonTools.putMap('"id"', str(smartGroup.id)) + ','
             # smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"')
             smartGroupStr = smartGroupStr + JsonTools.putMap('"description"', '"' + smartGroup.description + '"') + ','
-            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule.replace('"', '\\"')  + '"')
+            smartGroupStr = smartGroupStr + JsonTools.putMap('"rule"', '"' + smartGroup.rule.replace('"', '\\"') + '"')
             retorno.append(JsonTools.putObject(smartGroupStr))
 
         return JsonTools.putArray(', '.join(retorno))
@@ -464,11 +461,14 @@ class Character(Base):
         s.commit()
 
     @classmethod
-    def set_dateOfBirth(cls, intId, datDate):
+    def set_dateOfBirth(cls, intId, value):
         s = Session()
         d = cls()
         d = d.get(intId)
-        s.query(Character).filter(Character.id == d.id).update({'date_of_birth': datDate})
+        if value == '':
+            value =  sql.null()
+
+        s.query(Character).filter(Character.id == d.id).update({'date_of_birth': value})
         s.commit()
 
     @classmethod
@@ -631,7 +631,6 @@ class Character(Base):
         s.query(Character).filter(Character.id == d.id).update({'feet_legs': value.strip().upper()})
         s.commit()
 
-
     @classmethod
     def set_trunk_head(cls, intId, value):
         s = Session()
@@ -648,8 +647,6 @@ class Character(Base):
         s.query(Character).filter(Character.id == d.id).update({'home': value.strip().upper()})
         s.commit()
 
-
-
     @classmethod
     def set_favorite_room(cls, intId, value):
         s = Session()
@@ -657,8 +654,6 @@ class Character(Base):
         d = d.get(intId)
         s.query(Character).filter(Character.id == d.id).update({'favorite_room': value.strip().upper()})
         s.commit()
-
-
 
     @classmethod
     def set_view_from_the_window(cls, intId, value):
@@ -725,7 +720,7 @@ class Character(Base):
         d.costume = character['costume']
         d.shoes = character['shoes']
         d.hands_gestures = character['hands gestures']
-        d.feet_legs =  character['feet legs']
+        d.feet_legs = character['feet legs']
         d.trunk_head = character['trunk head']
         d.home = character['home']
         d.favorite_room = character['favorite room']
@@ -773,7 +768,6 @@ class Character(Base):
         s = Session()
         return s.query(Character).order_by(desc(Character.id))
 
-
     @classmethod
     def search(cls, value):
         s = Session()
@@ -806,7 +800,6 @@ class Character(Base):
         s = Session()
         return s.query(Character).filter_by(uuid=uuid)
 
-
     @classmethod
     def toDict(cls):
         s = Session()
@@ -818,21 +811,24 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"uuid"', '"' + character.uuid + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"created"', '"' + character.created + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"modified"', '"' + character.modified + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"name"', '"' + str(character.name).replace('"', '\\"') + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"name"',
+                                                           '"' + str(character.name).replace('"', '\\"') + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
             if character.date_of_birth != None:
-                characterStr = characterStr + JsonTools.putMap('"date of birth"','"' + str(character.date_of_birth) + '"') + ','
+                characterStr = characterStr + JsonTools.putMap('"date of birth"',
+                                                               '"' + str(character.date_of_birth) + '"') + ','
             else:
                 characterStr = characterStr + JsonTools.putMap('"date of birth"', '""') + ','
             characterStr = characterStr + JsonTools.putMap('"age"', '"' + str(character.age) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"local"', '"' + str(character.local) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"face"', '"' + str(character.face) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"month"','"' + str(character.month) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"month"', '"' + str(character.month) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"height"', str("{:.2f}".format(character.height))) + ','
             characterStr = characterStr + JsonTools.putMap('"weight"', str("{:.2f}".format(character.weight))) + ','
             characterStr = characterStr + JsonTools.putMap('"body type"', '"' + str(character.body_type) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"imperfections"', '"' + str(character.imperfections) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"imperfections"',
+                                                           '"' + str(character.imperfections) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"eye color"', '"' + str(character.eye_color) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"hair color"', '"' + str(character.hair_color) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"arms"', '"' + str(character.arms) + '"') + ','
@@ -844,12 +840,15 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"habits"', '"' + str(character.habits) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"costume"', '"' + str(character.costume) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"shoes"', '"' + str(character.shoes) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"hands gestures"', '"' + str(character.hands_gestures) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"hands gestures"',
+                                                           '"' + str(character.hands_gestures) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"feet legs"', '"' + str(character.feet_legs) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"trunk head"', '"' + str(character.trunk_head) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"home"', '"' + str(character.home) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"favorite room"', '"' + str(character.favorite_room) + '"') + ','
-            characterStr = characterStr + JsonTools.putMap('"view from the window"', '"' + str(character.view_from_the_window) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"favorite room"',
+                                                           '"' + str(character.favorite_room) + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"view from the window"',
+                                                           '"' + str(character.view_from_the_window) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"vehicles"', '"' + str(character.vehicles) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"ritual"', '"' + character.ritual + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"dream"', '"' + character.dream + '"') + ','
