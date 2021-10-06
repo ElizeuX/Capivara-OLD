@@ -736,6 +736,8 @@ class Character(Base):
         s = Session()
         s.query(CoreCharacterLink).filter(CoreCharacterLink.character_id == id).delete()
         s.query(TagCharacterLink).filter(TagCharacterLink.character_id == id).delete()
+        s.query(CharacterMap).filter(CharacterMap.character_one == id).delete()
+        s.query(CharacterMap).filter(CharacterMap.character_two == id).delete()
         s.query(Character).filter(Character.id == id).delete()
         s.commit()
 
