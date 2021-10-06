@@ -170,22 +170,40 @@ class Treeview():
         smartGroups = sg.list()
         character = Character()
         iter_level_1 = self.append_tree("Categorias")
+        __counter_1 = 0
+        __counter_2 = 0
         for smartGroup in smartGroups:
             iter_level_2 = self.append_tree(smartGroup.description, smartGroup.id, iter_level_1)
+            __counter_1 += 1
             c = smartGroup.listCharacter(smartGroup.rule)
             for i in c:
                 iter_level_3 = self.append_tree(character.get(i.id).name, i.id, iter_level_2)
+                __counter_2 += 1
+            self.treemodel.set_value(iter_level_2, 0, self.treemodel.get_value(iter_level_2, 0) + ' (%s)' % str(__counter_2))
+            __counter_2 = 0
+
+        self.treemodel.set_value(iter_level_1, 0, "Categorias (%s)" % str(__counter_1))
+
 
         # Adicionando núcleos
         c = Core()
         d = Character()
         cores = c.list()
-        iter_level_1 = self.append_tree("Nucleo Dramático")
+        iter_level_1 = self.append_tree("Núcleo Dramático")
+        __counter_1 = 0
+        __counter_2 = 0
         for core in cores:
             iter_level_2 = self.append_tree(core.description, core.id, iter_level_1)
             characters = c.listCharacters(core.id)
+            __counter_1 += 1
             for i in characters:
                 iter_level_3 = self.append_tree(d.get(i.character_id).name, i.character_id, iter_level_2)
+                __counter_2 += 1
+
+            self.treemodel.set_value(iter_level_2, 0, "Núcleo Dramático (%s)" % str(__counter_2))
+            __counter_2 = 0
+
+        self.treemodel.set_value(iter_level_1, 0, "Núcleo Dramático (%s)" % str(__counter_1))
 
         # Adicionando personagens
         c = Character()
@@ -195,8 +213,12 @@ class Treeview():
             characters = c.list()
 
         iter_level_1 = self.append_tree("Personagem")
+        i = 0
         for character in characters:
             iter_level_2 = self.append_tree(character.name, character.id, iter_level_1)
+            i += 1
+
+        self.treemodel.set_value(iter_level_1, 0, "Personagem (%s)" % str(i))
 
     def append_tree(self, name=None, id=None, parent=None):
         """
@@ -210,6 +232,7 @@ class Treeview():
         self.treemodel.set_value(myiter, 0, capitalizeFirstCharacter(name))
         self.treemodel.set_value(myiter, 1, itemIcon)
         self.treemodel.set_value(myiter, 2, str(id))
+
         # self.order = Gtk.SortType.ASCENDING
         # self.treemodel.set_sort_column_id(2, self.order)
 
