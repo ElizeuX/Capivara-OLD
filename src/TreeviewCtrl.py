@@ -179,11 +179,11 @@ class Treeview():
             for i in c:
                 iter_level_3 = self.append_tree(character.get(i.id).name, i.id, iter_level_2)
                 __counter_2 += 1
-            self.treemodel.set_value(iter_level_2, 0, self.treemodel.get_value(iter_level_2, 0) + ' (%s)' % str(__counter_2))
+            self.treemodel.set_value(iter_level_2, 0,
+                                     self.treemodel.get_value(iter_level_2, 0) + ' (%s)' % str(__counter_2))
             __counter_2 = 0
 
         self.treemodel.set_value(iter_level_1, 0, "Categorias (%s)" % str(__counter_1))
-
 
         # Adicionando núcleos
         c = Core()
@@ -200,7 +200,7 @@ class Treeview():
                 iter_level_3 = self.append_tree(d.get(i.character_id).name, i.character_id, iter_level_2)
                 __counter_2 += 1
 
-            self.treemodel.set_value(iter_level_2, 0, "Núcleo Dramático (%s)" % str(__counter_2))
+            self.treemodel.set_value(iter_level_2, 0, self.treemodel.get_value(iter_level_2, 0) + ' (%s)' % str(__counter_2))
             __counter_2 = 0
 
         self.treemodel.set_value(iter_level_1, 0, "Núcleo Dramático (%s)" % str(__counter_1))
