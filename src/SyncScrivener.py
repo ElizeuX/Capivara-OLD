@@ -141,6 +141,19 @@ def putCharacter(id, character, binderItem):
     target.text = "0"
 
 
+def getNewBinderId(root):
+    __maxBinderId = 0
+    for binderItem in root.iter('BinderItem'):
+        __binderItemNum = int(binderItem.get('ID'))
+        if __binderItemNum > __maxBinderId:
+            __maxBinderId = __binderItemNum
+
+    print(__maxBinderId)
+
+    return __maxBinderId + 1
+
+
+
 def SyncScrivener(scrivenerProjectFile):
     logs.record("Iniciando a sincronização com o Scrivener ", type="info", colorize=True)
     # Listar todos os personagens
@@ -153,7 +166,7 @@ def SyncScrivener(scrivenerProjectFile):
 
     # TODO: Obter o max BinderItem e atribuir o novo __ID
 
-    __ID = 54
+
     __Type = "Text"
     __LabelID = "6"
     __IncludeInCompile = "Yes"
@@ -178,7 +191,8 @@ def SyncScrivener(scrivenerProjectFile):
             for character in characters:
                 rtfFile = getRtf()
 
-                __ID = __ID + 1
+                __ID = getNewBinderId(root)
+
                 elementCharacter = ET.SubElement(children, 'BinderItem')
                 putCharacter(__ID, character, elementCharacter)
 
