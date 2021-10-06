@@ -394,7 +394,9 @@ class Character(Base):
     uuid = Column(Unicode(40))
     created = Column(Unicode(30))
     modified = Column(Unicode(30))
-    name = Column(Unicode(200))
+    full_name = Column(Unicode(200))
+    name = Column(Unicode(50))
+    alter_name = Column(Unicode(50))
     archtype = Column(Unicode(30))
     date_of_birth = Column(Date())
     sex = Column(Unicode(5))
@@ -434,6 +436,22 @@ class Character(Base):
         d = cls()
         d = d.get(intId)
         s.query(Character).filter(Character.id == d.id).update({'name': strName.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_full_name(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'full_name': value.strip().upper()})
+        s.commit()
+
+    @classmethod
+    def set_alter_name(cls, intId, value):
+        s = Session()
+        d = cls()
+        d = d.get(intId)
+        s.query(Character).filter(Character.id == d.id).update({'alter_name': value.strip().upper()})
         s.commit()
 
     @classmethod
@@ -696,6 +714,8 @@ class Character(Base):
         d.created = character['created']
         d.modified = character['modified']
         d.name = character['name'].strip().upper().replace('\"', '"')
+        d.alter_name =  character['alter name'].strip().upper().replace('\"', '"')
+        d.full_name =  character['full name'].strip().upper().replace('\"', '"')
         d.archtype = character['archtype']
         if character['date of birth'] and character['date of birth'] != "":
             d.date_of_birth = datetime.strptime(character['date of birth'], dateformat)
@@ -815,6 +835,10 @@ class Character(Base):
             characterStr = characterStr + JsonTools.putMap('"modified"', '"' + character.modified + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"name"',
                                                            '"' + str(character.name).replace('"', '\\"') + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"alter name"',
+                                                           '"' + str(character.alter_name).replace('"', '\\"') + '"') + ','
+            characterStr = characterStr + JsonTools.putMap('"full name"',
+                                                           '"' + str(character.full_name).replace('"', '\\"') + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"sex"', '"' + str(character.sex) + '"') + ','
             characterStr = characterStr + JsonTools.putMap('"archtype"', '"' + str(character.archtype) + '"') + ','
             if character.date_of_birth != None:

@@ -346,8 +346,6 @@ class Treeview():
         model = tv.get_model()
         treeiter = model.get_iter(treepath)
         self.selected = model.get_value(treeiter, 0)
-        # self.entry.set_text(self.selected)
-        # print(self.selected)
 
     def onSelectionChanged(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
@@ -357,7 +355,6 @@ class Treeview():
             value = model.get_value(tree_iter, 2)
         iters = [model.get_iter(path) for path in pathlist]
         iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
-        print(iter_str)
         # Se não houver item selecionado não faça nada
         if value.isnumeric():
             if iter_str[0] == '0' or len(iter_str) == 5:

@@ -336,18 +336,6 @@
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
                                             <property name="halign">start</property>
-                                            <property name="label" translatable="yes">Name :</property>
-                                          </object>
-                                          <packing>
-                                            <property name="left-attach">0</property>
-                                            <property name="top-attach">1</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkLabel">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="halign">start</property>
                                             <property name="label" translatable="yes">Archtype :</property>
                                           </object>
                                           <packing>
@@ -356,13 +344,13 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkEntry" id="gtkEntryName">
+                                          <object class="GtkEntry" id="gtkEntryFullName">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="margin-start">5</property>
                                             <property name="margin-bottom">5</property>
                                             <property name="width-chars">60</property>
-                                            <signal name="focus-out-event" handler="on_gtkEntryName_focus_out_event" swapped="no"/>
+                                            <signal name="focus-out-event" handler="on_gtkEntryFullName_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="left-attach">1</property>
@@ -841,10 +829,82 @@
                                           </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">Nome completo :</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">1</property>
+                                          </packing>
                                         </child>
                                         <child>
-                                          <placeholder/>
+                                          <object class="GtkBox">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <child>
+                                              <object class="GtkEntry" id="gtkEntryName">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="margin-start">5</property>
+                                                <property name="margin-bottom">5</property>
+                                                <property name="hexpand">True</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryName_focus_out_event" swapped="no"/>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="margin-start">5</property>
+                                                <property name="margin-bottom">5</property>
+                                                <property name="label" translatable="yes">Alternativo :</property>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkEntry" id="gtkEntryAlterName">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="margin-start">5</property>
+                                                <property name="margin-bottom">5</property>
+                                                <property name="hexpand">True</property>
+                                                <signal name="focus-out-event" handler="on_gtkEntryAlterName_focus_out_event" swapped="no"/>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">2</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">Nome :</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
                                         </child>
                                       </object>
                                       <packing>
@@ -2315,7 +2375,6 @@
         </child>
         <child>
           <object class="GtkComboBoxText">
-            <property name="visible">False</property>
             <property name="can-focus">False</property>
             <property name="active">0</property>
             <items>

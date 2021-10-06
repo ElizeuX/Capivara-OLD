@@ -37,7 +37,7 @@ from SmartGroup import SmartGroupDialog
 
 # IMPORTAR SINCRONIZADORES
 from SyncScrivener import SyncScrivener
-from SyncAeonTL import SyncAeonTimeLine
+from SyncAeonTLNew import SyncAeonTimeLine
 
 logs = Logs(filename="capivara.log")
 
@@ -65,6 +65,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
     # region CAMPOS ABA1
     txtName = Gtk.Template.Child(name='gtkEntryName')
+    txtAlterName = Gtk.Template.Child(name='gtkEntryAlterName')
+    txtFullName = Gtk.Template.Child(name='gtkEntryFullName')
     cboArchtype = Gtk.Template.Child(name='cboArchtype')
     txtDate = Gtk.Template.Child(name='gtkEntryDate')
     txtAge = Gtk.Template.Child(name='gtkEntryAge')
@@ -114,7 +116,8 @@ class MainWindow(Gtk.ApplicationWindow):
 
     # Vo com os elementos da tela
     voCharacter = namedtuple('voCharacter',
-                             ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
+                             ['name', 'alter_name', 'full_name', 'archtype', 'date_of_birth', 'age', 'sex', 'height',
+                              'weight', 'body_type',
                               'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
                               'imperfections',
                               'background', 'picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
@@ -224,9 +227,9 @@ class MainWindow(Gtk.ApplicationWindow):
 
         Global.set("capivara_file_open", self.lastFileOpen)
 
-
         # Passa os campos da tela para treeview
-        vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
+        vo = self.voCharacter(self.txtName, self.txtAlterName, self.txtFullName, self.cboArchtype, self.txtDate,
+                              self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtArms,
                               self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth,
                               self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,
@@ -307,7 +310,8 @@ class MainWindow(Gtk.ApplicationWindow):
                 Global.set("last_file_open", capivaraFile)
 
                 # Passa os campos da tela para treeview
-                vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex,
+                vo = self.voCharacter(self.txtName, self.txtAlterName, self.txtFullName, self.cboArchtype, self.txtDate,
+                                      self.txtAge, self.cboSex,
                                       self.txtHeigth,
                                       self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor,
                                       self.txtArms,
@@ -416,6 +420,30 @@ class MainWindow(Gtk.ApplicationWindow):
             # Nome alterado alterar flag
             Global.set("flag_edit", False)
             self.header_bar.set_title(Global.config("title"))
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryFullName_focus_out_event(self, widget, event):
+        c = Character()
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.full_name != self.txtFullName.get_text().upper():
+            c.set_full_name(intId, self.txtFullName.get_text().upper())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
+
+    @Gtk.Template.Callback()
+    def on_gtkEntryAlterName_focus_out_event(self, widget, event):
+        c = Character()
+        intId = self.getIdRow()
+        c = c.get(intId)
+        if c.alter_name != self.txtAlterName.get_text().upper():
+            c.set_alter_name(intId, self.txtAlterName.get_text().upper())
+
+            # Nome alterado alterar flag
+            Global.set("flag_edit", True)
+            self.header_bar.set_title("* " + Global.config("title"))
 
     @Gtk.Template.Callback()
     def on_cboArchtype_changed(self, combo):
@@ -853,7 +881,8 @@ class MainWindow(Gtk.ApplicationWindow):
         self.putHeaderBar()
 
         # Passa os campos da tela para treeview
-        vo = self.voCharacter(self.txtName, self.cboArchtype, self.txtDate, self.txtAge, self.cboSex, self.txtHeigth,
+        vo = self.voCharacter(self.txtName, self.txtAlterName, self.txtFullName, self.cboArchtype, self.txtDate,
+                              self.txtAge, self.cboSex, self.txtHeigth,
                               self.txtWeigth, self.txtBodyType, self.txtEyeColor, self.txtHairColor, self.txtArms,
                               self.txtLegs, self.txtTag, self.txtLocal, self.txtFace, self.txtMouth,
                               self.txtImperfections, self.txtBackground, self.imgCharacter, self.txtNotes,

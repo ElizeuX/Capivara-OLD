@@ -25,7 +25,7 @@ class CharacterControl:
     #                           'imperfections', 'background', 'picture', 'biography', 'relationships'])
 
     voCharacter = namedtuple('voCharacter',
-                             ['name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
+                             ['name', 'alter_name', 'full_name', 'archtype', 'date_of_birth', 'age', 'sex', 'height', 'weight', 'body_type',
                               'eye_color', 'hair_color', 'arms', 'legs', 'tag', 'local', 'face', 'month',
                               'imperfections',
                               'background', 'picture', 'notes', 'why', 'habits', 'costume', 'shoes', 'hands_gestures',
@@ -41,6 +41,9 @@ class CharacterControl:
         character = c.get(characterId)
 
         voCharacter.name.set_text(Utils.capitalizeFirstCharacter(character.name))
+        voCharacter.alter_name.set_text(Utils.capitalizeFirstCharacter(character.alter_name))
+        voCharacter.full_name.set_text(Utils.capitalizeFirstCharacter(character.full_name))
+
 
         if character.height == None:
             voCharacter.height.set_text('0.00')
