@@ -30,6 +30,9 @@ edit autoexec.bat
 
 A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
 
+￼![image](https://user-images.githubusercontent.com/6186868/136279550-cd8ecd54-053b-4cfc-bd64-6f285866ea23.png)
+
+
 _For more examples and usage, please refer to the [Wiki][wiki]._
 
 ## Development setup
