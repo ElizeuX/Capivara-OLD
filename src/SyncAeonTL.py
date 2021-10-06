@@ -29,9 +29,7 @@ def findGuidTemplateCharacter(mydata):
     return guidCharacter
 
 def SyncAeonTimeLine(AeonProjectFile):
-    # TODO: Inserir os relacionamentos dos personagens vindos do AeonTimeLine
     # TODO: Colocar logs
-    # TODO: Não está atualizando os personagens na segunda sincronização
     # TODO: Capiturar erros
     # TODO: Tratar timestamp do personagem
     # TODO: Verificar quem é o rangePropertyGuid
@@ -127,7 +125,7 @@ def SyncAeonTimeLine(AeonProjectFile):
                                 break
 
     if characters.count() > 0:
-        # Se houver personagens na base gravar no json
+        # Se houver personagens na base e não no AEON gravar
         strEntities = []
         for c in characters:
             guidPerson = c.uuid
@@ -160,29 +158,6 @@ def SyncAeonTimeLine(AeonProjectFile):
                  dictPerson["notes"] = c.notes
                  mydata["entities"].append(dictPerson)
 
-
-                # for c in characters:
-                #     dictPerson = {
-                #         "createRangePosition": {
-                #             "precision": "day",
-                #             "rangePropertyGuid": "B327CAD3-1CE1-475E-8F7A-C709D294EF2E",
-                #             "timestamp": 0
-                #         },
-                #         "entityType": "6C857017-8B69-43D5-BD6A-B4A9B0A4A2EF",
-                #         "guid": "",
-                #         "icon": "person",
-                #         "name": "",
-                #         "notes": "",
-                #         "sortOrder": 1,
-                #         "swatchColor": "red"
-                #     }
-                #     dictPerson["guid"] = c.uuid
-                #     dictPerson["name"] = c.name
-                #     dictPerson["notes"] = c.background
-                #     #dictPerson['createRangePosition']['timestamp'] = int(dateToTimestamp(c.date_of_birth))
-                #     strEntities.append(dictPerson)
-                #
-                # mydata["entities"] = strEntities
 
     # Gravar os dados
     zf = zipfile.ZipFile(AeonProjectFile, mode="w", compression=zipfile.ZIP_DEFLATED)

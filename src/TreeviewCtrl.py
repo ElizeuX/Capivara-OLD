@@ -3,32 +3,29 @@
 import gi
 
 gi.require_version(namespace='Gtk', version='3.0')
-from gi.repository import Gtk, Gdk, GdkPixbuf, GObject
+from gi.repository import Gtk, Gdk, GObject
 from gi.repository.GdkPixbuf import Pixbuf
 
-from DataAccess import Character, Core, SmartGroup, CoreCharacterLink, CharacterMap
+from DataAccess import Character, Core, SmartGroup, CoreCharacterLink
 from CharacterCtrl import CharacterControl
 from NewGroupDialog import NewGroupDialog
 from PrintOperation import PrintOperation
 from Utils import capitalizeFirstCharacter
 
-
-
 #### Drag and drop stuff
 DRAG_ACTION = Gdk.DragAction.COPY
 dnd_internal_target = 'gtg/task-iter-str'
-dnd_external_targets ={}
+dnd_external_targets = {}
 
 targets = [
-    ('text/plain', 0, 0) # have tried various combinations of these
+    ('text/plain', 0, 0)  # have tried various combinations of these
 ]
-
 
 
 class Treeview():
     treeview = None
     treemodel = None
-    #vo = None
+    # vo = None
     dnd_internal_target = 'gtg/task-iter-str'
     # CONSTANTES DO MENU
     __DELETE_CHARACTER = 1
@@ -43,7 +40,7 @@ class Treeview():
     selected = 'workspace'
     widget = ""
 
-    def __init__(self, treeview, widget, search, vo = None ):
+    def __init__(self, treeview, widget, search, vo=None):
 
         self.data = vo
         self.widget = widget
@@ -52,9 +49,6 @@ class Treeview():
             self.search = search
         else:
             self.search = ""
-
-
-
 
         for column in treeview.get_columns():
             treeview.remove_column(column)
@@ -69,7 +63,7 @@ class Treeview():
         self.treemodel = Gtk.TreeStore(str, Pixbuf, str)
         self.treeview.set_model(self.treemodel)
 
-        #Drag and drop
+        # Drag and drop
         self.__init_dnd()
 
         # add columns usually only one in case of the treeview
@@ -128,8 +122,6 @@ class Treeview():
 
         self.treeview_menu = Gtk.Menu()
 
-
-
     def __init_dnd(self):
         """ Initialize Drag'n'Drop support
 
@@ -158,7 +150,7 @@ class Treeview():
         #     dnd_targets.append((name, Gtk.TARGET_SAME_APP, target))
 
         self.treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK,
-                                          targets, Gdk.DragAction.DEFAULT | Gdk.DragAction.COPY)
+                                               targets, Gdk.DragAction.DEFAULT | Gdk.DragAction.COPY)
 
         self.treeview.enable_model_drag_dest(targets, Gdk.DragAction.DEFAULT | Gdk.DragAction.COPY)
 
@@ -184,14 +176,13 @@ class Treeview():
             for i in c:
                 iter_level_3 = self.append_tree(character.get(i.id).name, i.id, iter_level_2)
 
-
         # Adicionando núcleos
         c = Core()
         d = Character()
         cores = c.list()
         iter_level_1 = self.append_tree("Nucleo Dramático")
         for core in cores:
-            iter_level_2 = self.append_tree( core.description, core.id, iter_level_1)
+            iter_level_2 = self.append_tree(core.description, core.id, iter_level_1)
             characters = c.listCharacters(core.id)
             for i in characters:
                 iter_level_3 = self.append_tree(d.get(i.character_id).name, i.character_id, iter_level_2)
@@ -205,8 +196,7 @@ class Treeview():
 
         iter_level_1 = self.append_tree("Personagem")
         for character in characters:
-            iter_level_2 = self.append_tree( character.name, character.id, iter_level_1)
-
+            iter_level_2 = self.append_tree(character.name, character.id, iter_level_1)
 
     def append_tree(self, name=None, id=None, parent=None):
         """
@@ -220,8 +210,8 @@ class Treeview():
         self.treemodel.set_value(myiter, 0, capitalizeFirstCharacter(name))
         self.treemodel.set_value(myiter, 1, itemIcon)
         self.treemodel.set_value(myiter, 2, str(id))
-        #self.order = Gtk.SortType.ASCENDING
-        #self.treemodel.set_sort_column_id(2, self.order)
+        # self.order = Gtk.SortType.ASCENDING
+        # self.treemodel.set_sort_column_id(2, self.order)
 
         return myiter
 
@@ -230,19 +220,19 @@ class Treeview():
             self.deleteCharacter()
             self.treeview_menu.popdown()
 
-        elif( i == self.__PRINT_CAPIVARA):
+        elif (i == self.__PRINT_CAPIVARA):
             self.printCapivara()
             self.treeview_menu.popdown()
 
-        elif(i == self.__REMOVE_CHARACTER_CORE):
+        elif (i == self.__REMOVE_CHARACTER_CORE):
             self.removeCharacterOfCore()
             self.treeview_menu.popdown()
 
-        elif(i == self.__EDIT_GROUP):
+        elif (i == self.__EDIT_GROUP):
             self.groupEdit()
             self.treeview_menu.popdown()
 
-        elif(i == self.__DELETE_CORE):
+        elif (i == self.__DELETE_CORE):
             self.deleteCore()
             self.treeview_menu.popdown()
 
@@ -261,10 +251,10 @@ class Treeview():
             iters = [model.get_iter(path) for path in paths]
             iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
 
-            if iter_str == '0' or iter_str =='1' or iter_str == '2':
+            if iter_str == '0' or iter_str == '1' or iter_str == '2':
                 return
 
-            if iter_str[0] == '2' and len(iter_str)>3:
+            if iter_str[0] == '2' and len(iter_str) > 3:
                 return
 
             # remover todos os itens de menu
@@ -301,7 +291,7 @@ class Treeview():
 
             # smartgrupo = "2:0"
             elif iter_str[0] == "2":
-                if len(iter_str) <= 3 :
+                if len(iter_str) <= 3:
                     menu_item = Gtk.MenuItem("Excluir smartgroup")
                     self.treeview_menu.append(menu_item)
                     menu_item.connect("activate", self.item_activated, self.__DELETE_SMARTGROUP)
@@ -334,7 +324,7 @@ class Treeview():
         treeiter = model.get_iter(treepath)
         self.selected = model.get_value(treeiter, 0)
         # self.entry.set_text(self.selected)
-        #print(self.selected)
+        # print(self.selected)
 
     def onSelectionChanged(self, tree_selection):
         (model, pathlist) = tree_selection.get_selected_rows()
@@ -344,15 +334,11 @@ class Treeview():
             value = model.get_value(tree_iter, 2)
         iters = [model.get_iter(path) for path in pathlist]
         iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
-        # TODO: Resolver essa gambiarra
-        if value:
-            try:
+        print(iter_str)
+        # Se não houver item selecionado não faça nada
+        if value.isnumeric():
+            if iter_str[0] == '0' or len(iter_str) == 5:
                 c = CharacterControl(value, self.data)
-            except:
-                pass
-
-
-
 
     def get_Core_Iter(self):
         pass
@@ -390,7 +376,7 @@ class Treeview():
             value = model.get_value(tree_iter, 2)
         if value:
             dialog = NewGroupDialog(value)
-            dialog.set_transient_for(parent= self.widget)
+            dialog.set_transient_for(parent=self.widget)
             response = dialog.run()
 
             # Verificando qual botão foi pressionado.
@@ -420,20 +406,18 @@ class Treeview():
             c = self.treeview.get_column(0)
             self.treeview.set_cursor(last, c, True)
 
-
     def deleteCore(self):
-            tree_selection = self.treeview.get_selection()
-            (model, pathlist) = tree_selection.get_selected_rows()
-            value = ""
-            for path in pathlist:
-                tree_iter = model.get_iter(path)
-                value = model.get_value(tree_iter, 2)
-            if value:
-                print(value)
-                c = Core()
-                c.delete(value)
-                model.remove(tree_iter)
-
+        tree_selection = self.treeview.get_selection()
+        (model, pathlist) = tree_selection.get_selected_rows()
+        value = ""
+        for path in pathlist:
+            tree_iter = model.get_iter(path)
+            value = model.get_value(tree_iter, 2)
+        if value:
+            print(value)
+            c = Core()
+            c.delete(value)
+            model.remove(tree_iter)
 
     def deleteSmartGroup(self):
         tree_selection = self.treeview.get_selection()
@@ -449,10 +433,9 @@ class Treeview():
             model.remove(tree_iter)
 
 
-
-
 def on_drag_fail(widget, dc, result):
     print("Failed dragging", widget, dc, result)
+
 
 def on_drag_data_get(treeview, context, selection, info, timestamp):
     """ Extract data from the source of the DnD operation.
@@ -463,15 +446,15 @@ def on_drag_data_get(treeview, context, selection, info, timestamp):
     model, paths = treeselection.get_selected_rows()
     iters = [model.get_iter(path) for path in paths]
     iter_str = ','.join([model.get_string_from_iter(iter) for iter in iters])
-    #selection.set(dnd_internal_target, 0, iter_str)
+    # selection.set(dnd_internal_target, 0, iter_str)
     for path in paths:
         tree_iter = model.get_iter(path)
         value = model.get_value(tree_iter, 2)
     if value:
         selection.set_text(str(value), -1)
 
-def on_drag_data_received(treeview, context, x, y, selection, info, timestamp):
 
+def on_drag_data_received(treeview, context, x, y, selection, info, timestamp):
     characterId = selection.get_text()
 
     model = treeview.get_model()
