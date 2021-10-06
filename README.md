@@ -8,7 +8,7 @@
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 
-Construir uma base de dados humana para os personagens de histórias de ficção.
+Construir uma base de dados humana para os personagens de uma história de ficção.
 
 ![](header.png)
 
