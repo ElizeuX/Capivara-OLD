@@ -8,7 +8,7 @@
 [![Build Status][travis-image]][travis-url]
 [![Downloads Stats][npm-downloads]][npm-url]
 
-One to two paragraph statement about your product and what it does.
+Construir uma base de dados humana para os personagens de histórias de ficção.
 
 ![](header.png)
 
