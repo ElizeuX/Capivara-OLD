@@ -12,37 +12,26 @@ Construir uma base de dados humana para os personagens de uma história de ficç
 
 ![](header.png)
 
-## Installation
+## User Interface
+### The Main Interface:
+The image below highlights the main components of the Capivara interface, including:.
 
-OS X & Linux:
-
-```sh
-npm install my-crazy-module --save
-```
-
-Windows:
-
-```sh
-edit autoexec.bat
-```
-
-## Usage example
-
-A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.
+  - ***Toolbar:*** Provides access to regularly used functionality
+  - ***Tree View:*** The largest area of the interface, which shows your characters, dramatic core and smart groups. 
 
 ￼![image](https://user-images.githubusercontent.com/6186868/136279550-cd8ecd54-053b-4cfc-bd64-6f285866ea23.png)
+The main components of Capivara.
 
 
 _For more examples and usage, please refer to the [Wiki][wiki]._
 
-## Development setup
+## Screenshots  
 
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
+[Screenshots page](https://capivara.com)
 
-```sh
-make install
-npm test
-```
+## Usage
+
+See the [User Manual](https://capivara.com).
 
 ## Release History
 
@@ -56,6 +45,11 @@ Your Name – [@elizeux](https://twitter.com/elizeux) – elizeu.xavier@gmail.co
 Distributed under the XYZ license. See ``LICENSE`` for more information.
 
 [https://github.com/yourname/github-link](https://github.com/dbader/)
+
+## Bugs
+
+Bug reports and feature requests should be made in the capivara bug tracker at [launchpad](https://bugs.launchpad.net/capivara).
+GitHub is only used for code hosting and pull requests.
 
 ## Contributing
 
